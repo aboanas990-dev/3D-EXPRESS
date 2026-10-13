@@ -1,0 +1,1669 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>3D Express Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: Autodesk-style shell — title bar, ribbon tabs, ribbon, [library | viewport | outliner+properties], timeline, status bar */
+:root{
+  --bg0:#15171b; --bg1:#1c1f24; --bg2:#23272d; --bg3:#2b3038; --bg4:#343a44;
+  --bd:#3a414b; --bd2:#4a525e; --tx:#d9dee5; --tx2:#98a2ae; --tx3:#6c7682;
+  --ac:#0696d7; --ac2:#3db8f0; --acbg:rgba(6,150,215,.22);
+  --key:#f2b134; --ok:#4fbf83; --bad:#e5534b; --sk:#4fd1ff;
+  --ui:'IBM Plex Sans Arabic','Segoe UI',Tahoma,system-ui,sans-serif;
+  --mono:ui-monospace,'Cascadia Mono',Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg0);color:var(--tx);font:13px/1.4 var(--ui);overflow:hidden;-webkit-user-select:none;user-select:none}
+button,input,select{font:inherit;color:inherit}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+#app{display:grid;grid-template-rows:38px 30px 90px minmax(0,1fr) var(--tlh,176px) 24px;height:100%;opacity:0}
+#app.no-tl{--tlh:0px} #app.no-tl #timeline{display:none}
+/* title bar */
+#titlebar{display:flex;align-items:center;gap:6px;padding:0 10px;background:var(--bg0);border-bottom:1px solid var(--bd);min-width:0}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;letter-spacing:.06em;font-size:13px;white-space:nowrap;margin-inline-end:10px}
+.logo b{display:grid;place-items:center;width:24px;height:24px;border-radius:5px;background:linear-gradient(135deg,var(--ac),#0b5f8c);color:#fff;font-size:11px;letter-spacing:0}
+.logo span{color:var(--tx2);font-weight:500;letter-spacing:.02em}
+.tb{display:flex;align-items:center;gap:5px;height:28px;padding:0 9px;border:1px solid transparent;border-radius:4px;background:none;cursor:pointer;color:var(--tx);white-space:nowrap}
+.tb:hover{background:var(--bg3);border-color:var(--bd)}
+.tb svg.i{width:16px;height:16px}
+.tsep{width:1px;height:18px;background:var(--bd);margin:0 4px}
+.tspacer{flex:1}
+.docname{color:var(--tx2);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tbScroll{display:flex;align-items:center;gap:2px;overflow-x:auto;scrollbar-width:none;min-width:0}
+/* ribbon */
+#tabs{display:flex;gap:2px;padding:0 8px;background:var(--bg1);border-bottom:1px solid var(--bd);overflow-x:auto;scrollbar-width:none}
+.tab{padding:0 14px;height:29px;border:none;background:none;color:var(--tx2);cursor:pointer;border-top:2px solid transparent;white-space:nowrap}
+.tab:hover{color:var(--tx)}
+.tab.on{background:var(--bg3);color:var(--tx);border-top-color:var(--ac)}
+#ribbon{display:flex;background:var(--bg3);border-bottom:1px solid var(--bd);overflow-x:auto;overflow-y:hidden;padding:4px 4px 0}
+.rg{display:flex;flex-direction:column;border-inline-end:1px solid var(--bd);padding:0 6px;flex:none}
+.rg-items{display:flex;gap:1px;flex:1;align-items:flex-start}
+.rg-name{font-size:10.5px;color:var(--tx3);text-align:center;padding:1px 0 3px;white-space:nowrap}
+.rb{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:3px;width:58px;min-height:62px;padding:6px 2px 3px;border:1px solid transparent;border-radius:4px;background:none;cursor:pointer;color:var(--tx)}
+.rb span{font-size:11px;line-height:1.15;text-align:center;color:var(--tx)}
+.rb svg.i{width:24px;height:24px;stroke-width:1.5}
+.rb:hover{background:var(--bg4);border-color:var(--bd2)}
+.rb.on{background:var(--acbg);border-color:var(--ac)}
+.rb.on svg.i{color:var(--ac2)}
+.rb .sw{width:24px;height:24px;border-radius:50%;box-shadow:inset -3px -4px 8px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.08)}
+.rfield{display:flex;flex-direction:column;gap:2px;padding:2px 4px 0;font-size:11px;color:var(--tx2)}
+.rfield label{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.rfield input,.rfield select{width:84px;height:20px;background:var(--bg1);border:1px solid var(--bd);border-radius:3px;padding:0 4px;direction:ltr}
+.rfield input[type=color]{padding:0 2px;width:40px}
+/* main */
+main{display:grid;grid-template-columns:var(--lw,236px) minmax(0,1fr) var(--sw,292px);min-height:0}
+#app.no-lib{--lw:0px} #app.no-lib #library{display:none}
+#app.no-side{--sw:0px} #app.no-side #sidebar{display:none}
+.panel{background:var(--bg2);display:flex;flex-direction:column;min-height:0;min-width:0}
+.ph{display:flex;align-items:center;justify-content:space-between;height:28px;padding:0 10px;background:var(--bg1);border-bottom:1px solid var(--bd);font-weight:600;font-size:12px;letter-spacing:.02em;flex:none}
+.ph small{color:var(--tx3);font-weight:400}
+#library{border-inline-end:1px solid var(--bd)}
+#libTabs{display:flex;gap:2px;padding:6px 6px 0;background:var(--bg2);flex-wrap:wrap}
+.lt{flex:1 1 auto;min-width:0;padding:5px 5px;white-space:nowrap;border:1px solid var(--bd);border-bottom:none;border-radius:4px 4px 0 0;background:var(--bg1);color:var(--tx2);cursor:pointer;font-size:11.5px}
+.lt.on{background:var(--bg3);color:var(--tx);border-color:var(--bd2)}
+.lsearch{margin:0 6px;padding:6px;background:var(--bg3);border:1px solid var(--bd2);border-top:none}
+.lsearch input{width:100%;height:26px;background:var(--bg1);border:1px solid var(--bd);border-radius:3px;padding:0 8px}
+#libGrid{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:6px;padding:8px 6px;align-content:start;margin:0 6px 6px;background:var(--bg3);border:1px solid var(--bd2);border-top:none}
+.li{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 2px 5px;border:1px solid transparent;border-radius:5px;cursor:grab;background:var(--bg2)}
+.li:hover{border-color:var(--ac);background:var(--bg4)}
+.li img,.li .lic{width:100%;aspect-ratio:1;max-width:72px;border-radius:4px;object-fit:cover;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,#3b424d,#22262c)}
+.li .lic svg.i{width:30px;height:30px;color:var(--ac2)}
+.li span{font-size:11px;text-align:center;color:var(--tx);line-height:1.15}
+.libhint{grid-column:1/-1;color:var(--tx3);font-size:11px;padding:2px 2px 4px}
+/* viewport */
+#vpWrap{position:relative;min-width:0;min-height:0;background:radial-gradient(ellipse at 50% 30%,#3c4450 0%,#262b33 55%,#191c21 100%);overflow:hidden}
+#vpWrap.flat{background:var(--vpbg,#2a2f37)}
+#viewport{position:absolute;inset:0}
+#viewport canvas{display:block;outline:none;touch-action:none}
+.hud{position:absolute;top:8px;inset-inline-end:8px;display:flex;gap:6px;pointer-events:none;direction:ltr}
+.hud span{background:rgba(20,22,26,.72);border:1px solid var(--bd);padding:2px 8px;border-radius:3px;font-size:11px;color:var(--tx2)}
+.hud span.live{color:var(--key);border-color:var(--key)}
+#vcBtns{position:absolute;top:126px;right:16px;display:flex;gap:3px;direction:ltr}
+#vcBtns button{width:24px;height:22px;border:1px solid var(--bd);border-radius:3px;background:rgba(28,31,36,.85);color:var(--tx2);cursor:pointer;font-size:10px;display:grid;place-items:center;padding:0}
+#vcBtns button:hover{color:var(--tx);border-color:var(--ac)}
+#vcBtns svg.i{width:14px;height:14px}
+#skHint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(10,30,40,.85);border:1px solid var(--sk);color:var(--sk);padding:6px 14px;border-radius:20px;font-size:12px;display:none;white-space:nowrap;max-width:94%;overflow:hidden;text-overflow:ellipsis}
+#dropFx{position:absolute;inset:6px;border:2px dashed var(--ac);border-radius:6px;pointer-events:none;display:none;background:rgba(6,150,215,.06)}
+/* sidebar */
+#sidebar{border-inline-start:1px solid var(--bd)}
+#outliner{height:38%;min-height:120px;display:flex;flex-direction:column;border-bottom:1px solid var(--bd)}
+#olSearch{margin:6px;height:24px;background:var(--bg1);border:1px solid var(--bd);border-radius:3px;padding:0 8px}
+#olList{flex:1;overflow:auto;padding:0 4px 6px}
+.ol{display:flex;align-items:center;gap:6px;height:24px;padding:0 6px;border-radius:3px;cursor:pointer;color:var(--tx)}
+.ol:hover{background:var(--bg3)}
+.ol.on{background:var(--acbg);outline:1px solid var(--ac)}
+.ol svg.i{width:15px;height:15px;color:var(--tx2)}
+.ol .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ol .kf{color:var(--key);font-size:10px}
+.ol .eye{border:none;background:none;cursor:pointer;color:var(--tx3);padding:2px;display:grid}
+.ol .eye:hover{color:var(--tx)}
+.ol.hid .nm{color:var(--tx3);text-decoration:line-through}
+.ol input{flex:1;height:20px;background:var(--bg0);border:1px solid var(--ac);color:var(--tx);padding:0 4px}
+#props{flex:1;overflow:auto;padding-bottom:16px}
+.sec{border-bottom:1px solid var(--bd)}
+.sec h4{margin:0;padding:7px 10px;font-size:11.5px;font-weight:600;color:var(--tx2);background:var(--bg1);letter-spacing:.03em;cursor:pointer;display:flex;justify-content:space-between}
+.sec h4::after{content:'▾';color:var(--tx3)}
+.sec.closed h4::after{content:'◂'}
+.sec.closed .sb{display:none}
+.sb{padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.row{display:grid;grid-template-columns:88px minmax(0,1fr) 38px;align-items:center;gap:6px}
+.row>label{color:var(--tx2);font-size:12px}
+.row input[type=text],.row select,.row input[type=number]{grid-column:2/4;height:24px;background:var(--bg1);border:1px solid var(--bd);border-radius:3px;padding:0 6px;min-width:0}
+.row input[type=range]{width:100%;accent-color:var(--ac)}
+.row output{font-size:11px;color:var(--tx2);text-align:center;direction:ltr;font-variant-numeric:tabular-nums}
+.row input[type=color]{grid-column:2/4;height:24px;width:100%;border:1px solid var(--bd);border-radius:3px;background:var(--bg1);padding:1px 2px}
+.vec{display:grid;grid-template-columns:62px repeat(3,14px minmax(0,1fr));align-items:center;gap:3px;direction:ltr}
+.vec .vl{direction:rtl;color:var(--tx2);font-size:12px;text-align:right;grid-column:1;order:-1}
+.vec input{height:24px;background:var(--bg1);border:1px solid var(--bd);border-radius:3px;padding:0 3px;min-width:0;width:100%;font-family:var(--mono);font-size:11.5px;font-variant-numeric:tabular-nums}
+.scrub{cursor:ew-resize;font-size:10px;font-weight:700;text-align:center;border-radius:2px;padding:4px 0}
+.ax0{color:#ff6b6b}.ax1{color:#7ed957}.ax2{color:#5aa9ff}
+.chk{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--tx2)}
+.chk label{display:flex;align-items:center;gap:5px;cursor:pointer}
+.chk input{accent-color:var(--ac)}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+.btn{height:26px;padding:0 10px;border:1px solid var(--bd2);border-radius:3px;background:var(--bg3);cursor:pointer;color:var(--tx)}
+.btn:hover{border-color:var(--ac);background:var(--bg4)}
+.btn.pri{background:var(--ac);border-color:var(--ac);color:#fff}
+.tag{display:inline-block;padding:1px 8px;border-radius:10px;background:var(--bg4);color:var(--tx2);font-size:11px;grid-column:2/4;justify-self:start}
+.hint{margin:0;color:var(--tx3);font-size:11.5px}
+.empty{padding:22px 16px;text-align:center;color:var(--tx3)}
+.empty svg.i{width:34px;height:34px;color:var(--bd2)}
+.empty p{margin:6px 0 2px;color:var(--tx2)}
+.kbd{font-family:var(--mono);font-size:10.5px;background:var(--bg0);border:1px solid var(--bd);border-radius:3px;padding:0 4px;color:var(--tx2)}
+/* timeline */
+#timeline{background:var(--bg2);border-top:1px solid var(--bd);display:flex;flex-direction:column;min-height:0}
+.tlbar{display:flex;align-items:center;gap:4px;padding:3px 8px;background:var(--bg1);border-bottom:1px solid var(--bd);flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;flex:none}
+.tlbar .tb{height:24px;padding:0 6px}
+.tlbar .tb svg.i{width:15px;height:15px}
+.tlbar label{display:flex;align-items:center;gap:4px;color:var(--tx2);font-size:11.5px;white-space:nowrap;margin-inline-start:6px}
+.tlbar input[type=number],.tlbar select{height:22px;background:var(--bg0);border:1px solid var(--bd);border-radius:3px;padding:0 4px}
+.tlbar input[type=number]{width:52px;direction:ltr}
+#tlTime{font-family:var(--mono);font-size:12px;color:var(--key);background:var(--bg0);border:1px solid var(--bd);border-radius:3px;padding:1px 8px;direction:ltr;min-width:110px;text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+#tlPlay.on{background:var(--acbg);border-color:var(--ac)}
+#tlAuto.on{background:var(--bad);border-color:var(--bad);color:#fff}
+#timeline.auto #tlArea{box-shadow:inset 0 0 0 2px var(--bad)}
+#timeline.auto ~ #status{border-top-color:var(--bad)}
+.tlbody{flex:1;overflow:auto;display:grid;grid-template-columns:160px minmax(0,1fr);direction:ltr;min-height:0}
+.tln{border-right:1px solid var(--bd);background:var(--bg2)}
+.tln .rh,.tlr{height:22px;position:sticky;top:0;z-index:2;background:var(--bg1);border-bottom:1px solid var(--bd)}
+.tln .rh{display:flex;align-items:center;padding:0 8px;color:var(--tx3);font-size:11px}
+.tlnm{height:22px;display:flex;align-items:center;gap:5px;padding:0 8px;font-size:11.5px;cursor:pointer;direction:rtl;justify-content:flex-end;white-space:nowrap;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.03)}
+.tlnm.on{background:var(--acbg);color:#fff}
+#tlArea{position:relative;min-width:0;cursor:pointer}
+.tlr{position:sticky}
+.tick{position:absolute;bottom:0;width:1px;background:var(--bd2);height:5px}
+.tick.maj{height:10px;background:var(--tx3)}
+.tick i{position:absolute;bottom:9px;left:3px;font-style:normal;font-size:10px;color:var(--tx3);font-family:var(--mono)}
+.tltr{height:22px;position:relative;border-bottom:1px solid rgba(255,255,255,.03)}
+.tltr.on{background:rgba(6,150,215,.08)}
+.tltr .bar{position:absolute;top:9px;height:4px;background:rgba(242,177,52,.25);border-radius:2px}
+.kd{position:absolute;top:5px;width:12px;height:12px;margin-left:-6px;background:var(--key);transform:rotate(45deg);border:1px solid #6b4a0c;cursor:ew-resize;border-radius:2px;z-index:1}
+.kd:hover,.kd.sel{background:#fff6dd;box-shadow:0 0 0 2px var(--key)}
+#ph{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--bad);z-index:3;pointer-events:none}
+#ph::before{content:'';position:absolute;top:0;left:-5px;border:6px solid transparent;border-top:8px solid var(--bad)}
+/* status */
+#status{display:flex;align-items:center;gap:14px;padding:0 10px;background:var(--bg0);border-top:1px solid var(--bd);font-size:11.5px;color:var(--tx3);white-space:nowrap;overflow:hidden}
+#status b{color:var(--tx2);font-weight:500}
+#stHint{flex:1;overflow:hidden;text-overflow:ellipsis}
+#stStats{direction:ltr;font-family:var(--mono);font-size:11px}
+/* overlays */
+#ctx,#menu{position:fixed;z-index:50;min-width:190px;background:var(--bg2);border:1px solid var(--bd2);border-radius:5px;box-shadow:0 10px 30px rgba(0,0,0,.5);padding:4px;display:none}
+.mi{display:flex;align-items:center;gap:8px;width:100%;padding:6px 10px;border:none;background:none;cursor:pointer;border-radius:3px;text-align:start;color:var(--tx)}
+.mi:hover{background:var(--ac);color:#fff}
+.mi svg.i{width:15px;height:15px}
+.mi kbd{margin-inline-start:auto;font-family:var(--mono);font-size:10.5px;color:var(--tx3)}
+.msep{height:1px;background:var(--bd);margin:4px 2px}
+#modalBg{position:fixed;inset:0;z-index:60;background:rgba(5,7,10,.55);display:none;place-items:center;padding:16px}
+#modal{width:min(420px,100%);background:var(--bg2);border:1px solid var(--bd2);border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden}
+#modal h3{margin:0;padding:10px 14px;background:var(--bg1);border-bottom:1px solid var(--bd);font-size:13px}
+#modal .mb{padding:14px;display:flex;flex-direction:column;gap:9px;max-height:70vh;overflow:auto}
+#modal .mf{display:flex;justify-content:flex-start;gap:8px;padding:10px 14px;border-top:1px solid var(--bd);background:var(--bg1)}
+#modal table{width:100%;border-collapse:collapse;font-size:12px}
+#modal td{padding:4px 6px;border-bottom:1px solid var(--bd)}
+#toasts{position:fixed;bottom:36px;left:50%;transform:translateX(-50%);z-index:70;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
+.toast{background:var(--bg3);border:1px solid var(--bd2);border-inline-start:3px solid var(--ac);padding:7px 14px;border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,.45);font-size:12.5px;white-space:nowrap}
+#splash{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 50% 45%,#1d2a36,#0d1014 70%);display:grid;place-items:center}
+.sp{display:flex;flex-direction:column;align-items:center;gap:14px;direction:ltr}
+.sp-cube{width:64px;height:64px;perspective:300px}
+.sp-cube div{width:64px;height:64px;border:2px solid var(--ac2);border-radius:8px;background:rgba(6,150,215,.15);box-shadow:0 0 40px rgba(6,150,215,.35)}
+.sp-title{font-size:30px;font-weight:700;letter-spacing:.18em;color:#fff;display:flex}
+.sp-title span{display:inline-block}
+.sp-title em{font-style:normal;color:var(--ac2)}
+.sp-sub{color:var(--tx2);font-size:13px}
+.sp-bar{width:220px;height:3px;background:#273039;border-radius:2px;overflow:hidden}
+.sp-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ac),var(--ac2))}
+input[type=file]{display:none}
+::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:5px}::-webkit-scrollbar-track{background:transparent}
+:focus-visible{outline:2px solid var(--ac2);outline-offset:1px}
+@media (max-width:900px){
+  #app{grid-template-rows:38px 30px 90px minmax(0,1fr) var(--tlh,150px) 24px}
+  main{grid-template-columns:minmax(0,1fr)}
+  #library,#sidebar{position:fixed;top:158px;bottom:24px;width:min(300px,86vw);z-index:30;display:none;box-shadow:0 0 40px rgba(0,0,0,.6)}
+  #library{right:0} #sidebar{left:0}
+  #app.m-lib #library{display:flex} #app.m-side #sidebar{display:flex}
+  .logo span,.docname,.tb .tl{display:none}
+  #stStats{display:none}
+}
+[dir=ltr] .vec .vl{direction:ltr;text-align:left}
+[dir=ltr] .tlnm{direction:ltr;justify-content:flex-start}
+@media (max-width:900px){[dir=ltr] #library{right:auto;left:0}[dir=ltr] #sidebar{left:auto;right:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="splash"><div class="sp">
+  <div class="sp-cube"><div></div></div>
+  <div class="sp-title" id="spTitle"></div>
+  <div class="sp-sub">2D & 3D Design Studio · Preparing libraries</div>
+  <div class="sp-bar"><i id="spBar"></i></div>
+</div></div>
+
+<div id="app">
+  <header id="titlebar">
+    <div class="logo"><b>3D</b>EXPRESS <span>Studio</span></div>
+    <div id="tbScroll">
+      <button class="tb" data-cmd="new" title="New Scene"><svg class="i"><use href="#i-new"/></svg><span class="tl">New</span></button>
+      <button class="tb" data-cmd="open" title="Open a project or import a model"><svg class="i"><use href="#i-open"/></svg><span class="tl">Open / Import</span></button>
+      <button class="tb" data-cmd="save" title="Save project (Ctrl+S)"><svg class="i"><use href="#i-save"/></svg><span class="tl">Save</span></button>
+      <button class="tb" data-cmd="export" title="Export"><svg class="i"><use href="#i-export"/></svg><span class="tl">Export ▾</span></button>
+      <div class="tsep"></div>
+      <button class="tb" data-cmd="undo" title="Undo (Ctrl+Z)"><svg class="i"><use href="#i-undo"/></svg></button>
+      <button class="tb" data-cmd="redo" title="Redo (Ctrl+Y)"><svg class="i"><use href="#i-redo"/></svg></button>
+      <div class="tsep"></div>
+      <button class="tb" data-cmd="demo" title="Load the demo scene"><svg class="i"><use href="#i-models"/></svg><span class="tl">Demo Scene</span></button>
+      <button class="tb" data-cmd="mlib" title="Library"><svg class="i"><use href="#i-grid"/></svg><span class="tl">Library</span></button>
+      <button class="tb" data-cmd="mside" title="Properties"><svg class="i"><use href="#i-props"/></svg><span class="tl">Properties</span></button>
+    </div>
+    <div class="tspacer"></div>
+    <span class="docname" id="docName">Untitled Project</span>
+    <button class="tb" data-cmd="lang" id="langBtn" title="Language / اللغة"><svg class="i"><use href="#i-env"/></svg><span id="langLbl">العربية</span></button>
+    <button class="tb" data-cmd="help" title="Keyboard Shortcuts"><svg class="i"><use href="#i-help"/></svg></button>
+  </header>
+  <nav id="tabs"></nav>
+  <div id="ribbon"></div>
+  <main>
+    <aside id="library" class="panel">
+      <div class="ph">Library <small>Drag into the scene</small></div>
+      <div id="libTabs"></div>
+      <div class="lsearch"><input id="libSearch" type="search" placeholder="Search the library…"></div>
+      <div id="libGrid"></div>
+    </aside>
+    <section id="vpWrap">
+      <div id="viewport"></div>
+      <div class="hud"><span id="hudView">Perspective</span><span id="hudShade">Solid</span><span id="hudMode">Move</span><span id="hudPlay" style="display:none" class="live">● Play</span></div>
+      <div id="vcBtns">
+        <button data-v="home" title="Default view"><svg class="i"><use href="#i-home"/></svg></button>
+        <button data-v="top" title="Top (7)">T</button>
+        <button data-v="front" title="Front (1)">F</button>
+        <button data-v="right" title="Right (3)">R</button>
+      </div>
+      <div id="skHint"></div>
+      <div id="dropFx"></div>
+    </section>
+    <aside id="sidebar" class="panel">
+      <div id="outliner">
+        <div class="ph">Scene Explorer <small id="olCount"></small></div>
+        <input id="olSearch" type="search" placeholder="Filter objects…">
+        <div id="olList"></div>
+      </div>
+      <div class="ph">Properties</div>
+      <div id="props"></div>
+    </aside>
+  </main>
+  <footer id="timeline">
+    <div class="tlbar">
+      <button class="tb" id="tlStart" title="Start"><svg class="i"><use href="#i-prev"/></svg></button>
+      <button class="tb" id="tlPlay" title="Play / Pause (Space)"><svg class="i"><use href="#i-play"/></svg></button>
+      <button class="tb" id="tlStop" title="Stop"><svg class="i"><use href="#i-stop"/></svg></button>
+      <button class="tb" id="tlEnd" title="End"><svg class="i"><use href="#i-next"/></svg></button>
+      <span id="tlTime">0.00 / 6.00 s</span>
+      <label>Duration <input type="number" id="tlDur" min="1" max="120" step="0.5" value="6"></label>
+      <label><input type="checkbox" id="tlLoop" checked> Loop</label>
+      <label>Ease (GSAP)
+        <select id="tlEase"></select>
+      </label>
+      <button class="tb" id="tlAuto" title="Auto Key (N)"><svg class="i"><use href="#i-akey"/></svg><span class="tl">Auto Key</span></button>
+      <button class="tb" id="tlKey" title="Add Key (K)"><svg class="i"><use href="#i-key"/></svg><span class="tl">Key</span></button>
+      <button class="tb" id="tlDelKey" title="Delete the key at the playhead"><svg class="i"><use href="#i-trash"/></svg></button>
+    </div>
+    <div class="tlbody" id="tlBody"></div>
+  </footer>
+  <div id="status">
+    <span id="stHint">Ready</span>
+    <span>Selection: <b id="stSel">Nothing</b></span>
+    <span id="stStats"></span>
+  </div>
+</div>
+
+<div id="ctx"></div>
+<div id="menu"></div>
+<div id="modalBg"><div id="modal"></div></div>
+<div id="toasts"></div>
+<input type="file" id="fileIn" accept=".json,.glb,.gltf,.obj,.stl">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="iconDefs"></defs></svg>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { OBJExporter } from 'three/addons/exporters/OBJExporter.js';
+import { STLExporter } from 'three/addons/exporters/STLExporter.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+
+const gsap = window.gsap;
+const LANG = (() => { const h = location.hash.slice(1); if (h === 'ar' || h === 'en') return h; try { return localStorage.getItem('3dx-lang') || 'en'; } catch (e) { return 'en'; } })();
+const EN = {" (مرآة)": " (mirror)", " · Esc للإلغاء": " · Esc to cancel", " أضلاع)": " sides)", " على ": " on ", " كائن": " objects", " مفاتيح على الخط الزمني": " keys on the timeline", " نسخة": " copies", " — استخدم «بثق» أو «دوران» لتحويله إلى مجسم": " — use “Extrude” or “Lathe” to turn it into a solid", "<button class=\"btn\" data-act=\"clearkeys\">مسح</button>": "<button class=\"btn\" data-act=\"clearkeys\">Clear</button>", "<span class=\"kf\" title=\"متحرك\">◆</span>": "<span class=\"kf\" title=\"Animated\">◆</span>", "STL للطباعة 3D": "STL for 3D printing", "glTF ثنائي (GLB)": "Binary glTF (GLB)", "أدوات الرسم": "Sketch Tools", "أرضية الساحة": "Plaza Floor", "أريكة": "Sofa", "أسطوانة": "Cylinder", "أسفل": "Bottom", "أشكال": "Shapes", "أشكال أساسية": "Primitives", "أشكال خاصة": "Special Shapes", "أشكال قابلة للتعديل بخامة كاملة": "Editable shapes with full materials", "أصغر حجم": "Min scale", "أضف شكلاً من شريط «إنشاء» أو من المكتبة": "Add a shape from the Create tab or the library", "أضلاع المضلع": "Polygon sides", "أضواء قابلة للتحريك والتحكم بالشدة واللون": "Movable lights with intensity and color control", "أعلى": "Top", "أعلى (7)": "Top (7)", "أكبر حجم": "Max scale", "ألياف كربون": "Carbon Fiber", "أمام": "Front", "أمام (1)": "Front (1)", "أمام / يمين / أعلى / منظور": "Front / Right / Top / Perspective", "أنبوب": "Tube", "أو اسحب خامة من المكتبة فوقه.": "Or drag a material from the library onto it.", "أُسّي": "Expo", "أُضيف مفتاح عند ": "Key added at ", "أُضيف: ": "Added: ", "أُلغي الحفظ": "Save cancelled", "أُنشئت ": "Created ", "إخراج": "Output", "إخفاء": "Hide", "إخفاء / إظهار": "Hide / Show", "إزاحة X": "Offset X", "إزاحة Y": "Offset Y", "إزاحة Z": "Offset Z", "إسقاط للأرض": "Drop to Ground", "إضاءة": "Lights", "إضافة شخصية": "Add Character", "إضافة ضوء": "Add Light", "إضافة كرة": "Add Sphere", "إضافة مفتاح": "Add Key", "إضافة مفتاح (K)": "Add Key (K)", "إضافة مفتاح حركة": "Add animation key", "إضافة مكعب": "Add Box", "إظهار الكل": "Show All", "إظهار/إخفاء": "Show/Hide", "إعادة": "Redo", "إعادة (Ctrl+Y)": "Redo (Ctrl+Y)", "إعادة الوضعية": "Reset Pose", "إعادة ضبط": "Reset", "إعدادات الرسم": "Sketch Settings", "إلغاء": "Cancel", "إلغاء / إلغاء التحديد": "Cancel / Deselect", "إنشاء": "Create", "إنشاء سريع": "Quick Create", "إنهاء الخط المتعدد": "Finish polyline", "إيقاف": "Stop", "اثنا عشري": "Dodecahedron", "اختر": "Choose", "اختصارات لوحة المفاتيح": "Keyboard Shortcuts", "ارتداد": "Bounce", "استعادة الخامات الأصلية": "Restore Original Materials", "استوديو": "Studio", "استوديو التصميم ثنائي وثلاثي الأبعاد · جارٍ تجهيز المكتبات": "2D & 3D Design Studio · Preparing libraries", "استُعيد آخر مشروع محفوظ تلقائياً — «مشهد تجريبي» لإعادة العرض": "Restored your last autosaved project. Use “Demo Scene” to reload the demo", "استُورد: ": "Imported: ", "اسحب إلى المشهد": "Drag into the scene", "اسحب النماذج والخامات من المكتبة مباشرة إلى المشهد. اسحب ملفات GLB أو OBJ أو STL إلى نافذة العرض لاستيرادها.": "Drag models and materials from the library straight into the scene. Drop GLB, OBJ or STL files on the viewport to import them.", "اسحب حرف المحور لتغيير القيمة": "Drag an axis letter to change the value", "اسم المشروع": "Project name", "الإضاءة": "Lighting", "الاسم": "Name", "الالتقاط: متوقف": "Snap: off", "الالتقاط: مفعّل (0.25 · 15°)": "Snap: on (0.25 · 15°)", "الانبعاث": "Emissive", "البثق": "Extrude", "البداية": "Start", "البعد": "Distance", "التحديد:": "Selection:", "التحريك": "Animate", "التحويل": "Transform", "التسهيل (GSAP)": "Ease (GSAP)", "التسهيل: ": "Ease: ", "التشغيل": "Playback", "التقاط": "Snap", "التكسيات": "Textures", "التكسية": "Texture", "التكسية: ": "Texture: ", "التنقل": "Navigate", "الحجم": "Scale", "الحوض": "Hips", "الخامات": "Materials", "الخامة: ": "Material: ", "الخشونة": "Roughness", "الخصائص": "Properties", "الخط الزمني": "Timeline", "الخلفية": "Background", "الدوران": "Lathe", "الدوران°": "Rotation°", "الرأس": "Head", "الرئيسية": "Home", "الرسم يحتاج نقاطاً أكثر": "The sketch needs more points", "الرقبة": "Neck", "الزاوية°": "Angle°", "الساعد الأيسر": "Left Forearm", "الساعد الأيمن": "Right Forearm", "الساق اليسرى": "Left Shin", "الساق اليمنى": "Right Shin", "الشبكة": "Grid", "الشخصيات": "Characters", "الشخصية": "Character", "الشدة": "Intensity", "الشطف": "Bevel", "الصدر": "Chest", "الظلال": "Shadows", "العتامة": "Opacity", "العدد": "Count", "العرض": "View", "العرض الافتراضي": "Default view", "العرض الرئيسي": "Home View", "العضد الأيسر": "Left Upper Arm", "العضد الأيمن": "Right Upper Arm", "العظمة": "Bone", "العمق": "Depth", "العمود الفقري": "Spine", "الفخذ الأيسر": "Left Thigh", "الفخذ الأيمن": "Right Thigh", "القدم اليسرى": "Left Foot", "القدم اليمنى": "Right Foot", "الكائن": "Object", "الكائنات / الوقت": "Objects / Time", "الكاميرا": "Camera", "الكتف الأيسر": "Left Shoulder", "الكتف الأيمن": "Right Shoulder", "اللوحات": "Panels", "اللون": "Color", "المادة": "Material", "المحاور: عالمية": "Axes: world", "المحاور: محلية": "Axes: local", "المحفوظات": "History", "المدة": "Duration", "المدى (0=∞)": "Range (0=∞)", "المساقط": "Views", "المشهد": "Scene", "المشهد فارغ": "The scene is empty", "المفاتيح": "Keys", "المفتاح التلقائي (Auto Key)": "Auto Key", "المفتاح التلقائي: متوقف": "Auto Key: off", "المفتاح التلقائي: مفعّل — كل تعديل يُسجَّل كمفتاح عند المؤشر": "Auto Key: on. Every change is recorded as a key at the playhead", "المقاطع": "Segments", "المكتبة": "Library", "المواد": "Materials", "الموضع": "Position", "النص": "Text", "النص (أحرف لاتينية)": "Text (Latin letters)", "النعومة": "Softness", "النهاية": "End", "النوع": "Type", "الهيكل العظمي (Rig)": "Skeleton (Rig)", "الوضع": "Mode", "اليد اليسرى": "Left Hand", "اليد اليمنى": "Right Hand", "انعكاسات البيئة": "Reflections", "انقر على كائن في المشهد أو في المستكشف، أو اسحب نموذجاً من المكتبة.": "Click an object in the scene or the outliner, or drag a model from the library.", "انقر لإضافة نقاط · انقر على النقطة الأولى للإغلاق · نقر مزدوج أو Enter للإنهاء": "Click to add points · click the first point to close · double-click or Enter to finish", "انقر لتطبيقها على المحدد أو اسحبها فوق أي كائن": "Click to apply to the selection, or drag onto any object", "انقر للإضافة أو اسحب إلى موضع في المشهد": "Click to add, or drag to a spot in the scene", "انقر للزاوية الأولى ثم للزاوية المقابلة": "Click the first corner, then the opposite corner", "انقر للمركز ثم لتحديد الحجم (": "Click the center, then set the size (", "انقر للمركز ثم لتحديد نصف القطر": "Click the center, then set the radius", "بثق": "Extrude", "بثق إلى": "Extrude to", "بثق إلى 3D": "Extrude to 3D", "بحث في المكتبة…": "Search the library…", "بدون": "None", "بعثرة": "Scatter", "بعثرة عشوائية": "Random Scatter", "بلاستيك": "Plastic", "بلاط": "Tiles", "بيدق شطرنج": "Chess Pawn", "بُعثرت ": "Scattered ", "تباطؤ": "Ease Out", "تجاوز": "Overshoot", "تحجيم": "Scale", "تحجيم موحّد": "Uniform scale", "تحديد": "Select", "تحرير": "Edit", "تحريك": "Move", "تحريك / تدوير / تحجيم": "Move / Rotate / Scale", "تحريك الشخصيات": "Character Animation", "تحميل المشهد التجريبي": "Load the demo scene", "تحويل إلى 3D": "Convert to 3D", "تخصيص خامة موحّدة": "Use a single material", "تدرّج": "Gradient", "تدوير": "Rotate", "تراجع": "Undo", "تراجع (Ctrl+Z)": "Undo (Ctrl+Z)", "تراجع / إعادة": "Undo / Redo", "ترس": "Gear", "تركيز": "Focus", "تركيز على المحدد": "Focus selection", "تشغيل": "Play", "تشغيل / إيقاف (Space)": "Play / Pause (Space)", "تشغيل / إيقاف الحركة": "Play / pause animation", "تشغيل الالتقاط": "Toggle snap", "تصدير": "Export", "تصدير ▾": "Export ▾", "تصفية الكائنات…": "Filter objects…", "تظليل مسطح": "Flat shading", "تعديل": "Modify", "تعذّر التشغيل: ": "Could not start: ", "تعذّر الحفظ هنا": "Couldn't save here", "تعذّر قراءة OBJ": "Couldn't read the OBJ file", "تعذّر قراءة STL": "Couldn't read the STL file", "تعذّر قراءة glTF (الملفات ذات الموارد الخارجية غير مدعومة)": "Couldn't read glTF (files with external resources aren't supported)", "تعذّرت قراءة الملف": "Couldn't read the file", "تكرار": "Loop", "تكرار التكسية": "Texture repeat", "تكسيات": "Textures", "تكسيات إجرائية قابلة للتكرار بلا ملفات خارجية": "Tileable procedural textures, no external files", "تلويح": "Wave", "تمايل": "Wobble", "تنفس / انتظار": "Idle / Breathe", "توسيط": "Center", "ث": "s", "ث — حرّك المؤشر وغيّر الكائن ثم أضف مفتاحاً آخر": "s. Move the playhead, change the object, then add another key", "ثماني": "Octahedron", "جاهز": "Ready", "جديد": "New", "جسم دوراني": "Lathed solid", "جسم مبثوق": "Extruded solid", "جولة الكاميرا": "Camera Tour", "جولة الكاميرا بـ GSAP": "GSAP camera tour", "جيبي": "Sine", "حدد رسماً ثنائي الأبعاد أولاً (من مستكشف المشهد)": "Select a 2D sketch first (from the outliner)", "حدد شخصية بهيكل عظمي أولاً": "Select a rigged character first", "حدد كائناً أولاً": "Select an object first", "حدد كائناً لإضافة مفتاح": "Select an object to add a key", "حدد كائناً لتطبيق التكسية": "Select an object to apply the texture", "حدد كائناً لتطبيق الحركة": "Select an object to apply the animation", "حدد كائناً لتطبيق الخامة": "Select an object to apply the material", "حذف": "Delete", "حذف المفتاح عند المؤشر": "Delete the key at the playhead", "حذف مفتاح": "Delete Key", "حركات GSAP جاهزة": "GSAP Presets", "حركة GSAP: ": "GSAP animation: ", "حركة جاهزة": "Preset", "حركة شخصية": "Character motion", "حركة شخصية: ": "Character motion: ", "حركة: ارتداد": "Animate: Bounce", "حركة: دوران": "Animate: Spin", "حركة: طفو": "Animate: Float", "حرّك المؤشر إلى مفتاح لحذفه": "Move the playhead to a key to delete it", "حسناً": "OK", "حفظ": "Save", "حفظ المشروع": "Save project", "حفظ المشروع (Ctrl+S)": "Save project (Ctrl+S)", "حلقة نيون": "Neon Ring", "حمم": "Lava", "حُذف المفتاح": "Key deleted", "حُذف: ": "Deleted: ", "حُفظ المشروع": "Project saved", "حُمّل المشهد التجريبي": "Demo scene loaded", "خامات": "Materials", "خامات سريعة": "Quick Materials", "خرجت من وضع الوضعية": "Left pose mode", "خرسانة": "Concrete", "خشب": "Wood", "خط النص ثلاثي الأبعاد لم يُحمّل بعد (يتطلب اتصالاً بالإنترنت)": "The 3D text font hasn't loaded yet (needs an internet connection)", "خط متعدد": "Polyline", "خط مفتوح": "Open line", "خطوات": "Steps", "خطوط تحذير": "Hazard Stripes", "خطي": "Linear", "خلف": "Back", "دائرة": "Circle", "دائري": "Circular", "درج": "Stairs", "دوران": "Spin", "دوران ": "Rotate ", "دوران (خراطة)": "Lathe (revolve)", "دوران Y لكل نسخة°": "Y rotation per copy°", "دوران الكاميرا": "Turntable", "دوران الكاميرا: متوقف": "Turntable: off", "دوران الكاميرا: يعمل": "Turntable: on", "دوران المشهد": "Turntable", "ذهب": "Gold", "ذهب وردي": "Rose Gold", "رباعي": "Tetrahedron", "رجل ثلج": "Snowman", "رخام": "Marble", "رسم": "Sketch", "رسم ثنائي الأبعاد": "2D Sketch", "رقص": "Dance", "رمل": "Sand", "روبوت": "Robot", "روبوت متحرك": "Rigged Robot", "رُسم: ": "Drawn: ", "زجاج": "Glass", "زجاج أزرق": "Blue Glass", "زجاجة": "Bottle", "سقوط": "Drop", "سلكي": "Wireframe", "سيارة": "Car", "سيراميك": "Ceramic", "سيُمسح المشهد الحالي. يمكنك التراجع بعد ذلك بـ Ctrl+Z.": "The current scene will be cleared. You can undo with Ctrl+Z.", "شبكة UV": "UV Grid", "شجرة": "Tree", "شخصية": "Character", "شخصية بهيكل عظمي · ": "Rigged character · ", "شخصية متحركة": "Rigged Character", "شدة الانبعاث": "Emissive strength", "شطرنج": "Checker", "شكل · ": "Shape · ", "شكل مبثوق": "Extruded Shape", "شكل مغلق": "Closed shape", "صاروخ": "Rocket", "صدأ": "Rust", "صلب": "Solid", "صنوبر": "Pine", "صورة PNG": "PNG image", "صيغة غير مدعومة: ": "Unsupported format: ", "صُدّر ": "Exported ", "صُدّر OBJ": "Exported OBJ", "صُدّر STL للطباعة ثلاثية الأبعاد": "Exported STL for 3D printing", "ضباب": "Fog", "ضوء": "Light", "ضوء أزرق": "Blue Light", "ضوء اتجاهي": "Directional Light", "ضوء كشاف": "Spot Light", "ضوء محيطي": "Hemisphere Light", "ضوء نقطي": "Point Light", "طارة": "Torus", "طاولة": "Table", "طفو": "Float", "طلاء لامع": "Clearcoat", "طوب": "Bricks", "طين": "Clay", "ظهور": "Pop In", "عدد النسخ": "Number of copies", "عرض الخامة": "Material Display", "عرض الكل": "Frame All", "عشب": "Grass", "عشريني": "Icosahedron", "عقدة": "Knot", "عقدة ذهبية": "Golden Knot", "عمق البثق": "Extrude depth", "عمود": "Column", "فتح / استيراد": "Open / Import", "فتح مشروع أو استيراد نموذج": "Open a project or import a model", "فشل التصدير: ": "Export failed: ", "فولاذ مصقول": "Brushed Steel", "في الخراطة: الحافة اليسرى للرسم هي محور الدوران.": "For lathe, the sketch's left edge is the axis of revolution.", "في وضع الوضعية انقر أي مفصل في المشهد ودوّره بالمقبض. فعّل «مفتاح تلقائي» ثم حرّك المؤشر الزمني وغيّر الوضعية لتسجيل الحركة مثل 3ds Max.": "In pose mode, click any joint in the scene and rotate it with the gizmo. Turn on Auto Key, move the playhead and change the pose to record motion, as in 3ds Max.", "فُتح المشروع": "Project opened", "قرص حلقي": "Ring", "قفز": "Jump", "قلب": "Heart", "قماش جينز": "Denim", "كائن": "objects", "كبسولة": "Capsule", "كربون": "Carbon", "كرة": "Sphere", "كرة جيوديسية": "Geosphere", "كرة كروم": "Chrome Ball", "كرسي": "Chair", "كروم": "Chrome", "كوب": "Mug", "لا توجد مفاتيح عند المؤشر": "No keys at the playhead", "لا توجد مفاتيح. أضف مفتاحاً أو طبّق حركة جاهزة.": "No keys yet. Add a key or apply a preset.", "لا شيء": "Nothing", "لا يمكن تطبيق تكسية على هذا النوع": "Textures can't be applied to this type", "لا يمكن تطبيق خامة على هذا النوع": "Materials can't be applied to this type", "لا يوجد تحديد": "Nothing selected", "لقطة PNG": "PNG Snapshot", "لقطة الشاشة جاهزة": "Screenshot ready", "لون الأرض": "Ground color", "لون ثابت": "Solid color", "مانيكان خشبي": "Wooden Mannequin", "متابعة": "Continue", "متحرك": "animated", "متعددات الوجوه": "Polyhedra", "محاذاة": "Align", "محاور محلية": "Local Axes", "مخروط": "Cone", "مدار": "Orbit", "مرآة": "Mirror", "مرآة X": "Mirror X", "مرآة Y": "Mirror Y", "مرآة Z": "Mirror Z", "مرئي": "Visible", "مزهرية": "Vase", "مستطيل": "Rectangle", "مستكشف المشهد": "Scene Explorer", "مستورد": "Imported", "مستوى": "Plane", "مسح المفاتيح": "Clear Keys", "مشروع بلا عنوان": "Untitled Project", "مشهد تجريبي": "Demo Scene", "مشهد تجريبي — 3D Express": "Demo Scene · 3D Express", "مشهد جديد": "New Scene", "مشي": "Walk", "مصباح": "Lamp", "مصفوفة خطية": "Linear Array", "مصفوفة دائرية": "Radial Array", "مضلع": "Polygon", "مضلع منتظم": "Regular Polygon", "مطاط": "Rubber", "مطاطي": "Elastic", "معدن صدئ": "Rusty Metal", "معدن مصقول": "Brushed Metal", "معدني": "Metalness", "مفتاح": "Key", "مفتاح تلقائي": "Auto Key", "مفتاح تلقائي (N)": "Auto Key (N)", "مفتاح عند": "Key at", "مكعب": "Box", "ملء الشاشة": "Fullscreen", "ملء الشاشة غير متاح هنا": "Fullscreen isn't available here", "ملف المشروع JSON": "Project file (JSON)", "ملف المشروع غير صالح": "Invalid project file", "منزل": "House", "منصة رخام": "Marble Plinth", "منظور": "Perspective", "موافق": "OK", "مُسحت مفاتيح ": "Cleared keys of ", "نابض": "Spring", "ناعم": "Smooth", "ناعم +": "Smooth +", "نبض": "Pulse", "نجمة": "Star", "نحاس": "Copper", "نسخ مكرر": "Duplicate", "نسخ وتوزيع": "Copy & Distribute", "نص": "Text", "نص 3D": "3D Text", "نص ثلاثي الأبعاد": "3D Text", "نصف القطر": "Radius", "نصف قطر المنطقة": "Area radius", "نفاذية (زجاج)": "Transmission (glass)", "نقطة": "points", "نماذج": "Models", "نمط التظليل": "Shading", "نموذج · ": "Model · ", "نموذج مستورد": "Imported model", "نواظم": "Normals", "نيون أزرق": "Neon Blue", "نيون وردي": "Neon Pink", "هذه الصيغة غير متاحة في المعاينة على الويب — افتح ملف HTML محلياً لتصديرها": "This format isn't available in the web preview. Open the HTML file locally to export it", "هرم": "Pyramid", "وضع التحديد": "Select mode", "وضع الرسم": "Sketch Mode", "وضع الرسم 2D": "2D sketch mode", "وضع الرسم ثنائي الأبعاد": "2D sketch mode", "وضع الرسم ثنائي الأبعاد · زر الفأرة الأيمن لإنهاء الخط · Esc للخروج": "2D sketch mode · right-click to finish the line · Esc to exit", "وضع الوضعية": "Pose Mode", "وضع الوضعية (P)": "Pose Mode (P)", "وضع الوضعية للشخصيات": "Character pose mode", "وضع الوضعية: انقر مفصلاً (العظام) ثم دوّره": "Pose mode: click a joint (bone), then rotate it", "وضعية": "Pose", "يسار": "Left", "يسار: تدوير · يمين: سحب · العجلة: تقريب · انقر لتحديد كائن": "Left: orbit · Right: pan · Wheel: zoom · Click to select", "يستخدم هذا النموذج خاماته الأصلية المتعددة.": "This model uses its own original materials.", "يشم": "Jade", "يلقي ظلالاً": "Casts shadows", "يلقي ظلاً": "Casts shadow", "يمين": "Right", "يمين (3)": "Right (3)", "✓ وضع الوضعية مفعّل": "✓ Pose mode on"};
+const T = s => LANG === 'ar' ? s : (EN[s] ?? s);
+const AREV = Object.fromEntries(Object.entries(EN).map(([a, e]) => [e.trim(), a.trim()]));
+(function i18nDom() {
+  document.documentElement.lang = LANG; document.querySelectorAll('[dir]').forEach(e => e.dir = LANG === 'ar' ? 'rtl' : 'ltr'); document.documentElement.dir = LANG === 'ar' ? 'rtl' : 'ltr';
+  const lb = document.getElementById('langLbl'); if (lb) lb.textContent = LANG === 'ar' ? 'English' : 'العربية';
+  if (LANG !== 'ar') return;
+  const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest('script,style') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  const nodes = []; while (w.nextNode()) nodes.push(w.currentNode);
+  nodes.forEach(n => { const t = n.nodeValue.trim(); if (t && AREV[t]) n.nodeValue = n.nodeValue.replace(t, AREV[t]); });
+  document.querySelectorAll('[title],[placeholder]').forEach(e => { for (const a of ['title', 'placeholder']) { const v = e.getAttribute(a); if (v && AREV[v.trim()]) e.setAttribute(a, AREV[v.trim()]); } });
+})();
+function switchLang() {
+  const nl = LANG === 'ar' ? 'en' : 'ar';
+  const tr = n => { const m = String(n).match(/^(.*?)((?: \d+| #\d+| ~\d+| \(.*\))*)$/); const b = m[1], suf = m[2]; const t = nl === 'en' ? EN[b] : AREV[b]; return t ? t.trim() + suf : n; };
+  const pd = projectData(false); pd.name = tr(pd.name); pd.objects.forEach(o => o.name = tr(o.name));
+  try { localStorage.setItem('3dx-lang', nl); localStorage.setItem('3dx-autosave', JSON.stringify(pd)); } catch (e) { }
+  location.hash = nl; location.reload();
+}
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const V3 = THREE.Vector3, D2R = Math.PI / 180, TAU = Math.PI * 2;
+const uid = () => Math.random().toString(36).slice(2, 10);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fmt = v => Math.round(v * 1000) / 1000;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+/* ───────────── Icons ───────────── */
+const ICONS = {
+  undo: 'M9 14L4 9l5-5M4 9h11a5 5 0 010 10h-3', redo: 'M15 14l5-5-5-5M20 9H9a5 5 0 000 10h3',
+  select: 'M5 3l14 8-6 2-2 6z', move: 'M12 2v20M2 12h20M12 2L9 5M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3',
+  rotate: 'M20 12a8 8 0 11-2.3-5.6M20 4v4h-4', scale: 'M4 20h8v-8H4zM12 12l8-8M14 4h6v6',
+  dup: 'M8 8h12v12H8zM4 16V4h12', trash: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',
+  focus: 'M3 8V3h5M16 3h5v5M21 16v5h-5M8 21H3v-5M12 9a3 3 0 100 6 3 3 0 000-6',
+  box: 'M12 2l9 5v10l-9 5-9-5V7zM12 12l9-5M12 12v10M12 12L3 7',
+  sphere: 'M12 3a9 9 0 100 18 9 9 0 000-18zM3 12c0 2.5 4 4.5 9 4.5s9-2 9-4.5',
+  cyl: 'M5 6c0-1.7 3.1-3 7-3s7 1.3 7 3-3.1 3-7 3-7-1.3-7-3zM5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6',
+  cone: 'M12 3L5 18c0 1.7 3.1 3 7 3s7-1.3 7-3z', torus: 'M12 5c5 0 9 3 9 7s-4 7-9 7-9-3-9-7 4-7 9-7zM9 12c0 1 1.3 1.5 3 1.5s3-.5 3-1.5-1.3-1.5-3-1.5-3 .5-3 1.5',
+  knot: 'M7 7c5-5 10 0 5 5s-10 0-5 5 10 0 5-5', plane: 'M2 16l8-6h12l-8 6z', capsule: 'M8 8a4 4 0 018 0v8a4 4 0 01-8 0z',
+  poly20: 'M12 2l9 6-3 11H6L3 8zM12 2l-3 9h6zM3 8l6 3M21 8l-6 3M9 11l-3 8M15 11l3 8',
+  pyramid: 'M12 3l9 16H3zM12 3l3 16', tube: 'M6 5c0-1 2.7-2 6-2s6 1 6 2v14c0 1-2.7 2-6 2s-6-1-6-2zM9 5c0 .5 1.3 1 3 1s3-.5 3-1',
+  spring: 'M6 4h12L6 8h12L6 12h12L6 16h12L6 20h12', star: 'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z',
+  heart: 'M12 20s-8-5-8-11a4 4 0 018-1 4 4 0 018 1c0 6-8 11-8 11z',
+  light: 'M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c1 1 1 2 1 3h6c0-1 0-2 1-3A6 6 0 0012 3z',
+  sun: 'M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',
+  spot: 'M8 3h8l3 9H5zM9 15l-2 6M15 15l2 6M12 15v6', hemi: 'M3 14a9 9 0 0118 0zM12 18v3M7 17l-1 2M17 17l1 2',
+  text: 'M5 5h14M12 5v14M9 19h6', mirror: 'M12 3v18M9 6L3 18h6zM15 6l6 12h-6z', array: 'M3 6h5v5H3zM10 6h5v5h-5zM17 6h4v5h-4zM3 16h18M3 19h18',
+  ground: 'M7 4h10v9H7zM2 20h20M12 14v4M10 16l2 2 2-2', center: 'M12 2v4M12 18v4M2 12h4M18 12h4M12 8a4 4 0 100 8 4 4 0 000-8z',
+  reset: 'M3 12a9 9 0 109-9 9 9 0 00-6.4 2.6L3 8M3 3v5h5', scatter: 'M5 5h1M12 4h1M19 7h1M7 12h1M15 13h1M4 19h1M12 19h1M19 18h1M10 9h1',
+  pen: 'M4 20l4-1 11-11-3-3L5 16zM14 6l3 3', poly: 'M4 18l5-12 6 8 5-6', rect: 'M4 6h16v12H4z', circle: 'M12 4a8 8 0 100 16 8 8 0 000-16z',
+  hex: 'M12 3l8 4.5v9L12 21l-8-4.5v-9z', extrude: 'M4 14h16v6H4zM12 11V3M9 6l3-3 3 3', lathe: 'M12 2v20M8 5c-3 3-3 11 0 14M16 5c3 3 3 11 0 14',
+  key: 'M12 3l7 9-7 9-7-9z', play: 'M7 4l13 8-13 8z', pause: 'M7 4h3v16H7zM14 4h3v16h-3z', stop: 'M6 6h12v12H6z',
+  prev: 'M6 5v14M19 5l-10 7 10 7z', next: 'M18 5v14M5 5l10 7-10 7z',
+  camera: 'M3 7h4l2-3h6l2 3h4v13H3zM12 10a4 4 0 100 8 4 4 0 000-8z', grid: 'M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18',
+  axes: 'M4 20V4M4 20h16M4 20l10-10', shadow: 'M12 3a6 6 0 100 12 6 6 0 000-12zM4 20h16M7 17h10',
+  env: 'M12 3a9 9 0 100 18 9 9 0 000-18zM3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18', fog: 'M3 8h18M3 12h14M6 16h15M3 20h12',
+  wire: 'M12 2l9 5v10l-9 5-9-5V7zM3 7l18 10M21 7L3 17M12 2v20', clay: 'M12 3a9 9 0 100 18 9 9 0 000-18zM8 9a3 3 0 013-2',
+  normals: 'M12 3v8M12 3L9 6M12 3l3 3M4 15l8 6 8-6-8-4z', full: 'M3 9V3h6M15 3h6v6M21 15v6h-6M9 21H3v-6',
+  new: 'M6 2h9l5 5v15H6zM14 2v6h6', open: 'M3 6h6l2 2h10v12H3z', save: 'M5 3h12l4 4v14H5zM8 3v6h8V3M8 21v-7h8v7',
+  export: 'M12 3v12M7 8l5-5 5 5M4 15v6h16v-6', import: 'M12 15V3M7 10l5 5 5-5M4 15v6h16v-6',
+  turn: 'M4 12c0 2.2 3.6 4 8 4s8-1.8 8-4-3.6-4-8-4M16 16l-2 2.5 2.5 1M12 4v8',
+  palette: 'M12 3a9 9 0 000 18c1 0 1.5-.8 1.5-1.5 0-1.2-1-1.5-1-2.5s.8-1.5 2-1.5H17a4 4 0 004-4c0-4.4-4-8.5-9-8.5zM7.5 11h.5M10 7h.5M15 7h.5',
+  eye: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 9a3 3 0 100 6 3 3 0 000-6z', eyeoff: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM3 3l18 18',
+  local: 'M12 3l8 4v10l-8 4-8-4V7zM12 12v9M12 12l8-5', magnet: 'M6 3v8a6 6 0 0012 0V3h-4v8a2 2 0 01-4 0V3zM6 7h4M14 7h4',
+  models: 'M3 21h18M5 21V10l7-6 7 6v11M10 21v-6h4v6', tree: 'M12 2l7 10h-4l4 6H5l4-6H5zM12 18v4',
+  bounce: 'M3 20h18M12 3a3 3 0 100 6 3 3 0 000-6M6 14c2-4 4-5 6-5s4 1 6 5', float: 'M12 4a4 4 0 100 8 4 4 0 000-8zM4 17c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 4-1.5M4 21c2-1.5 4-1.5 6 0s4 1.5 6 0',
+  pulse: 'M3 12h4l2-5 4 10 2-5h6', wobble: 'M12 3v4M8 21l4-14 4 14M5 9l3 2M19 9l-3 2', drop: 'M12 3v10M8 9l4 4 4-4M5 20h14',
+  pop: 'M12 6a6 6 0 100 12 6 6 0 000-12zM12 1v2M12 21v2M1 12h2M21 12h2', orbit: 'M12 9a3 3 0 100 6 3 3 0 000-6zM3 12a9 4 0 1018 0 9 4 0 10-18 0',
+  help: 'M12 3a9 9 0 100 18 9 9 0 000-18zM9.5 9a2.5 2.5 0 015 .5c0 1.7-2.5 2-2.5 3.5M12 17h.01', home: 'M3 11l9-8 9 8M5 9v12h14V9',
+  props: 'M4 6h16M4 12h16M4 18h10M17 16v4M15 18h4', layers: 'M12 3l9 5-9 5-9-5zM3 13l9 5 9-5', timeline: 'M3 6h18M3 12h18M3 18h18M8 4v4M15 10v4M11 16v4',
+  person: 'M12 3a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM8 21l1-7-3-4 6-1 6 1-3 4 1 7M9 14h6', bone: 'M6 4a2 2 0 102 3l8 8a2 2 0 103 2 2 2 0 10-2-3L9 6a2 2 0 00-3-2z', akey: 'M12 4l6 8-6 8-6-8zM3 3h18v18H3z', walk: 'M13 3a2 2 0 100 4 2 2 0 000-4zM10 21l2-6 3 3v3M8 11l3-3 3 2 3 2M12 15l-2-4', wave: 'M7 20v-8l-2-3M7 12l3-1 2 3v6M15 3l2 2M18 6l2 1M14 7l3 2', jump: 'M12 2a2 2 0 100 4 2 2 0 000-4zM7 9l5 2 5-2M12 11v4l-3 4M12 15l3 4M4 22h16', dance: 'M12 2a2 2 0 100 4 2 2 0 000-4zM6 6l6 4 6-6M12 10v5l-4 6M12 15l5 3', idle: 'M12 2a2 2 0 100 4 2 2 0 000-4zM9 22v-8M15 22v-8M8 9h8v6H8z',
+  frame: 'M3 7V3h4M17 3h4v4M21 17v4h-4M7 21H3v-4M8 8h8v8H8z', flat: 'M3 12l9-7 9 7-9 7z', sel: 'M3 3h7v7H3zM14 14h7v7h-7zM10 6h4M6 10v4',
+};
+$('#iconDefs').innerHTML = Object.entries(ICONS).map(([k, d]) => `<symbol id="i-${k}" viewBox="0 0 24 24"><path d="${d}"/></symbol>`).join('');
+const ic = n => `<svg class="i"><use href="#i-${n}"/></svg>`;
+
+/* ───────────── Procedural textures ───────────── */
+function h2(i, j) { let n = (Math.imul(i, 374761393) + Math.imul(j, 668265263)) | 0; n = Math.imul(n ^ (n >>> 13), 1274126177); return ((n ^ (n >>> 16)) >>> 0) / 4294967296; }
+const wrap = (a, p) => ((a % p) + p) % p;
+function vn(x, y, px, py) {
+  const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi;
+  const a = h2(wrap(xi, px), wrap(yi, py)), b = h2(wrap(xi + 1, px), wrap(yi, py)), c = h2(wrap(xi, px), wrap(yi + 1, py)), d = h2(wrap(xi + 1, px), wrap(yi + 1, py));
+  const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+}
+function fbm(x, y, px, py, oct = 4) { let s = 0, amp = .5, f = 1, n = 0; for (let o = 0; o < oct; o++) { s += amp * vn(x * f, y * f, px * f, py * f); n += amp; amp *= .5; f *= 2; } return s / n; }
+const S = 256;
+const lerp3 = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+function pix(fn) {
+  const c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d'); const im = g.createImageData(S, S); const d = im.data;
+  for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) { const p = fn(x, y), i = (y * S + x) * 4; d[i] = p[0]; d[i + 1] = p[1]; d[i + 2] = p[2]; d[i + 3] = 255; }
+  g.putImageData(im, 0, 0); return c;
+}
+const TEXLIST = [
+  { id: 'checker', n: T('شطرنج'), f: (x, y) => ((x >> 5) + (y >> 5)) & 1 ? [228, 230, 233] : [46, 51, 58] },
+  { id: 'uv', n: T('شبكة UV'), f: (x, y) => { const q = ((x >> 6) + (y >> 6) * 4); let b = lerp3([30, 60, 90], [90, 40, 80], (q % 16) / 15); if (x % 32 < 1 || y % 32 < 1) b = [150, 170, 200]; if (x % 64 < 2 || y % 64 < 2) b = [230, 230, 240]; return b; } },
+  { id: 'bricks', n: T('طوب'), bump: 1, f: (x, y) => { const row = y >> 5, off = (row & 1) * 32; if (y % 32 < 3 || (x + off) % 64 < 3) return [178, 172, 162].map(v => v - fbm(x / 16, y / 16, 16, 16, 2) * 40); const id = h2(((x + off) >> 6) & 3, row); const n = fbm(x / S * 16, y / S * 16, 16, 16, 4); return lerp3([120, 48, 34], [176, 82, 56], id * .7 + n * .5); } },
+  { id: 'tiles', n: T('بلاط'), bump: 1, f: (x, y) => { if (x % 64 < 3 || y % 64 < 3) return [74, 78, 84]; const id = h2(x >> 6, y >> 6); const n = fbm(x / S * 8, y / S * 8, 8, 8, 3); const v = 205 + id * 25 + n * 20 - ((y % 64) / 64) * 14; return [v - 6, v, v + 6]; } },
+  { id: 'wood', n: T('خشب'), f: (x, y) => { const n = fbm(x / S * 4, y / S * 4, 4, 4, 4); const t = y / S * 10 + n * 2.5; const f = t - Math.floor(t); const g = vn(x / S * 64, y / S * 4, 64, 4) * .15; return lerp3([104, 62, 32], [196, 140, 86], Math.pow(f, .7) * .85 + g); } },
+  { id: 'marble', n: T('رخام'), f: (x, y) => { const n = fbm(x / S * 4, y / S * 4, 4, 4, 5); const v = Math.abs(Math.sin((x / S * 2 + y / S * 1 + n * 3) * Math.PI * 2)); return lerp3([96, 100, 112], [242, 241, 236], Math.pow(v, .28)); } },
+  { id: 'concrete', n: T('خرسانة'), bump: 1, f: (x, y) => { const n = fbm(x / S * 8, y / S * 8, 8, 8, 5); const sp = h2(x, y) > .985 ? -45 : 0; const v = 120 + n * 90 + sp; return [v, v, v + 3]; } },
+  { id: 'grass', n: T('عشب'), f: (x, y) => { const n = fbm(x / S * 16, y / S * 16, 16, 16, 4); const b = h2(x, y >> 1) * 30; return lerp3([34, 82, 28], [116, 170, 62], n).map((v, i) => v + b - 15 + (i === 1 ? 6 : 0)); } },
+  { id: 'lava', n: T('حمم'), f: (x, y) => { const n = fbm(x / S * 6, y / S * 6, 6, 6, 5); const cr = 1 - Math.abs(n - .5) * 2; const h = Math.pow(cr, 7); return lerp3([28, 10, 8], [255, 150, 30], h).map((v, i) => v + (i === 0 ? h * 40 : 0)); } },
+  { id: 'brushed', n: T('معدن مصقول'), f: (x, y) => { const n = fbm(x / S * 2, y / S * 128, 2, 128, 3); const v = 150 + n * 70; return [v, v + 2, v + 6]; } },
+  { id: 'carbon', n: T('ألياف كربون'), bump: 1, f: (x, y) => { const cx = x >> 4, cy = y >> 4, par = (cx + cy) & 1, u = (x % 16) / 16, v = (y % 16) / 16; const s = par ? Math.sin(u * Math.PI) : Math.sin(v * Math.PI); const c = 22 + s * 48; return [c, c + 2, c + 6]; } },
+  { id: 'fabric', n: T('قماش جينز'), bump: 1, f: (x, y) => { const v = (Math.sin(x * Math.PI / 2) * .5 + .5) * .5 + (Math.sin((y + x) * Math.PI / 3) * .5 + .5) * .5; const n = h2(x, y) * .15; return lerp3([34, 56, 98], [92, 124, 176], v * .8 + n); } },
+  { id: 'stripes', n: T('خطوط تحذير'), f: (x, y) => (((x + y) >> 5) & 1) ? [240, 190, 30] : [30, 30, 32] },
+  { id: 'sand', n: T('رمل'), f: (x, y) => { const n = fbm(x / S * 8, y / S * 8, 8, 8, 4); const r = Math.sin((y / S * 12 + n * 2) * TAU) * .5 + .5; return lerp3([186, 156, 108], [232, 206, 158], r * .5 + n * .5).map(v => v + h2(x, y) * 14); } },
+  { id: 'rust', n: T('صدأ'), bump: 1, f: (x, y) => { const n = fbm(x / S * 6, y / S * 6, 6, 6, 5); const m = fbm(x / S * 3 + 7, y / S * 3, 3, 3, 3); const b = lerp3([112, 50, 22], [196, 112, 52], n); return m > .58 ? lerp3(b, [70, 74, 80], .7) : b; } },
+];
+const TEXMAP = Object.fromEntries(TEXLIST.map(t => [t.id, t]));
+const texCanvas = {}, texCache = {};
+function getCanvas(id) { return texCanvas[id] || (texCanvas[id] = pix(TEXMAP[id].f)); }
+function getTex(id) {
+  if (!texCache[id]) { const t = new THREE.CanvasTexture(getCanvas(id)); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; texCache[id] = t; }
+  return texCache[id];
+}
+
+/* ───────────── Materials ───────────── */
+const PALETTE = ['#b8c4d6', '#e07a5f', '#81b29a', '#f2cc8f', '#3d85c6', '#c27ba0', '#e9c46a', '#2a9d8f', '#9b8ac4'];
+let palI = 0;
+function defMat(c) { return { c: c || PALETTE[palI++ % PALETTE.length], m: .05, r: .45, o: 1, tr: 0, cc: 0, e: '#000000', ei: 0, tx: '', rp: 1, w: false, f: false }; }
+function updateMat(mat, m) {
+  mat.color.set(m.c); mat.metalness = m.m; mat.roughness = m.r; mat.emissive.set(m.e); mat.emissiveIntensity = m.ei;
+  mat.opacity = m.o; mat.transparent = m.o < 1; mat.wireframe = !!m.w; mat.flatShading = !!m.f;
+  mat.transmission = m.tr || 0; mat.thickness = m.tr ? .6 : 0; mat.ior = 1.5; mat.clearcoat = m.cc || 0; mat.clearcoatRoughness = .08;
+  const key = m.tx + '|' + m.rp;
+  if (mat.userData.tk !== key) {
+    if (mat.map) mat.map.dispose();
+    if (m.tx && TEXMAP[m.tx]) { const t = getTex(m.tx).clone(); t.repeat.set(m.rp, m.rp); t.needsUpdate = true; mat.map = t; mat.bumpMap = TEXMAP[m.tx].bump ? t : null; mat.bumpScale = 2; }
+    else { mat.map = null; mat.bumpMap = null; }
+    mat.userData.tk = key;
+  }
+  mat.emissiveMap = (mat.map && m.ei > 0) ? mat.map : null;
+  mat.needsUpdate = true;
+}
+function managedMat(side) { const m = new THREE.MeshPhysicalMaterial({ side: side || THREE.FrontSide }); m.userData.managed = true; return m; }
+function applyMat(o) {
+  const m = o.userData.mat; if (!m) return;
+  o.traverse(c => {
+    if (!c.isMesh || c.userData.helper) return;
+    if (!c.material.userData || !c.material.userData.managed) { const side = c.material.side; c.material.dispose(); c.material = managedMat(side); }
+    updateMat(c.material, m);
+  });
+}
+const MATS = [
+  { id: 'gold', n: T('ذهب'), m: { c: '#ffc857', m: 1, r: .22 } },
+  { id: 'chrome', n: T('كروم'), m: { c: '#f2f4f7', m: 1, r: .04 } },
+  { id: 'copper', n: T('نحاس'), m: { c: '#e08a5a', m: 1, r: .28 } },
+  { id: 'rosegold', n: T('ذهب وردي'), m: { c: '#f4b6a6', m: 1, r: .25 } },
+  { id: 'steel', n: T('فولاذ مصقول'), m: { c: '#d0d4da', m: 1, r: .32, tx: 'brushed' } },
+  { id: 'glass', n: T('زجاج'), m: { c: '#ffffff', m: 0, r: .02, tr: 1 } },
+  { id: 'glassblue', n: T('زجاج أزرق'), m: { c: '#8fcaff', m: 0, r: .06, tr: .95 } },
+  { id: 'plastic', n: T('بلاستيك'), m: { c: '#e63946', m: 0, r: .35, cc: .5 } },
+  { id: 'rubber', n: T('مطاط'), m: { c: '#25272b', m: 0, r: .95 } },
+  { id: 'ceramic', n: T('سيراميك'), m: { c: '#f3f1ec', m: 0, r: .15, cc: 1 } },
+  { id: 'jade', n: T('يشم'), m: { c: '#3fae7d', m: 0, r: .2, cc: .7, tr: .25 } },
+  { id: 'neonblue', n: T('نيون أزرق'), m: { c: '#0a1a2a', e: '#19c3ff', ei: 3, r: .4 } },
+  { id: 'neonpink', n: T('نيون وردي'), m: { c: '#2a0a1a', e: '#ff2fa0', ei: 3, r: .4 } },
+  { id: 'wood', n: T('خشب'), m: { c: '#ffffff', r: .6, tx: 'wood' } },
+  { id: 'marble', n: T('رخام'), m: { c: '#ffffff', r: .12, cc: .6, tx: 'marble' } },
+  { id: 'bricks', n: T('طوب'), m: { c: '#ffffff', r: .9, tx: 'bricks', rp: 2 } },
+  { id: 'concrete', n: T('خرسانة'), m: { c: '#ffffff', r: .92, tx: 'concrete' } },
+  { id: 'lava', n: T('حمم'), m: { c: '#ffffff', r: .8, tx: 'lava', e: '#ff6a00', ei: 2 } },
+  { id: 'carbon', n: T('كربون'), m: { c: '#ffffff', m: .4, r: .3, cc: 1, tx: 'carbon', rp: 3 } },
+  { id: 'grass', n: T('عشب'), m: { c: '#ffffff', r: 1, tx: 'grass', rp: 3 } },
+  { id: 'rust', n: T('معدن صدئ'), m: { c: '#ffffff', m: .6, r: .8, tx: 'rust' } },
+];
+const MATMAP = Object.fromEntries(MATS.map(m => [m.id, m]));
+
+/* ───────────── Primitives ───────────── */
+class Helix extends THREE.Curve { getPoint(t, v = new V3()) { const a = t * TAU * 5; return v.set(Math.cos(a) * .45, t * 1.4 - .7, Math.sin(a) * .45); } }
+function starShape(n = 5, R = .6, r = .26) { const s = new THREE.Shape(); for (let i = 0; i <= n * 2; i++) { const a = i / (n * 2) * TAU + Math.PI / 2, rr = i % 2 ? r : R; i ? s.lineTo(Math.cos(a) * rr, Math.sin(a) * rr) : s.moveTo(Math.cos(a) * rr, Math.sin(a) * rr); } return s; }
+function heartShape() { const s = new THREE.Shape(), x = -25, y = -25; s.moveTo(x + 25, y + 25); s.bezierCurveTo(x + 25, y + 25, x + 20, y, x, y); s.bezierCurveTo(x - 30, y, x - 30, y + 35, x - 30, y + 35); s.bezierCurveTo(x - 30, y + 55, x - 10, y + 77, x + 25, y + 95); s.bezierCurveTo(x + 60, y + 77, x + 80, y + 55, x + 80, y + 35); s.bezierCurveTo(x + 80, y + 35, x + 80, y, x + 50, y); s.bezierCurveTo(x + 35, y, x + 25, y + 25, x + 25, y + 25); return s; }
+const XO = { bevelEnabled: true, bevelThickness: .04, bevelSize: .03, bevelSegments: 4, curveSegments: 24 };
+const PRIMS = {
+  box: { n: T('مكعب'), i: 'box', g: () => new THREE.BoxGeometry(1, 1, 1) },
+  sphere: { n: T('كرة'), i: 'sphere', g: () => new THREE.SphereGeometry(.6, 48, 32) },
+  cylinder: { n: T('أسطوانة'), i: 'cyl', g: () => new THREE.CylinderGeometry(.5, .5, 1.2, 48) },
+  cone: { n: T('مخروط'), i: 'cone', g: () => new THREE.ConeGeometry(.6, 1.2, 48) },
+  torus: { n: T('طارة'), i: 'torus', g: () => new THREE.TorusGeometry(.5, .18, 24, 64) },
+  knot: { n: T('عقدة'), i: 'knot', g: () => new THREE.TorusKnotGeometry(.45, .14, 160, 24) },
+  capsule: { n: T('كبسولة'), i: 'capsule', g: () => new THREE.CapsuleGeometry(.35, .7, 8, 24) },
+  plane: { n: T('مستوى'), i: 'plane', side: THREE.DoubleSide, g: () => new THREE.PlaneGeometry(2, 2).rotateX(-Math.PI / 2) },
+  ring: { n: T('قرص حلقي'), i: 'circle', side: THREE.DoubleSide, g: () => new THREE.RingGeometry(.3, .7, 64).rotateX(-Math.PI / 2) },
+  pyramid: { n: T('هرم'), i: 'pyramid', g: () => new THREE.ConeGeometry(.75, 1.1, 4).rotateY(Math.PI / 4) },
+  icosa: { n: T('عشريني'), i: 'poly20', g: () => new THREE.IcosahedronGeometry(.6, 0) },
+  dodeca: { n: T('اثنا عشري'), i: 'poly20', g: () => new THREE.DodecahedronGeometry(.6, 0) },
+  octa: { n: T('ثماني'), i: 'poly20', g: () => new THREE.OctahedronGeometry(.6, 0) },
+  tetra: { n: T('رباعي'), i: 'pyramid', g: () => new THREE.TetrahedronGeometry(.7, 0) },
+  geo: { n: T('كرة جيوديسية'), i: 'sphere', g: () => new THREE.IcosahedronGeometry(.6, 2), flat: true },
+  tube: { n: T('أنبوب'), i: 'tube', side: THREE.DoubleSide, g: () => new THREE.LatheGeometry([[.35, -.6], [.5, -.6], [.5, .6], [.35, .6], [.35, -.6]].map(p => new THREE.Vector2(p[0], p[1])), 48) },
+  spring: { n: T('نابض'), i: 'spring', g: () => new THREE.TubeGeometry(new Helix(), 240, .06, 12) },
+  star: { n: T('نجمة'), i: 'star', g: () => new THREE.ExtrudeGeometry(starShape(), { ...XO, depth: .25 }).center() },
+  heart: { n: T('قلب'), i: 'heart', g: () => new THREE.ExtrudeGeometry(heartShape(), { ...XO, depth: 14, bevelThickness: 3, bevelSize: 3 }).center().rotateZ(Math.PI).scale(.012, .012, .012) },
+};
+
+/* ───────────── Procedural models ───────────── */
+const sm = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: o.r ?? .6, metalness: o.m ?? 0, emissive: o.e ?? 0, emissiveIntensity: o.ei ?? 1, flatShading: !!o.f, side: o.side ?? THREE.FrontSide, transparent: o.o != null, opacity: o.o ?? 1 });
+function mk(g, m, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0) { const s = new THREE.Mesh(g, m); s.position.set(x, y, z); s.rotation.set(rx, ry, rz); return s; }
+function grp(...ch) { const g = new THREE.Group(); ch.flat().forEach(c => g.add(c)); return g; }
+const B = (w, h, d) => new THREE.BoxGeometry(w, h, d), C = (rt, rb, h, s = 24, open = false) => new THREE.CylinderGeometry(rt, rb, h, s, 1, open), Sp = (r, w = 32, h = 20) => new THREE.SphereGeometry(r, w, h);
+const lathe = (pts, s = 48) => new THREE.LatheGeometry(pts.map(p => new THREE.Vector2(p[0], p[1])), s);
+function gearGeo() {
+  const s = new THREE.Shape(), n = 16, R = .6, r = .5;
+  for (let i = 0; i < n; i++) { const a = i / n * TAU, d = TAU / n; const pts = [[r, a], [R, a + d * .15], [R, a + d * .45], [r, a + d * .6]]; pts.forEach(([rr, aa], k) => (i === 0 && k === 0) ? s.moveTo(Math.cos(aa) * rr, Math.sin(aa) * rr) : s.lineTo(Math.cos(aa) * rr, Math.sin(aa) * rr)); }
+  s.closePath(); const h = new THREE.Path(); h.absarc(0, 0, .15, 0, TAU, true); s.holes.push(h);
+  for (let i = 0; i < 6; i++) { const a = i / 6 * TAU, p = new THREE.Path(); p.absarc(Math.cos(a) * .32, Math.sin(a) * .32, .07, 0, TAU, true); s.holes.push(p); }
+  return new THREE.ExtrudeGeometry(s, { depth: .18, bevelEnabled: true, bevelThickness: .02, bevelSize: .015, bevelSegments: 2, curveSegments: 16 }).rotateX(-Math.PI / 2);
+}
+const MODELS = {
+  table: { n: T('طاولة'), b: () => { const w = sm(0x9a6a3c, { r: .55 }); return grp(mk(B(2, .08, 1.1), w, 0, .78, 0), [[-.9, -.47], [.9, -.47], [-.9, .47], [.9, .47]].map(([x, z]) => mk(C(.04, .035, .74, 12), w, x, .37, z))); } },
+  chair: { n: T('كرسي'), b: () => { const a = sm(0x4a6fa5, { r: .5 }), l = sm(0x2c2f36, { m: .6, r: .4 }); return grp(mk(B(.5, .06, .5), a, 0, .45, 0), mk(B(.5, .55, .05), a, 0, .75, -.225), [[-.22, -.22], [.22, -.22], [-.22, .22], [.22, .22]].map(([x, z]) => mk(B(.04, .45, .04), l, x, .225, z))); } },
+  sofa: { n: T('أريكة'), b: () => { const f = sm(0x6b4c9a, { r: .9 }), c = sm(0x7d5db0, { r: .95 }), l = sm(0x2a2320); return grp(mk(B(2, .35, .9), f, 0, .3, 0), mk(B(2, .6, .2), f, 0, .75, -.35), mk(B(.2, .55, .9), f, -.9, .55, 0), mk(B(.2, .55, .9), f, .9, .55, 0), mk(B(.78, .14, .66), c, -.4, .545, .08), mk(B(.78, .14, .66), c, .4, .545, .08), [[-.9, -.38], [.9, -.38], [-.9, .38], [.9, .38]].map(([x, z]) => mk(C(.04, .03, .12, 8), l, x, .06, z))); } },
+  lamp: { n: T('مصباح'), b: () => { const m = sm(0x30343b, { m: .8, r: .3 }); return grp(mk(C(.25, .3, .06, 32), m, 0, .03, 0), mk(C(.025, .025, 1.4, 12), m, 0, .73, 0), mk(C(.13, .36, .36, 32, true), sm(0xf3e6c8, { side: THREE.DoubleSide, r: .8 }), 0, 1.47, 0), mk(Sp(.08), sm(0xffffff, { e: 0xffd27a, ei: 3 }), 0, 1.4, 0)); } },
+  tree: { n: T('شجرة'), b: () => { const g = sm(0x4c9a4a, { f: 1, r: .8 }); return grp(mk(C(.09, .15, 1, 8), sm(0x6b4a2b, { r: .9 }), 0, .5, 0), mk(new THREE.IcosahedronGeometry(.6, 1), g, 0, 1.45, 0), mk(new THREE.IcosahedronGeometry(.42, 1), g, .38, 1.15, .18), mk(new THREE.IcosahedronGeometry(.45, 1), g, -.32, 1.2, -.15)); } },
+  pine: { n: T('صنوبر'), b: () => { const g = sm(0x2e7d4f, { f: 1, r: .8 }); return grp(mk(C(.07, .1, .5, 8), sm(0x5b3d22), 0, .25, 0), mk(new THREE.ConeGeometry(.62, .9, 8), g, 0, .85, 0), mk(new THREE.ConeGeometry(.47, .75, 8), g, 0, 1.3, 0), mk(new THREE.ConeGeometry(.3, .6, 8), g, 0, 1.7, 0)); } },
+  house: { n: T('منزل'), b: () => { const win = sm(0x9fd3ff, { e: 0x335577, ei: .6, r: .1, m: .2 }); return grp(mk(B(2, 1.4, 1.6), sm(0xe8dcc4, { r: .9 }), 0, .7, 0), mk(new THREE.ConeGeometry(1.6, .9, 4), sm(0xb5483a, { r: .7, f: 1 }), 0, 1.85, 0, 0, Math.PI / 4), mk(B(.42, .75, .06), sm(0x6b4226), 0, .375, .81), mk(B(.36, .36, .05), win, -.6, .88, .81), mk(B(.36, .36, .05), win, .6, .88, .81), mk(B(.05, .36, .36), win, 1.01, .88, 0), mk(B(.22, .55, .22), sm(0x8a5a44), .5, 2.05, .25)); } },
+  car: { n: T('سيارة'), b: () => { const w = sm(0x1b1c1f, { r: .9 }), rim = sm(0xcfd3d8, { m: 1, r: .25 }); const wheels = [[-.6, .45], [.6, .45], [-.6, -.45], [.6, -.45]].flatMap(([x, z]) => [mk(C(.21, .21, .16, 24), w, x, .21, z, Math.PI / 2), mk(C(.12, .12, .17, 16), rim, x, .21, z, Math.PI / 2)]); return grp(mk(B(1.8, .38, .9), sm(0xd23c3c, { m: .4, r: .35 }), 0, .42, 0), mk(B(1, .36, .8), sm(0x1d2b3a, { m: .5, r: .08 }), -.1, .79, 0), mk(B(.04, .1, .2), sm(0xffffff, { e: 0xfff2b0, ei: 2 }), .9, .47, .28), mk(B(.04, .1, .2), sm(0xffffff, { e: 0xfff2b0, ei: 2 }), .9, .47, -.28), mk(B(.04, .08, .18), sm(0x550000, { e: 0xff2020, ei: 1.5 }), -.9, .47, .3), mk(B(.04, .08, .18), sm(0x550000, { e: 0xff2020, ei: 1.5 }), -.9, .47, -.3), wheels); } },
+  rocket: { n: T('صاروخ'), b: () => { const red = sm(0xd64045, { r: .4 }); const body = mk(lathe([[0, 0], [.22, 0], [.27, .3], [.28, .9], [.24, 1.4], [.14, 1.75], [0, 1.95]]), sm(0xeeeeee, { r: .3, m: .2 }), 0, .2, 0); return grp(body, mk(new THREE.ConeGeometry(.18, .25, 24), sm(0x555a60, { m: .8 }), 0, .1, 0, Math.PI), [0, 1, 2].map(i => { const a = i / 3 * TAU; const f = mk(B(.04, .45, .3), red, Math.cos(a) * .3, .4, Math.sin(a) * .3, 0, -a); return f; }), mk(C(.08, .08, .05, 24), sm(0x7fd0ff, { e: 0x2277aa, ei: .8 }), 0, 1.2, .27, Math.PI / 2)); } },
+  robot: { n: T('روبوت'), b: () => { const m = sm(0x7f8fa6, { m: .7, r: .35 }), d = sm(0x3b4252, { m: .6, r: .4 }), eye = sm(0x001a22, { e: 0x29e0ff, ei: 3 }); return grp(mk(B(.7, .8, .45), m, 0, .95, 0), mk(B(.5, .4, .4), m, 0, 1.6, 0), mk(Sp(.06), eye, -.12, 1.63, .2), mk(Sp(.06), eye, .12, 1.63, .2), mk(C(.015, .015, .25, 8), d, 0, 1.9, 0), mk(Sp(.05), sm(0x330000, { e: 0xff3030, ei: 2 }), 0, 2.04, 0), mk(B(.15, .6, .15), d, -.45, .95, 0), mk(B(.15, .6, .15), d, .45, .95, 0), mk(B(.2, .55, .22), d, -.18, .28, 0), mk(B(.2, .55, .22), d, .18, .28, 0), mk(B(.3, .2, .03), sm(0x111111, { e: 0x00ff88, ei: .6 }), 0, 1.0, .23)); } },
+  snowman: { n: T('رجل ثلج'), b: () => { const s = sm(0xf7f9fc, { r: .9 }), k = sm(0x111111); return grp(mk(Sp(.5), s, 0, .48, 0), mk(Sp(.35), s, 0, 1.2, 0), mk(Sp(.25), s, 0, 1.73, 0), mk(Sp(.03), k, -.08, 1.8, .22), mk(Sp(.03), k, .08, 1.8, .22), mk(new THREE.ConeGeometry(.045, .28, 12), sm(0xff7a1a), 0, 1.73, .36, Math.PI / 2), mk(C(.3, .3, .03, 24), k, 0, 1.95, 0), mk(C(.19, .19, .3, 24), k, 0, 2.1, 0), mk(new THREE.TorusGeometry(.36, .05, 8, 32), sm(0xc0392b), 0, 1.47, 0, Math.PI / 2)); } },
+  column: { n: T('عمود'), b: () => { const m = sm(0xe8e4dc, { r: .35 }); return grp(mk(B(.8, .15, .8), m, 0, .075, 0), mk(C(.33, .36, .1, 32), m, 0, .2, 0), mk(C(.28, .3, 1.8, 20), sm(0xe8e4dc, { r: .35, f: 1 }), 0, 1.15, 0), mk(C(.36, .3, .12, 32), m, 0, 2.11, 0), mk(B(.8, .15, .8), m, 0, 2.245, 0)); } },
+  stairs: { n: T('درج'), b: () => { const m = sm(0x9aa0a8, { r: .85 }); return grp([...Array(8)].map((_, i) => mk(B(1.2, .2 * (i + 1), .3), m, 0, .1 * (i + 1), -i * .3))); } },
+  gear: { n: T('ترس'), b: () => grp(mk(gearGeo(), sm(0x9aa3ad, { m: .9, r: .3 }), 0, 0, 0)) },
+  vase: { n: T('مزهرية'), b: () => grp(mk(lathe([[0, 0], [.22, 0], [.3, .12], [.36, .4], [.3, .72], [.15, .92], [.16, 1.04], [.22, 1.1], [.2, 1.1], [.14, 1.0]], 64), sm(0x2f6db5, { r: .2, side: THREE.DoubleSide }))) },
+  mug: { n: T('كوب'), b: () => { const m = sm(0xf4f1ea, { r: .25, side: THREE.DoubleSide }); return grp(mk(lathe([[0, 0], [.28, 0], [.3, .6], [.27, .6], [.25, .05], [0, .05]], 48), m), mk(new THREE.TorusGeometry(.16, .04, 12, 32, Math.PI), m, .29, .3, 0, 0, 0, -Math.PI / 2)); } },
+  pawn: { n: T('بيدق شطرنج'), b: () => { const m = sm(0x222428, { r: .2, m: .1 }); return grp(mk(lathe([[0, 0], [.4, 0], [.4, .08], [.3, .16], [.2, .4], [.14, .7], [.26, .76], [.12, .82], [0, .82]], 48), m), mk(Sp(.2), m, 0, .98, 0)); } },
+  bottle: { n: T('زجاجة'), b: () => grp(mk(lathe([[0, 0], [.25, 0], [.27, .05], [.27, .7], [.2, .9], [.09, 1.05], [.09, 1.3], [0, 1.3]], 48), new THREE.MeshPhysicalMaterial({ color: 0x5fbf7a, transmission: .9, roughness: .05, thickness: .3 })), mk(C(.1, .1, .1, 24), sm(0xc49a3a, { m: .8, r: .3 }), 0, 1.33, 0)) },
+};
+
+/* ───────────── Rigged characters (bone hierarchy) ───────────── */
+const BONEN = { hips: T('الحوض'), spine: T('العمود الفقري'), chest: T('الصدر'), neck: T('الرقبة'), head: T('الرأس'), shoulderL: T('الكتف الأيسر'), upperArmL: T('العضد الأيسر'), foreArmL: T('الساعد الأيسر'), handL: T('اليد اليسرى'), shoulderR: T('الكتف الأيمن'), upperArmR: T('العضد الأيمن'), foreArmR: T('الساعد الأيمن'), handR: T('اليد اليمنى'), thighL: T('الفخذ الأيسر'), shinL: T('الساق اليسرى'), footL: T('القدم اليسرى'), thighR: T('الفخذ الأيمن'), shinR: T('الساق اليمنى'), footR: T('القدم اليمنى') };
+const REST = { upperArmL: [0, 0, .12], upperArmR: [0, 0, -.12] };
+const RIGS = {
+  hero: { n: T('شخصية متحركة'), c: { skin: 0xe0ac7e, shirt: 0x3d85c6, pants: 0x2b3240, shoe: 0x1b1b1f, hair: 0x2a1c12 } },
+  mannequin: { n: T('مانيكان خشبي'), c: { skin: 0xc8965f, shirt: 0xc8965f, pants: 0xc8965f, shoe: 0xa97a48, hair: null } },
+  robo: { n: T('روبوت متحرك'), c: { skin: 0x9aa7b8, shirt: 0x5a6578, pants: 0x3b4252, shoe: 0x22262e, hair: null, metal: true } },
+};
+function buildRig(rec) {
+  const C0 = (RIGS[rec.type] || RIGS.hero).c, mo = C0.metal ? { m: .7, r: .35 } : { r: .7 };
+  const skin = sm(C0.skin, mo), shirt = sm(C0.shirt, mo), pants = sm(C0.pants, mo), shoe = sm(C0.shoe, { r: .6 }), jm = sm(0xf2b134, { r: .4, e: 0x332200, ei: .4 });
+  const root = new THREE.Group(), bones = {};
+  const bn = (name, parent, x, y, z) => { const b = new THREE.Bone(); b.name = name; b.position.set(x, y, z); b.userData.bone = name; (parent ? bones[parent] : root).add(b); bones[name] = b; const r = REST[name]; if (r) b.rotation.set(...r); const j = new THREE.Mesh(new THREE.SphereGeometry(.035, 10, 8), jm); j.userData.helper = true; j.userData.joint = true; j.userData.boneOf = name; j.renderOrder = 2; b.add(j); return b; };
+  const part = (bone, geo, mat, x, y, z) => { const m = mk(geo, mat, x, y, z); m.userData.boneOf = bone; bones[bone].add(m); return m; };
+  const cap = (r, l) => new THREE.CapsuleGeometry(r, l, 6, 14);
+  bn('hips', null, 0, 1.0, 0); part('hips', B(.32, .17, .2), pants, 0, 0, 0);
+  bn('spine', 'hips', 0, .09, 0); part('spine', B(.3, .24, .18), shirt, 0, .12, 0);
+  bn('chest', 'spine', 0, .25, 0); part('chest', B(.4, .27, .22), shirt, 0, .12, 0);
+  bn('neck', 'chest', 0, .27, 0); part('neck', C(.045, .05, .08, 12), skin, 0, .03, 0);
+  bn('head', 'neck', 0, .07, 0); part('head', C0.metal ? B(.24, .24, .24) : Sp(.13, 24, 16), skin, 0, .13, 0);
+  if (C0.hair) part('head', new THREE.SphereGeometry(.138, 24, 12, 0, TAU, 0, Math.PI * .55), sm(C0.hair, { r: .9 }), 0, .15, -.01);
+  const eye = C0.metal ? sm(0x001a22, { e: 0x29e0ff, ei: 3 }) : sm(0x1a1a1a);
+  part('head', Sp(.02, 10, 8), eye, -.045, .15, .12); part('head', Sp(.02, 10, 8), eye, .045, .15, .12);
+  for (const [S, s] of [['L', 1], ['R', -1]]) {
+    bn('shoulder' + S, 'chest', s * .2, .22, 0);
+    bn('upperArm' + S, 'shoulder' + S, s * .04, 0, 0); part('upperArm' + S, cap(.052, .2), shirt, 0, -.14, 0);
+    bn('foreArm' + S, 'upperArm' + S, 0, -.29, 0); part('foreArm' + S, cap(.045, .19), skin, 0, -.13, 0);
+    bn('hand' + S, 'foreArm' + S, 0, -.27, 0); part('hand' + S, B(.06, .1, .035), skin, 0, -.05, 0);
+    bn('thigh' + S, 'hips', s * .1, -.07, 0); part('thigh' + S, cap(.068, .3), pants, 0, -.2, 0);
+    bn('shin' + S, 'thigh' + S, 0, -.42, 0); part('shin' + S, cap(.058, .28), pants, 0, -.19, 0);
+    bn('foot' + S, 'shin' + S, 0, -.39, 0); part('foot' + S, B(.1, .07, .22), shoe, 0, -.02, .05);
+  }
+  root.userData.bones = bones;
+  return root;
+}
+function readPose(o) { const b = o.userData.bones; if (!b) return null; const out = {}; for (const n in b) out[n] = [b[n].rotation.x, b[n].rotation.y, b[n].rotation.z].map(v => Math.round(v * 1e4) / 1e4); return out; }
+function applyPose(o, pose) { const b = o.userData.bones; if (!b || !pose) return; for (const n in pose) if (b[n]) b[n].rotation.set(...pose[n]); }
+function restPose() { const out = {}; for (const n in BONEN) out[n] = REST[n] ? [...REST[n]] : [0, 0, 0]; return out; }
+
+/* ───────────── Lights ───────────── */
+const LIGHTS = {
+  point: { n: T('ضوء نقطي'), i: 'light', d: { color: '#ffd9a0', int: 15, dist: 0, cs: false } },
+  spot: { n: T('ضوء كشاف'), i: 'spot', d: { color: '#ffffff', int: 60, angle: 30, pen: .35, dist: 0, cs: true } },
+  dir: { n: T('ضوء اتجاهي'), i: 'sun', d: { color: '#fff4e0', int: 2, cs: true } },
+  hemi: { n: T('ضوء محيطي'), i: 'hemi', d: { color: '#bcd7ff', ground: '#5a4a3a', int: 1 } },
+};
+function buildLight(rec) {
+  const g = new THREE.Group(); let L;
+  if (rec.type === 'point') L = new THREE.PointLight(rec.color, rec.int, rec.dist || 0, 2);
+  else if (rec.type === 'spot') { L = new THREE.SpotLight(rec.color, rec.int, rec.dist || 0, (rec.angle || 30) * D2R, rec.pen ?? .35, 2); L.target.position.set(0, -1, 0); g.add(L.target); }
+  else if (rec.type === 'dir') { L = new THREE.DirectionalLight(rec.color, rec.int); L.target.position.set(0, -1, 0); g.add(L.target); const sc = L.shadow.camera; sc.left = sc.bottom = -10; sc.right = sc.top = 10; sc.far = 60; }
+  else L = new THREE.HemisphereLight(rec.color, rec.ground || '#444444', rec.int);
+  if (L.shadow) { L.castShadow = !!rec.cs; L.shadow.mapSize.set(1024, 1024); L.shadow.bias = -.0005; L.shadow.normalBias = .02; }
+  g.add(L); g.userData.light = L;
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(.12, 16, 12), new THREE.MeshBasicMaterial({ color: rec.color })); bulb.userData.helper = true; g.add(bulb); g.userData.bulb = bulb;
+  if (rec.type === 'spot' || rec.type === 'dir') { const ar = new THREE.ArrowHelper(new V3(0, -1, 0), new V3(), .9, new THREE.Color(rec.color).getHex(), .2, .12); ar.traverse(c => c.userData.helper = true); g.add(ar); g.userData.arrow = ar; }
+  if (rec.type === 'hemi') { const r = new THREE.Mesh(new THREE.TorusGeometry(.22, .02, 6, 24).rotateX(Math.PI / 2), new THREE.MeshBasicMaterial({ color: rec.ground })); r.userData.helper = true; g.add(r); }
+  return g;
+}
+
+/* ───────────── Sketch / extrude / lathe / text builders ───────────── */
+const shapeOf = pts => new THREE.Shape(pts.map(([x, z]) => new THREE.Vector2(x, -z)));
+function buildSketch(rec) {
+  const g = new THREE.Group();
+  const pts = rec.pts.map(([x, z]) => new V3(x, .012, z));
+  const geo = new THREE.BufferGeometry().setFromPoints(pts);
+  const L = new (rec.closed ? THREE.LineLoop : THREE.Line)(geo, new THREE.LineBasicMaterial({ color: 0x4fd1ff }));
+  g.add(L); g.userData.line = L;
+  const dots = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xffffff, size: 5, sizeAttenuation: false })); dots.userData.helper = true; g.add(dots);
+  if (rec.closed && rec.pts.length > 2) { const f = new THREE.Mesh(new THREE.ShapeGeometry(shapeOf(rec.pts)).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x4fd1ff, transparent: true, opacity: .12, side: THREE.DoubleSide, depthWrite: false })); f.position.y = .01; f.userData.helper = true; g.add(f); }
+  return g;
+}
+function extrudeGeo(rec) {
+  const b = Math.max(0, rec.bevel || 0);
+  const g = new THREE.ExtrudeGeometry(shapeOf(rec.pts), { depth: Math.max(.01, rec.depth), bevelEnabled: b > 0, bevelThickness: b, bevelSize: b, bevelSegments: 3, curveSegments: 24 });
+  g.rotateX(-Math.PI / 2); g.translate(0, b, 0); return g;
+}
+function latheGeo(rec) {
+  const xs = rec.pts.map(p => p[0]), zs = rec.pts.map(p => -p[1]); const mx = Math.min(...xs), mz = Math.min(...zs);
+  let prof = rec.pts.map(([x, z]) => new THREE.Vector2(Math.max(0, x - mx), -z - mz));
+  if (rec.closed) prof.push(prof[0].clone());
+  return new THREE.LatheGeometry(prof, rec.seg || 64);
+}
+let FONT = null;
+new FontLoader().load('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json', f => { FONT = f; }, undefined, () => { });
+function textGeo(rec) {
+  if (!FONT) return new THREE.BoxGeometry(1, .3, .1);
+  const g = new TextGeometry(rec.text || 'Text', { font: FONT, size: rec.size || .6, height: rec.depth ?? .2, depth: rec.depth ?? .2, curveSegments: 8, bevelEnabled: true, bevelThickness: .02, bevelSize: .012, bevelSegments: 2 });
+  g.center(); return g;
+}
+const importCache = {};
+const MATKINDS = new Set(['prim', 'extrude', 'lathe', 'text']);
+
+function build(rec, mat) {
+  let o;
+  switch (rec.kind) {
+    case 'prim': { const d = PRIMS[rec.type] || PRIMS.box; o = new THREE.Mesh(d.g(), managedMat(d.side)); if (d.flat && mat) mat.f = mat.f ?? true; break; }
+    case 'model': o = (MODELS[rec.type] || MODELS.table).b(); break;
+    case 'light': o = buildLight(rec); break;
+    case 'rig': o = buildRig(rec); break;
+    case 'sketch': o = buildSketch(rec); break;
+    case 'extrude': o = new THREE.Mesh(extrudeGeo(rec), managedMat()); break;
+    case 'lathe': o = new THREE.Mesh(latheGeo(rec), managedMat(THREE.DoubleSide)); break;
+    case 'text': o = new THREE.Mesh(textGeo(rec), managedMat()); break;
+    case 'import': o = importCache[rec.ref] ? importCache[rec.ref].clone(true) : new THREE.Group(); break;
+    default: o = new THREE.Group();
+  }
+  o.userData.rec = rec; o.userData.mat = mat || null;
+  if (MATKINDS.has(rec.kind) && !o.userData.mat) o.userData.mat = defMat();
+  applyMat(o);
+  return o;
+}
+function disposeObj(o) {
+  o.traverse(c => {
+    if (c.geometry) c.geometry.dispose();
+    if (c.material) (Array.isArray(c.material) ? c.material : [c.material]).forEach(m => { if (m.map && m.userData.managed) m.map.dispose(); m.dispose(); });
+  });
+}
+
+/* ───────────── Renderer & scene ───────────── */
+const vp = $('#viewport'), vpWrap = $('#vpWrap');
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1;
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.autoClear = false; renderer.info.autoReset = false;
+vp.appendChild(renderer.domElement);
+const cv = renderer.domElement; cv.tabIndex = 0;
+const scene = new THREE.Scene(), helpers = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, 1, .05, 600); camera.position.set(8, 6, 10);
+const controls = new OrbitControls(camera, cv); controls.enableDamping = true; controls.dampingFactor = .09; controls.target.set(0, .6, 0); controls.autoRotateSpeed = 1.6;
+const pmrem = new THREE.PMREMGenerator(renderer);
+const envTex = pmrem.fromScene(new RoomEnvironment(renderer), .04).texture;
+scene.environment = envTex;
+const studio = new THREE.Group(); scene.add(studio);
+const hemi = new THREE.HemisphereLight(0xdfe8ff, 0x3a3328, .55); studio.add(hemi);
+const keyL = new THREE.DirectionalLight(0xffffff, 2.2); keyL.position.set(6, 11, 5); keyL.castShadow = true; keyL.shadow.mapSize.set(2048, 2048);
+Object.assign(keyL.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, near: 1, far: 50 }); keyL.shadow.bias = -.0004; keyL.shadow.normalBias = .02; studio.add(keyL);
+const fillL = new THREE.DirectionalLight(0xbcd2ff, .5); fillL.position.set(-6, 4, -5); studio.add(fillL);
+const shadowPlane = new THREE.Mesh(new THREE.PlaneGeometry(200, 200).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ opacity: .3 }));
+shadowPlane.position.y = -.002; shadowPlane.receiveShadow = true; scene.add(shadowPlane);
+const grid = new THREE.GridHelper(40, 40, 0x5d6573, 0x3b414b); grid.material.transparent = true; grid.material.opacity = .75; grid.position.y = .001; helpers.add(grid);
+const axesL = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints([new V3(-20, .003, 0), new V3(20, .003, 0), new V3(0, .003, -20), new V3(0, .003, 20)]), new THREE.LineBasicMaterial({ vertexColors: true }));
+axesL.geometry.setAttribute('color', new THREE.Float32BufferAttribute([.85, .3, .3, .85, .3, .3, .3, .5, .9, .3, .5, .9], 3)); helpers.add(axesL);
+const tc = new TransformControls(camera, cv); tc.setSize(.9); helpers.add(tc);
+const selBox = new THREE.BoxHelper(undefined, 0x3db8f0); selBox.visible = false; helpers.add(selBox);
+const skPrev = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineDashedMaterial({ color: 0xffc94d, dashSize: .15, gapSize: .08 })); helpers.add(skPrev);
+const skDots = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ color: 0xffc94d, size: 7, sizeAttenuation: false })); helpers.add(skDots);
+const OVR = {
+  wire: new THREE.MeshBasicMaterial({ color: 0x8fc6ee, wireframe: true }),
+  clay: new THREE.MeshStandardMaterial({ color: 0xc9c2b6, roughness: .85 }),
+  normals: new THREE.MeshNormalMaterial(),
+};
+const SHADES = { solid: T('صلب'), wire: T('سلكي'), clay: T('طين'), normals: T('نواظم') };
+
+/* ───────────── State ───────────── */
+const state = {
+  mode: 'translate', space: 'world', snap: false, shade: 'solid', grid: true, shadows: true, env: true, fog: false,
+  bg: 'gradient', bgColor: '#2a2f37', dur: 6, time: 0, loop: true, ease: 'power2.inOut', playing: false, uLock: true,
+  sk: { on: false, tool: 'poly', pts: [], cursor: null, depth: 1, bevel: .04, sides: 6 },
+  lib: 'models', tab: 'home', name: T('مشروع بلا عنوان'), poseMode: false, bone: 'chest', autoKey: false,
+};
+const objects = [];
+let sel = null, master = null;
+
+/* ───────────── Object management ───────────── */
+function setShadow(o) { const cs = o.userData.cs !== false; o.traverse(c => { if (c.isMesh && !c.userData.helper) { c.castShadow = cs; c.receiveShadow = true; } }); }
+function kindName(r) {
+  return r.kind === 'prim' ? T('شكل · ') + (PRIMS[r.type]?.n || '') : r.kind === 'model' ? T('نموذج · ') + (MODELS[r.type]?.n || '') : r.kind === 'rig' ? T('شخصية بهيكل عظمي · ') + (RIGS[r.type]?.n || '') : r.kind === 'light' ? LIGHTS[r.type]?.n : r.kind === 'sketch' ? T('رسم ثنائي الأبعاد') : r.kind === 'extrude' ? T('جسم مبثوق') : r.kind === 'lathe' ? T('جسم دوراني') : r.kind === 'text' ? T('نص ثلاثي الأبعاد') : T('نموذج مستورد');
+}
+function kindIcon(r) { if (r.kind === 'rig') return 'person'; return r.kind === 'prim' ? (PRIMS[r.type]?.i || 'box') : r.kind === 'model' ? (r.type === 'tree' || r.type === 'pine' ? 'tree' : 'models') : r.kind === 'light' ? LIGHTS[r.type]?.i : r.kind === 'sketch' ? 'pen' : r.kind === 'extrude' ? 'extrude' : r.kind === 'lathe' ? 'lathe' : r.kind === 'text' ? 'text' : 'import'; }
+function baseName(r) { if (r.kind === 'rig') return RIGS[r.type]?.n || T('شخصية'); return r.kind === 'prim' ? PRIMS[r.type]?.n : r.kind === 'model' ? MODELS[r.type]?.n : r.kind === 'light' ? LIGHTS[r.type]?.n : r.kind === 'sketch' ? T('رسم') : r.kind === 'extrude' ? T('بثق') : r.kind === 'lathe' ? T('دوران') : r.kind === 'text' ? T('نص') : (r.name || T('مستورد')); }
+function uniqueName(b) { let n = 1; const names = new Set(objects.map(o => o.name)); while (names.has(b + ' ' + n)) n++; return b + ' ' + n; }
+function ser(o) {
+  return { id: o.userData.id, name: o.name, rec: JSON.parse(JSON.stringify(o.userData.rec)), mat: o.userData.mat ? { ...o.userData.mat } : null, p: o.position.toArray().map(fmt), r: [o.rotation.x, o.rotation.y, o.rotation.z].map(v => Math.round(v * 1e5) / 1e5), s: o.scale.toArray().map(fmt), v: o.visible, cs: o.userData.cs !== false, keys: JSON.parse(JSON.stringify(o.userData.keys || [])), ...(o.userData.bones ? { pose: readPose(o) } : {}) };
+}
+function deser(d) {
+  const o = build(JSON.parse(JSON.stringify(d.rec)), d.mat ? { ...d.mat } : null);
+  o.userData.id = d.id || uid(); o.name = d.name || uniqueName(baseName(d.rec));
+  o.position.fromArray(d.p || [0, 0, 0]); o.rotation.set(...(d.r || [0, 0, 0])); o.scale.fromArray(d.s || [1, 1, 1]);
+  o.visible = d.v !== false; o.userData.cs = d.cs !== false; o.userData.keys = d.keys || []; applyPose(o, d.pose); setShadow(o);
+  return o;
+}
+function addObject(o, i) { scene.add(o); if (i == null) objects.push(o); else objects.splice(i, 0, o); }
+function removeObject(o) { const i = objects.indexOf(o); if (i >= 0) objects.splice(i, 1); scene.remove(o); disposeObj(o); return i; }
+function dropToGround(o) { o.updateMatrixWorld(true); const b = new THREE.Box3().setFromObject(o); if (!b.isEmpty()) o.position.y -= b.min.y; }
+function spawn(rec, opt = {}) {
+  const mat = opt.mat !== undefined ? opt.mat : (MATKINDS.has(rec.kind) ? defMat() : null);
+  const o = build(rec, mat);
+  o.userData.id = uid(); o.name = opt.name || uniqueName(baseName(rec)); o.userData.keys = []; o.userData.cs = true; setShadow(o);
+  if (opt.pos) o.position.copy(opt.pos);
+  if (opt.rot) o.rotation.set(...opt.rot);
+  if (opt.scl) typeof opt.scl === 'number' ? o.scale.setScalar(opt.scl) : o.scale.set(...opt.scl);
+  if (opt.drop !== false && rec.kind !== 'light' && rec.kind !== 'sketch') dropToGround(o);
+  addObject(o); return o;
+}
+function pop(o, delay = 0) { if (!o) return; gsap.from(o.scale, { x: .001, y: .001, z: .001, duration: .65, delay, ease: 'back.out(2.2)' }); }
+function spawnUI(rec, pos, opt = {}) {
+  if (state.sk.on) toggleSketch(false);
+  const p = pos ? pos.clone() : new V3(controls.target.x, 0, controls.target.z);
+  if (rec.kind === 'light') p.y = rec.type === 'dir' ? 7 : rec.type === 'spot' ? 4.5 : 3;
+  const o = spawn(rec, { pos: p, ...opt });
+  if (rec.kind === 'light' && rec.type === 'dir') o.rotation.set(-.5, 0, .4);
+  select(o); commit(); pop(o); toast(T('أُضيف: ') + o.name);
+  return o;
+}
+function addPrim(t, pos) { return spawnUI({ kind: 'prim', type: t }, pos); }
+function addModel(t, pos) { return spawnUI({ kind: 'model', type: t }, pos); }
+function addLight(t, pos) { return spawnUI({ kind: 'light', type: t, ...LIGHTS[t].d }, pos); }
+function rebuildObj(o) {
+  const d = ser(o); const i = removeObject(o); const n = deser(d); addObject(n, i);
+  if (sel === o) { sel = null; select(n, true); }
+  return n;
+}
+
+/* ───────────── Selection ───────────── */
+function select(o, keepInspector) {
+  if (sel && sel.userData.rec.kind === 'sketch' && sel.userData.line) sel.userData.line.material.color.set(0x4fd1ff);
+  sel = o || null;
+  if (state.poseMode && !(sel && sel.userData.bones)) setPoseMode(false, true);
+  if (sel && state.poseMode) { const b = sel.userData.bones[state.bone] || sel.userData.bones.chest; tc.setMode('rotate'); tc.setSpace('local'); tc.attach(b); }
+  else if (sel && state.mode !== 'select' && !state.sk.on) { tc.setMode(state.mode === 'select' ? 'translate' : state.mode); tc.setSpace(state.space); tc.attach(sel); } else tc.detach();
+  objects.forEach(o => o.userData.bones && Object.values(o.userData.bones).forEach(b => { const j = b.children.find(c => c.userData.joint); if (j) { j.visible = o === sel; j.material = j.material; j.scale.setScalar(o === sel && state.poseMode && b.name === state.bone ? 1.9 : 1); } }));
+  if (sel) { if (sel.userData.rec.kind === 'sketch') sel.userData.line.material.color.set(0xffc94d); selBox.setFromObject(sel); selBox.visible = true; }
+  else selBox.visible = false;
+  $('#stSel').textContent = sel ? sel.name : T('لا شيء');
+  renderOutliner(); renderInspector(); renderTracks();
+}
+const rc = new THREE.Raycaster(); rc.params.Line.threshold = .12; rc.params.Points.threshold = .1;
+const ground = new THREE.Plane(new V3(0, 1, 0), 0);
+function ndc(e) { const r = cv.getBoundingClientRect(); return new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); }
+function rootOf(x) { while (x && !objects.includes(x)) x = x.parent; return x; }
+function pick(e) {
+  rc.setFromCamera(ndc(e), camera);
+  const hits = rc.intersectObjects(objects.filter(o => o.visible), true);
+  for (const h of hits) { const r = rootOf(h.object); if (r) return r; }
+  return null;
+}
+function groundPt(e) { rc.setFromCamera(ndc(e), camera); const p = new V3(); return rc.ray.intersectPlane(ground, p) ? p : null; }
+
+/* ───────────── History / autosave ───────────── */
+let hist = [], hi = -1;
+const snapshot = () => objects.map(ser);
+function commit() {
+  const s = JSON.stringify(snapshot());
+  if (s !== hist[hi]) { hist = hist.slice(0, hi + 1); hist.push(s); if (hist.length > 100) hist.shift(); hi = hist.length - 1; }
+  autosave(); renderOutliner(); renderTracks(); buildTL(false);
+}
+function restore(arr, selId) {
+  objects.slice().forEach(removeObject);
+  arr.forEach(d => addObject(deser(d)));
+  sel = null; select(objects.find(o => o.userData.id === selId) || null);
+  buildTL(true);
+}
+function undo() { if (hi > 0) { hi--; restore(JSON.parse(hist[hi]), sel?.userData.id); toast(T('تراجع')); } }
+function redo() { if (hi < hist.length - 1) { hi++; restore(JSON.parse(hist[hi]), sel?.userData.id); toast(T('إعادة')); } }
+function projectData(includeImports) {
+  return { app: '3d-express-studio', v: 1, name: state.name, settings: { dur: state.dur, loop: state.loop, bg: state.bg, bgColor: state.bgColor, fog: state.fog, env: state.env, shadows: state.shadows, grid: state.grid }, camera: { p: camera.position.toArray(), t: controls.target.toArray() }, objects: snapshot().filter(d => includeImports || d.rec.kind !== 'import') };
+}
+let saveT = 0;
+function autosave() { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem('3dx-autosave', JSON.stringify(projectData(false))); } catch (e) { } }, 400); }
+function loadProject(p) {
+  if (!p || !Array.isArray(p.objects)) throw new Error('bad');
+  if (p.settings) { Object.assign(state, p.settings); applyScene(); $('#tlDur').value = state.dur; $('#tlLoop').checked = state.loop; }
+  if (p.name) { state.name = p.name; $('#docName').textContent = p.name; }
+  if (p.camera) { camera.position.fromArray(p.camera.p); controls.target.fromArray(p.camera.t); }
+  state.time = 0; restore(p.objects); hist = []; hi = -1; commit();
+}
+
+/* ───────────── Edit operations ───────────── */
+function need() { if (!sel) { toast(T('حدد كائناً أولاً')); return false; } return true; }
+function duplicate() {
+  if (!need()) return; const d = ser(sel); d.id = uid(); d.name = uniqueName(baseName(d.rec)); d.p[0] += 1.2;
+  const o = deser(d); addObject(o); select(o); commit(); pop(o);
+}
+function delSel() { if (!need()) return; const n = sel.name; tc.detach(); removeObject(sel); sel = null; select(null); commit(); toast(T('حُذف: ') + n); }
+function mirror(ax) {
+  if (!need()) return; const d = ser(sel); d.id = uid(); d.name = sel.name + T(' (مرآة)'); d.p[ax] = -d.p[ax]; d.s[ax] = -d.s[ax];
+  if (Math.abs(d.p[ax]) < .01) d.p[ax] += ax === 1 ? 0 : 1.5;
+  const o = deser(d); addObject(o); select(o); commit(); pop(o);
+}
+async function arrayTool() {
+  if (!need()) return;
+  const v = await ask(T('مصفوفة خطية'), [{ k: 'n', l: T('عدد النسخ'), v: 5, t: 'number' }, { k: 'dx', l: T('إزاحة X'), v: 1.5, t: 'number' }, { k: 'dy', l: T('إزاحة Y'), v: 0, t: 'number' }, { k: 'dz', l: T('إزاحة Z'), v: 0, t: 'number' }, { k: 'ry', l: T('دوران Y لكل نسخة°'), v: 0, t: 'number' }]);
+  if (!v) return; const base = ser(sel); const made = [];
+  for (let i = 1; i < clamp(v.n | 0, 1, 200); i++) { const d = JSON.parse(JSON.stringify(base)); d.id = uid(); d.name = base.name + ' #' + (i + 1); d.p = [d.p[0] + v.dx * i, d.p[1] + v.dy * i, d.p[2] + v.dz * i]; d.r[1] += v.ry * D2R * i; const o = deser(d); addObject(o); made.push(o); }
+  commit(); made.forEach((o, i) => pop(o, i * .05)); toast(T('أُنشئت ') + made.length + T(' نسخة'));
+}
+async function radialTool() {
+  if (!need()) return;
+  const v = await ask(T('مصفوفة دائرية'), [{ k: 'n', l: T('عدد النسخ'), v: 8, t: 'number' }, { k: 'r', l: T('نصف القطر'), v: 3, t: 'number' }]);
+  if (!v) return; const base = ser(sel); const made = []; const n = clamp(v.n | 0, 2, 200);
+  const c = new V3(...base.p);
+  for (let i = 0; i < n; i++) { const a = i / n * TAU; const d = JSON.parse(JSON.stringify(base)); d.id = i ? uid() : d.id; d.name = i ? base.name + ' #' + (i + 1) : base.name; d.p = [c.x + Math.cos(a) * v.r, c.y, c.z + Math.sin(a) * v.r]; d.r[1] = base.r[1] - a; if (i === 0) { sel.position.fromArray(d.p); sel.rotation.y = d.r[1]; continue; } const o = deser(d); addObject(o); made.push(o); }
+  commit(); made.forEach((o, i) => pop(o, i * .04));
+}
+async function scatterTool() {
+  if (!need()) return;
+  const v = await ask(T('بعثرة عشوائية'), [{ k: 'n', l: T('العدد'), v: 12, t: 'number' }, { k: 'r', l: T('نصف قطر المنطقة'), v: 6, t: 'number' }, { k: 'smin', l: T('أصغر حجم'), v: .6, t: 'number' }, { k: 'smax', l: T('أكبر حجم'), v: 1.3, t: 'number' }]);
+  if (!v) return; const base = ser(sel); const made = [];
+  for (let i = 0; i < clamp(v.n | 0, 1, 300); i++) {
+    const a = Math.random() * TAU, rr = Math.sqrt(Math.random()) * v.r, k = v.smin + Math.random() * (v.smax - v.smin);
+    const d = JSON.parse(JSON.stringify(base)); d.id = uid(); d.name = base.name + ' ~' + (i + 1); d.p = [base.p[0] + Math.cos(a) * rr, base.p[1] * k, base.p[2] + Math.sin(a) * rr]; d.r[1] = Math.random() * TAU; d.s = base.s.map(s => s * k);
+    const o = deser(d); addObject(o); made.push(o);
+  }
+  commit(); made.forEach((o, i) => pop(o, i * .03)); toast(T('بُعثرت ') + made.length + T(' نسخة'));
+}
+function groundSel() { if (!need()) return; dropToGround(sel); commit(); syncInspector(); }
+function centerSel() { if (!need()) return; gsap.to(sel.position, { x: 0, z: 0, duration: .5, ease: 'power2.out', onUpdate: syncInspector, onComplete: commit }); }
+function resetSel() { if (!need()) return; gsap.to(sel.rotation, { x: 0, y: 0, z: 0, duration: .5, ease: 'power2.out' }); gsap.to(sel.scale, { x: 1, y: 1, z: 1, duration: .5, ease: 'power2.out', onUpdate: syncInspector, onComplete: commit }); }
+function toggleHide() { if (!need()) return; sel.visible = !sel.visible; commit(); }
+function showAll() { objects.forEach(o => o.visible = true); commit(); }
+async function addText() {
+  if (!FONT) { toast(T('خط النص ثلاثي الأبعاد لم يُحمّل بعد (يتطلب اتصالاً بالإنترنت)')); return; }
+  const v = await ask(T('نص ثلاثي الأبعاد'), [{ k: 'text', l: T('النص (أحرف لاتينية)'), v: '3D EXPRESS', t: 'text' }, { k: 'size', l: T('الحجم'), v: .6, t: 'number' }, { k: 'depth', l: T('العمق'), v: .2, t: 'number' }]);
+  if (!v) return; spawnUI({ kind: 'text', text: v.text || 'Text', size: v.size || .6, depth: v.depth ?? .2 }, null, { mat: { ...defMat('#f2cc8f'), m: .3, r: .3 } });
+}
+
+/* ───────────── Library apply ───────────── */
+function applyMatPreset(id, o = sel) {
+  if (!o) { toast(T('حدد كائناً لتطبيق الخامة')); return; }
+  const k = o.userData.rec.kind; if (k === 'light' || k === 'sketch') { toast(T('لا يمكن تطبيق خامة على هذا النوع')); return; }
+  o.userData.mat = { ...defMat(), ...MATMAP[id].m }; applyMat(o); if (o !== sel) select(o); else renderInspector(); commit(); toast(T('الخامة: ') + MATMAP[id].n);
+  gsap.fromTo(o.scale, { x: o.scale.x * 1.08, y: o.scale.y * 1.08, z: o.scale.z * 1.08 }, { x: o.scale.x, y: o.scale.y, z: o.scale.z, duration: .4, ease: 'elastic.out(1,0.4)' });
+}
+function applyTexture(id, o = sel) {
+  if (!o) { toast(T('حدد كائناً لتطبيق التكسية')); return; }
+  const k = o.userData.rec.kind; if (k === 'light' || k === 'sketch') { toast(T('لا يمكن تطبيق تكسية على هذا النوع')); return; }
+  const m = o.userData.mat || defMat(); m.tx = id; m.c = '#ffffff'; o.userData.mat = m; applyMat(o); if (o !== sel) select(o); else renderInspector(); commit(); toast(T('التكسية: ') + TEXMAP[id].n);
+}
+
+/* ───────────── Camera ───────────── */
+function fly(pos, tgt, d = .9) {
+  gsap.to(camera.position, { x: pos.x, y: pos.y, z: pos.z, duration: d, ease: 'power3.inOut', overwrite: true });
+  gsap.to(controls.target, { x: tgt.x, y: tgt.y, z: tgt.z, duration: d, ease: 'power3.inOut', overwrite: true });
+}
+const VIEWS = { top: [0, 1, .0001], bottom: [0, -1, .0001], front: [0, 0, 1], back: [0, 0, -1], right: [1, 0, 0], left: [-1, 0, 0], home: [.62, .45, .78] };
+const VIEWN = { top: T('أعلى'), bottom: T('أسفل'), front: T('أمام'), back: T('خلف'), right: T('يمين'), left: T('يسار'), home: T('منظور') };
+function view(name) {
+  const d = new V3(...VIEWS[name]).normalize();
+  const t = name === 'home' ? new V3(0, .6, 0) : controls.target.clone();
+  const dist = name === 'home' ? 14 : camera.position.distanceTo(controls.target);
+  fly(t.clone().add(d.multiplyScalar(dist)), t); $('#hudView').textContent = VIEWN[name];
+}
+function focusSel() {
+  const b = new THREE.Box3(); if (sel) b.setFromObject(sel); else objects.forEach(o => o.visible && b.expandByObject(o));
+  if (b.isEmpty()) return; const c = b.getCenter(new V3()); const r = Math.max(b.getSize(new V3()).length() * .5, .4);
+  const dir = camera.position.clone().sub(controls.target).normalize(); const dist = r / Math.sin(camera.fov * D2R / 2) * 1.05;
+  fly(c.clone().add(dir.multiplyScalar(dist)), c, .7);
+}
+
+/* ───────────── Modes / view toggles ───────────── */
+const MODEN = { select: T('تحديد'), translate: T('تحريك'), rotate: T('تدوير'), scale: T('تحجيم') };
+function setMode(m) { state.mode = m; if (m !== 'select') tc.setMode(m); select(sel); $('#hudMode').textContent = MODEN[m]; refreshRibbon(); }
+function toggleSpace() { state.space = state.space === 'world' ? 'local' : 'world'; tc.setSpace(state.space); toast(state.space === 'local' ? T('المحاور: محلية') : T('المحاور: عالمية')); refreshRibbon(); }
+function toggleSnap() { state.snap = !state.snap; tc.setTranslationSnap(state.snap ? .25 : null); tc.setRotationSnap(state.snap ? 15 * D2R : null); tc.setScaleSnap(state.snap ? .1 : null); toast(state.snap ? T('الالتقاط: مفعّل (0.25 · 15°)') : T('الالتقاط: متوقف')); refreshRibbon(); }
+function setShade(s) { state.shade = s; scene.overrideMaterial = OVR[s] || null; shadowPlane.visible = s === 'solid' && state.shadows; $('#hudShade').textContent = SHADES[s]; refreshRibbon(); }
+function applyScene() {
+  grid.visible = axesL.visible = state.grid;
+  renderer.shadowMap.enabled = state.shadows; keyL.castShadow = state.shadows; shadowPlane.visible = state.shadows && state.shade === 'solid';
+  scene.traverse(c => { if (c.material) c.material.needsUpdate = true; });
+  scene.environment = state.env ? envTex : null; hemi.intensity = state.env ? .55 : 1.1;
+  const bgc = new THREE.Color(state.bgColor);
+  if (state.bg === 'gradient') { scene.background = null; vpWrap.classList.remove('flat'); }
+  else if (state.bg === 'env') { scene.background = envTex; scene.backgroundBlurriness = .5; }
+  else { scene.background = bgc; vpWrap.classList.add('flat'); }
+  scene.fog = state.fog ? new THREE.Fog(state.bg === 'color' ? bgc : new THREE.Color(0x2a3038), 12, 60) : null;
+  refreshRibbon();
+}
+function toggle(k) { state[k] = !state[k]; applyScene(); }
+function panel(which) {
+  const app = $('#app'); const mobile = innerWidth <= 900;
+  if (which === 'tl') { app.classList.toggle('no-tl'); return; }
+  if (mobile) { const c = which === 'lib' ? 'm-lib' : 'm-side'; app.classList.toggle(c); app.classList.remove(which === 'lib' ? 'm-side' : 'm-lib'); }
+  else app.classList.toggle(which === 'lib' ? 'no-lib' : 'no-side');
+  refreshRibbon();
+}
+function screenshot() {
+  renderFrame(); const url = cv.toDataURL('image/png');
+  dlURL(url, (state.name || 'render') + '.png'); toast(T('لقطة الشاشة جاهزة'));
+}
+function fullscreen() { (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.())?.catch?.(() => toast(T('ملء الشاشة غير متاح هنا'))); }
+function turntable() { controls.autoRotate = !controls.autoRotate; toast(controls.autoRotate ? T('دوران الكاميرا: يعمل') : T('دوران الكاميرا: متوقف')); refreshRibbon(); }
+
+/* ───────────── 2D Sketch ───────────── */
+const SKN = { poly: T('خط متعدد'), rect: T('مستطيل'), circle: T('دائرة'), ngon: T('مضلع منتظم') };
+function toggleSketch(on) {
+  const s = state.sk; s.on = on ?? !s.on; s.pts = []; s.cursor = null;
+  controls.enableRotate = !s.on;
+  if (s.on) { view('top'); tc.detach(); setSkTool(s.tool); }
+  else { $('#skHint').style.display = 'none'; select(sel); }
+  updateSkPreview(); refreshRibbon(); hint();
+}
+function setSkTool(t) {
+  const s = state.sk; s.tool = t; s.pts = []; if (!s.on) { toggleSketch(true); return; }
+  const H = { poly: T('انقر لإضافة نقاط · انقر على النقطة الأولى للإغلاق · نقر مزدوج أو Enter للإنهاء'), rect: T('انقر للزاوية الأولى ثم للزاوية المقابلة'), circle: T('انقر للمركز ثم لتحديد نصف القطر'), ngon: T('انقر للمركز ثم لتحديد الحجم (') + s.sides + T(' أضلاع)') };
+  const h = $('#skHint'); h.textContent = '✎ ' + SKN[t] + ' — ' + H[t] + T(' · Esc للإلغاء'); h.style.display = 'block';
+  gsap.fromTo(h, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: .35, ease: 'power2.out' });
+  updateSkPreview(); refreshRibbon();
+}
+function snapP(p) { if (!p) return p; const g = state.snap ? .25 : .05; p.x = Math.round(p.x / g) * g; p.z = Math.round(p.z / g) * g; p.y = 0; return p; }
+function shapePts(tool, p0, c, n) {
+  if (tool === 'rect') return [p0.clone(), new V3(c.x, 0, p0.z), c.clone(), new V3(p0.x, 0, c.z)];
+  const r = Math.max(.01, Math.hypot(c.x - p0.x, c.z - p0.z)), a0 = Math.atan2(c.z - p0.z, c.x - p0.x), N = tool === 'circle' ? 64 : n;
+  return [...Array(N)].map((_, i) => new V3(p0.x + Math.cos(a0 + i / N * TAU) * r, 0, p0.z + Math.sin(a0 + i / N * TAU) * r));
+}
+function updateSkPreview() {
+  const s = state.sk; let pts = [];
+  if (s.on && s.cursor) {
+    if (s.tool === 'poly') pts = [...s.pts, s.cursor];
+    else if (s.pts.length) { pts = shapePts(s.tool, s.pts[0], s.cursor, s.sides); pts.push(pts[0].clone()); }
+  }
+  const lift = p => new V3(p.x, .02, p.z);
+  skPrev.geometry.dispose(); skPrev.geometry = new THREE.BufferGeometry().setFromPoints(pts.map(lift)); skPrev.computeLineDistances();
+  const dots = s.on ? [...s.pts, ...(s.cursor ? [s.cursor] : [])] : [];
+  skDots.geometry.dispose(); skDots.geometry = new THREE.BufferGeometry().setFromPoints(dots.map(lift));
+}
+function sketchClick(e) {
+  const s = state.sk; const p = snapP(groundPt(e)); if (!p) return;
+  if (s.tool === 'poly') {
+    if (s.pts.length >= 3 && p.distanceTo(s.pts[0]) < .3) { finishSketch(s.pts, true); return; }
+    const last = s.pts[s.pts.length - 1]; if (!last || last.distanceTo(p) > 1e-3) s.pts.push(p);
+  } else {
+    if (!s.pts.length) s.pts.push(p);
+    else if (p.distanceTo(s.pts[0]) > .02) finishSketch(shapePts(s.tool, s.pts[0], p, s.sides), true);
+  }
+  updateSkPreview();
+}
+function finishSketch(pts, closed) {
+  const clean = pts.filter((p, i) => i === 0 || p.distanceTo(pts[i - 1]) > 1e-3);
+  state.sk.pts = []; updateSkPreview();
+  if (clean.length < 2) return;
+  const c = clean.reduce((a, p) => a.add(p), new V3()).multiplyScalar(1 / clean.length);
+  const rec = { kind: 'sketch', pts: clean.map(p => [fmt(p.x - c.x), fmt(p.z - c.z)]), closed: closed && clean.length > 2 };
+  const o = spawn(rec, { pos: new V3(c.x, 0, c.z), name: uniqueName(SKN[state.sk.tool] || T('رسم')) });
+  sel = o; selBox.setFromObject(o); selBox.visible = true; o.userData.line.material.color.set(0xffc94d);
+  commit(); renderInspector(); $('#stSel').textContent = o.name;
+  toast(T('رُسم: ') + o.name + T(' — استخدم «بثق» أو «دوران» لتحويله إلى مجسم'));
+}
+function convertSketch(kind) {
+  if (state.sk.on && state.sk.tool === 'poly' && state.sk.pts.length > 1) finishSketch(state.sk.pts, false);
+  if (!sel || sel.userData.rec.kind !== 'sketch') { toast(T('حدد رسماً ثنائي الأبعاد أولاً (من مستكشف المشهد)')); return; }
+  const r = sel.userData.rec; if (r.pts.length < (kind === 'extrude' ? 3 : 2)) { toast(T('الرسم يحتاج نقاطاً أكثر')); return; }
+  const rec = kind === 'extrude' ? { kind: 'extrude', pts: r.pts, depth: state.sk.depth, bevel: state.sk.bevel } : { kind: 'lathe', pts: r.pts, closed: r.closed, seg: 64 };
+  const pos = sel.position.clone(), rot = [sel.rotation.x, sel.rotation.y, sel.rotation.z];
+  removeObject(sel); sel = null;
+  if (state.sk.on) toggleSketch(false);
+  const o = spawn(rec, { pos, rot, drop: kind === 'lathe', name: uniqueName(kind === 'extrude' ? T('بثق') : T('دوران')) });
+  select(o); commit();
+  if (kind === 'extrude') gsap.from(o.scale, { y: .001, duration: .8, ease: 'elastic.out(1,0.5)' });
+  else gsap.from(o.rotation, { y: o.rotation.y - Math.PI, duration: .9, ease: 'power3.out' });
+  view('home');
+}
+
+/* ───────────── Timeline (GSAP) ───────────── */
+const EASES = [['none', T('خطي')], ['power1.inOut', T('ناعم')], ['power2.inOut', T('ناعم +')], ['power3.out', T('تباطؤ')], ['expo.inOut', T('أُسّي')], ['sine.inOut', T('جيبي')], ['back.out(1.7)', T('تجاوز')], ['elastic.out(1,0.3)', T('مطاطي')], ['bounce.out', T('ارتداد')], ['circ.inOut', T('دائري')], ['steps(6)', T('خطوات')]];
+const tf = o => ({ p: o.position.toArray().map(fmt), r: [o.rotation.x, o.rotation.y, o.rotation.z].map(v => Math.round(v * 1e4) / 1e4), s: o.scale.toArray().map(fmt) });
+function buildTL(reseek) {
+  const t = state.time, wasPlaying = state.playing;
+  if (master) master.kill();
+  master = gsap.timeline({ paused: true, repeat: state.loop ? -1 : 0, onUpdate: onTL, onComplete: () => setPlaying(false) });
+  master.to({}, { duration: state.dur }, 0);
+  for (const o of objects) {
+    const ks = (o.userData.keys || []).slice().sort((a, b) => a.t - b.t); if (ks.length < 2) continue;
+    for (let i = 1; i < ks.length; i++) {
+      const a = ks[i - 1], b = ks[i], d = Math.max(.001, b.t - a.t), e = b.e || 'power2.inOut';
+      master.fromTo(o.position, { x: a.p[0], y: a.p[1], z: a.p[2] }, { x: b.p[0], y: b.p[1], z: b.p[2], duration: d, ease: e, immediateRender: false }, a.t);
+      master.fromTo(o.rotation, { x: a.r[0], y: a.r[1], z: a.r[2] }, { x: b.r[0], y: b.r[1], z: b.r[2], duration: d, ease: e, immediateRender: false }, a.t);
+      master.fromTo(o.scale, { x: a.s[0], y: a.s[1], z: a.s[2] }, { x: b.s[0], y: b.s[1], z: b.s[2], duration: d, ease: e, immediateRender: false }, a.t);
+      if (o.userData.bones && a.b && b.b) for (const n in b.b) { const bone = o.userData.bones[n], fa = a.b[n]; if (!bone || !fa) continue; master.fromTo(bone.rotation, { x: fa[0], y: fa[1], z: fa[2] }, { x: b.b[n][0], y: b.b[n][1], z: b.b[n][2], duration: d, ease: e, immediateRender: false }, a.t); }
+    }
+  }
+  if (reseek) master.seek(Math.min(t, state.dur), false);
+  else { const saved = objects.map(o => [o, tf(o), readPose(o)]); master.time(Math.min(t, state.dur), true); saved.forEach(([o, v, ps]) => { o.position.fromArray(v.p); o.rotation.set(...v.r); o.scale.fromArray(v.s); applyPose(o, ps); }); }
+  if (wasPlaying) master.play();
+}
+function onTL() { state.time = master.time(); updatePH(); if (sel) { selBox.setFromObject(sel); syncInspector(); } }
+function seek(t) { state.time = clamp(t, 0, state.dur); if (!master) buildTL(true); master.seek(state.time, false); updatePH(); if (sel) syncInspector(); }
+function setPlaying(p) {
+  if (p && !state.loop && state.time >= state.dur - .001) seek(0);
+  if (!master) buildTL(true); state.playing = p; p ? master.play() : master.pause();
+  $('#tlPlay').innerHTML = ic(p ? 'pause' : 'play'); $('#tlPlay').classList.toggle('on', p); $('#hudPlay').style.display = p ? '' : 'none'; refreshRibbon();
+}
+function hasKeys(o) { return (o.userData.keys || []).length > 0; }
+function addKey(o = sel, t = state.time, silent) {
+  if (!o) { toast(T('حدد كائناً لإضافة مفتاح')); return; }
+  const ks = o.userData.keys || (o.userData.keys = []); const k = { t: Math.round(t * 100) / 100, ...tf(o), e: state.ease }; if (o.userData.bones) k.b = readPose(o);
+  const ex = ks.findIndex(x => Math.abs(x.t - k.t) < .03); if (ex >= 0) ks[ex] = k; else ks.push(k); ks.sort((a, b) => a.t - b.t);
+  if (!silent && ks.length === 1 && k.t > 0) toast(T('أُضيف مفتاح عند ') + k.t.toFixed(2) + T('ث — حرّك المؤشر وغيّر الكائن ثم أضف مفتاحاً آخر'));
+  commit(); flashKeys();
+}
+function commitEdit(o = sel) {
+  if (!state.autoKey || !o || state.playing) { commit(); return; }
+  const ks = o.userData.keys || (o.userData.keys = []);
+  if (!ks.length && state.time > .01) { const prev = JSON.parse(hist[hi] || '[]').find(d => d.id === o.userData.id); if (prev) ks.push({ t: 0, p: prev.p, r: prev.r, s: prev.s, e: state.ease, ...(prev.pose ? { b: prev.pose } : {}) }); }
+  addKey(o, state.time, true);
+}
+function toggleAutoKey() { state.autoKey = !state.autoKey; $('#tlAuto').classList.toggle('on', state.autoKey); $('#timeline').classList.toggle('auto', state.autoKey); toast(state.autoKey ? T('المفتاح التلقائي: مفعّل — كل تعديل يُسجَّل كمفتاح عند المؤشر') : T('المفتاح التلقائي: متوقف')); refreshRibbon(); }
+function setPoseMode(on, quiet) {
+  if (on && !(sel && sel.userData.bones)) { toast(T('حدد شخصية بهيكل عظمي أولاً')); return; }
+  state.poseMode = on; if (!quiet) { select(sel); renderInspector(); toast(on ? T('وضع الوضعية: انقر مفصلاً (العظام) ثم دوّره') : T('خرجت من وضع الوضعية')); }
+  $('#hudMode').textContent = on ? T('وضعية') : MODEN[state.mode]; refreshRibbon();
+}
+function resetPose() { if (!sel?.userData.bones) return; applyPose(sel, restPose()); commitEdit(); syncInspector(); }
+function delKey() { if (!sel || !hasKeys(sel)) { toast(T('لا توجد مفاتيح عند المؤشر')); return; } const ks = sel.userData.keys; const i = ks.findIndex(x => Math.abs(x.t - state.time) < .06); if (i < 0) { toast(T('حرّك المؤشر إلى مفتاح لحذفه')); return; } ks.splice(i, 1); commit(); }
+function clearKeys() { if (!need()) return; sel.userData.keys = []; commit(); toast(T('مُسحت مفاتيح ') + sel.name); }
+function flashKeys() { gsap.fromTo('.tltr.on .kd', { scale: 1.8 }, { scale: 1, duration: .4, ease: 'back.out(3)', stagger: .02 }); }
+const PRESETS = {
+  spin: { n: T('دوران'), i: 'rotate', f: (b, D) => [[0, b, 'none'], [D, { ...b, r: [b.r[0], b.r[1] + TAU, b.r[2]] }, 'none']] },
+  bounce: { n: T('ارتداد'), i: 'bounce', f: (b, D) => { const n = Math.max(1, Math.round(D)), st = D / n, out = []; for (let i = 0; i < n; i++) { out.push([i * st, b, 'power2.in']); out.push([i * st + st / 2, { ...b, p: [b.p[0], b.p[1] + 1.8, b.p[2]], s: [b.s[0] * .92, b.s[1] * 1.1, b.s[2] * .92] }, 'power2.out']); } out.push([D, b, 'power2.in']); return out; } },
+  float: { n: T('طفو'), i: 'float', f: (b, D) => { const n = Math.max(1, Math.round(D / 2)), st = D / n, out = []; for (let i = 0; i < n; i++) { out.push([i * st, b, 'sine.inOut']); out.push([i * st + st / 2, { ...b, p: [b.p[0], b.p[1] + .5, b.p[2]], r: [b.r[0], b.r[1] + .3, b.r[2]] }, 'sine.inOut']); } out.push([D, b, 'sine.inOut']); return out; } },
+  pulse: { n: T('نبض'), i: 'pulse', f: (b, D) => { const n = Math.max(1, Math.round(D / 1.5)), st = D / n, out = []; for (let i = 0; i < n; i++) { out.push([i * st, b, 'power2.out']); out.push([i * st + st * .3, { ...b, s: b.s.map(v => v * 1.3) }, 'power3.out']); } out.push([D, b, 'elastic.out(1,0.3)']); return out; } },
+  wobble: { n: T('تمايل'), i: 'wobble', f: (b, D) => { const n = Math.max(2, Math.round(D * 2)), out = []; for (let i = 0; i <= n; i++) out.push([i / n * D, { ...b, r: [b.r[0], b.r[1], b.r[2] + (i % 2 ? .35 : -.35) * (i === 0 || i === n ? 0 : 1)] }, 'sine.inOut']); return out; } },
+  drop: { n: T('سقوط'), i: 'drop', f: (b, D) => [[0, { ...b, p: [b.p[0], b.p[1] + 6, b.p[2]] }, 'none'], [Math.min(D, 1.6), b, 'bounce.out']] },
+  popin: { n: T('ظهور'), i: 'pop', f: (b, D) => [[0, { ...b, s: [.001, .001, .001], r: [b.r[0], b.r[1] - Math.PI, b.r[2]] }, 'none'], [Math.min(D, 1.2), b, 'back.out(2)']] },
+  orbit: { n: T('مدار'), i: 'orbit', f: (b, D) => { const n = 24, R = 2.5, out = []; for (let i = 0; i <= n; i++) { const a = i / n * TAU; out.push([i / n * D, { ...b, p: [b.p[0] + Math.cos(a) * R - R, b.p[1], b.p[2] + Math.sin(a) * R], r: [b.r[0], b.r[1] - a, b.r[2]] }, 'none']); } return out; } },
+};
+const RIGP = {
+  walk: { n: T('مشي'), i: 'walk', f: D => { const out = [], n = Math.max(1, Math.round(D)), st = D / n; const A = (ph, m) => ({ thighL: [m * -.5, 0, 0], thighR: [m * .5, 0, 0], shinL: [ph ? .1 : .1, 0, 0], shinR: [.35, 0, 0], upperArmL: [m * .45, 0, .12], upperArmR: [m * -.45, 0, -.12], foreArmL: [-.35, 0, 0], foreArmR: [-.35, 0, 0], spine: [.05, m * .08, 0], footL: [0, 0, 0], footR: [0, 0, 0] });
+    const P = (ph) => ({ thighL: [0, 0, 0], thighR: [0, 0, 0], [ph ? 'shinL' : 'shinR']: [.7, 0, 0], [ph ? 'shinR' : 'shinL']: [.05, 0, 0], upperArmL: [0, 0, .12], upperArmR: [0, 0, -.12], foreArmL: [-.3, 0, 0], foreArmR: [-.3, 0, 0], spine: [.05, 0, 0] });
+    const mir = a => ({ ...a, thighL: a.thighR.map(v => v), thighR: a.thighL.map(v => v), shinL: a.shinR, shinR: a.shinL, upperArmL: [-a.upperArmL[0], 0, .12], upperArmR: [-a.upperArmR[0], 0, -.12], spine: [.05, -a.spine[1], 0] });
+    for (let i = 0; i < n; i++) { const t = i * st; out.push([t, A(0, 1), 0, 'sine.inOut'], [t + st * .25, P(0), .035, 'sine.inOut'], [t + st * .5, mir(A(0, 1)), 0, 'sine.inOut'], [t + st * .75, P(1), .035, 'sine.inOut']); } out.push([D, A(0, 1), 0, 'sine.inOut']); return { frames: out, move: 1.1 }; } },
+  wave: { n: T('تلويح'), i: 'wave', f: D => { const out = [[0, {}, 0, 'power2.out']], up = { upperArmR: [0, 0, -2.5], foreArmR: [0, 0, -.4], head: [0, -.2, .1] }; out.push([.5, up, 0, 'power2.out']); let t = .5, k = 0; while (t + .3 < D - .5) { t += .3; k++; out.push([t, { ...up, foreArmR: [0, 0, k % 2 ? .45 : -.45] }, 0, 'sine.inOut']); } out.push([D, {}, 0, 'power2.inOut']); return { frames: out }; } },
+  jump: { n: T('قفز'), i: 'jump', f: D => { const n = Math.max(1, Math.round(D / 1.6)), st = D / n, out = []; const crouch = { thighL: [-.9, 0, 0], thighR: [-.9, 0, 0], shinL: [1.5, 0, 0], shinR: [1.5, 0, 0], footL: [-.5, 0, 0], footR: [-.5, 0, 0], spine: [.35, 0, 0], upperArmL: [.8, 0, .2], upperArmR: [.8, 0, -.2] }; const air = { upperArmL: [0, 0, 2.6], upperArmR: [0, 0, -2.6], shinL: [.3, 0, 0], shinR: [.3, 0, 0], footL: [.3, 0, 0], footR: [.3, 0, 0], head: [-.2, 0, 0] };
+    for (let i = 0; i < n; i++) { const t = i * st; out.push([t, {}, 0, 'power2.inOut'], [t + st * .25, crouch, -.3, 'power2.out'], [t + st * .5, air, 1.1, 'power2.out'], [t + st * .72, crouch, -.3, 'power2.in'], [t + st * .9, {}, 0, 'back.out(2)']); } out.push([D, {}, 0, 'power1.inOut']); return { frames: out }; } },
+  dance: { n: T('رقص'), i: 'dance', f: D => { const n = Math.max(2, Math.round(D * 2)), out = []; for (let i = 0; i <= n; i++) { const m = i % 2 ? 1 : -1, end = i === 0 || i === n; out.push([i / n * D, end ? {} : { hips: [0, m * .35, m * .08], spine: [0, -m * .2, -m * .1], upperArmL: [0, 0, m > 0 ? 2.4 : .6], upperArmR: [0, 0, m > 0 ? -.6 : -2.4], foreArmL: [0, 0, m > 0 ? .5 : -.6], foreArmR: [0, 0, m > 0 ? .6 : -.5], thighL: [m > 0 ? -.4 : 0, 0, .1], thighR: [m > 0 ? 0 : -.4, 0, -.1], shinL: [m > 0 ? .7 : 0, 0, 0], shinR: [m > 0 ? 0 : .7, 0, 0], head: [0, m * .3, 0] }, end ? 0 : .06, 'back.out(1.7)']); } return { frames: out }; } },
+  idle: { n: T('تنفس / انتظار'), i: 'idle', f: D => { const n = Math.max(1, Math.round(D / 3)), st = D / n, out = []; for (let i = 0; i < n; i++) { out.push([i * st, {}, 0, 'sine.inOut'], [i * st + st / 2, { chest: [-.06, 0, 0], neck: [.05, .15, 0], head: [.05, .2, 0], upperArmL: [.05, 0, .18], upperArmR: [.05, 0, -.18], spine: [0, .05, 0] }, .01, 'sine.inOut']); } out.push([D, {}, 0, 'sine.inOut']); return { frames: out }; } },
+};
+function applyRigPreset(id, o = sel) {
+  if (!o || !o.userData.bones) { o = spawnUI({ kind: 'rig', type: 'hero' }); }
+  seek(0); const b0 = o.userData.keys?.length ? { p: o.userData.keys[0].p, r: o.userData.keys[0].r, s: o.userData.keys[0].s } : tf(o);
+  const { frames, move = 0 } = RIGP[id].f(state.dur); const dir = new V3(Math.sin(b0.r[1]), 0, Math.cos(b0.r[1]));
+  o.userData.keys = frames.map(([t, ov, dy, e]) => { const fwd = move * t; return { t: Math.round(t * 100) / 100, p: [fmt(b0.p[0] + dir.x * fwd), fmt(b0.p[1] + dy), fmt(b0.p[2] + dir.z * fwd)], r: [...b0.r], s: [...b0.s], e, b: { ...restPose(), ...JSON.parse(JSON.stringify(ov)) } }; });
+  commit(); buildTL(true); seek(0); setPlaying(true); toast(T('حركة شخصية: ') + RIGP[id].n + T(' على ') + o.name);
+}
+function applyPreset(id, o = sel) {
+  if (!o) { toast(T('حدد كائناً لتطبيق الحركة')); return; }
+  seek(0); const b = (o.userData.keys?.length ? { p: o.userData.keys[0].p, r: o.userData.keys[0].r, s: o.userData.keys[0].s } : tf(o));
+  o.userData.keys = PRESETS[id].f(b, state.dur).map(([t, v, e]) => ({ t: Math.round(t * 100) / 100, p: [...v.p], r: [...v.r], s: [...v.s], e }));
+  commit(); buildTL(true); seek(0); setPlaying(true); toast(T('حركة GSAP: ') + PRESETS[id].n + T(' على ') + o.name);
+}
+
+/* ───────────── UI: ribbon ───────────── */
+const P = t => () => addPrim(t), M = t => () => addModel(t), Lt = t => () => addLight(t);
+const RIBBON = {
+  home: { n: T('الرئيسية'), g: [
+    { n: T('المحفوظات'), it: [{ i: 'undo', l: T('تراجع'), a: undo, k: 'Ctrl+Z' }, { i: 'redo', l: T('إعادة'), a: redo, k: 'Ctrl+Y' }] },
+    { n: T('التحويل'), it: [{ i: 'select', l: T('تحديد'), a: () => setMode('select'), t: () => state.mode === 'select', k: 'Q' }, { i: 'move', l: T('تحريك'), a: () => setMode('translate'), t: () => state.mode === 'translate', k: 'W' }, { i: 'rotate', l: T('تدوير'), a: () => setMode('rotate'), t: () => state.mode === 'rotate', k: 'E' }, { i: 'scale', l: T('تحجيم'), a: () => setMode('scale'), t: () => state.mode === 'scale', k: 'R' }, { i: 'local', l: T('محاور محلية'), a: toggleSpace, t: () => state.space === 'local' }, { i: 'magnet', l: T('التقاط'), a: toggleSnap, t: () => state.snap, k: 'G' }] },
+    { n: T('تحرير'), it: [{ i: 'dup', l: T('نسخ مكرر'), a: duplicate, k: 'Ctrl+D' }, { i: 'trash', l: T('حذف'), a: delSel, k: 'Del' }, { i: 'eyeoff', l: T('إخفاء'), a: toggleHide, k: 'H' }, { i: 'eye', l: T('إظهار الكل'), a: showAll }] },
+    { n: T('التنقل'), it: [{ i: 'focus', l: T('تركيز'), a: focusSel, k: 'F' }, { i: 'home', l: T('العرض الرئيسي'), a: () => view('home'), k: '0' }, { i: 'turn', l: T('دوران الكاميرا'), a: turntable, t: () => controls.autoRotate }] },
+    { n: T('إنشاء سريع'), it: [{ i: 'box', l: T('مكعب'), a: P('box') }, { i: 'sphere', l: T('كرة'), a: P('sphere') }, { i: 'cyl', l: T('أسطوانة'), a: P('cylinder') }, { i: 'light', l: T('ضوء'), a: Lt('point') }] },
+  ] },
+  create: { n: T('إنشاء'), g: [
+    { n: T('أشكال أساسية'), it: ['box', 'sphere', 'cylinder', 'cone', 'torus', 'knot', 'capsule', 'plane', 'ring'].map(t => ({ i: PRIMS[t].i, l: PRIMS[t].n, a: P(t) })) },
+    { n: T('متعددات الوجوه'), it: ['pyramid', 'icosa', 'dodeca', 'octa', 'tetra', 'geo'].map(t => ({ i: PRIMS[t].i, l: PRIMS[t].n, a: P(t) })) },
+    { n: T('أشكال خاصة'), it: [...['tube', 'spring', 'star', 'heart'].map(t => ({ i: PRIMS[t].i, l: PRIMS[t].n, a: P(t) })), { i: 'text', l: T('نص 3D'), a: addText }] },
+    { n: T('الشخصيات'), it: Object.entries(RIGS).map(([k, v]) => ({ i: 'person', l: v.n, a: () => spawnUI({ kind: 'rig', type: k }) })) },
+    { n: T('الإضاءة'), it: Object.entries(LIGHTS).map(([k, v]) => ({ i: v.i, l: v.n, a: Lt(k) })) },
+  ] },
+  modify: { n: T('تعديل'), g: [
+    { n: T('مرآة'), it: [{ i: 'mirror', l: T('مرآة X'), a: () => mirror(0) }, { i: 'mirror', l: T('مرآة Y'), a: () => mirror(1) }, { i: 'mirror', l: T('مرآة Z'), a: () => mirror(2) }] },
+    { n: T('نسخ وتوزيع'), it: [{ i: 'dup', l: T('نسخ مكرر'), a: duplicate }, { i: 'array', l: T('مصفوفة خطية'), a: arrayTool }, { i: 'orbit', l: T('مصفوفة دائرية'), a: radialTool }, { i: 'scatter', l: T('بعثرة'), a: scatterTool }] },
+    { n: T('محاذاة'), it: [{ i: 'ground', l: T('إسقاط للأرض'), a: groundSel }, { i: 'center', l: T('توسيط'), a: centerSel }, { i: 'reset', l: T('إعادة ضبط'), a: resetSel }] },
+    { n: T('التحويل'), it: [{ i: 'move', l: T('تحريك'), a: () => setMode('translate'), t: () => state.mode === 'translate' }, { i: 'rotate', l: T('تدوير'), a: () => setMode('rotate'), t: () => state.mode === 'rotate' }, { i: 'scale', l: T('تحجيم'), a: () => setMode('scale'), t: () => state.mode === 'scale' }, { i: 'magnet', l: T('التقاط'), a: toggleSnap, t: () => state.snap }] },
+  ] },
+  sketch: { n: T('رسم ثنائي الأبعاد'), g: [
+    { n: T('الوضع'), it: [{ i: 'pen', l: T('وضع الرسم'), a: () => toggleSketch(), t: () => state.sk.on, k: 'S' }] },
+    { n: T('أدوات الرسم'), it: [{ i: 'poly', l: T('خط متعدد'), a: () => setSkTool('poly'), t: () => state.sk.on && state.sk.tool === 'poly' }, { i: 'rect', l: T('مستطيل'), a: () => setSkTool('rect'), t: () => state.sk.on && state.sk.tool === 'rect' }, { i: 'circle', l: T('دائرة'), a: () => setSkTool('circle'), t: () => state.sk.on && state.sk.tool === 'circle' }, { i: 'hex', l: T('مضلع'), a: () => setSkTool('ngon'), t: () => state.sk.on && state.sk.tool === 'ngon' }] },
+    { n: T('تحويل إلى 3D'), it: [{ i: 'extrude', l: T('بثق'), a: () => convertSketch('extrude') }, { i: 'lathe', l: T('دوران (خراطة)'), a: () => convertSketch('lathe') }] },
+    { n: T('إعدادات الرسم'), h: `<div class="rfield"><label>${T('عمق البثق')} <input type="number" id="skDepth" step="0.1" min="0.01" value="1"></label><label>${T('الشطف')} <input type="number" id="skBevel" step="0.01" min="0" value="0.04"></label><label>${T('أضلاع المضلع')} <input type="number" id="skSides" step="1" min="3" max="24" value="6"></label></div>` },
+  ] },
+  materials: { n: T('المواد'), g: [
+    { n: T('المكتبة'), it: [{ i: 'palette', l: T('الخامات'), a: () => libTab('mats'), t: () => state.lib === 'mats' }, { i: 'grid', l: T('التكسيات'), a: () => libTab('tex'), t: () => state.lib === 'tex' }] },
+    { n: T('خامات سريعة'), it: ['gold', 'chrome', 'glass', 'plastic', 'ceramic', 'neonblue', 'wood', 'marble'].map(id => ({ sw: swatch(MATMAP[id].m), l: MATMAP[id].n, a: () => applyMatPreset(id) })) },
+    { n: T('عرض الخامة'), it: [{ i: 'wire', l: T('سلكي'), a: () => matToggle('w') }, { i: 'flat', l: T('تظليل مسطح'), a: () => matToggle('f') }] },
+  ] },
+  animate: { n: T('التحريك'), g: [
+    { n: T('المفاتيح'), it: [{ i: 'akey', l: T('مفتاح تلقائي'), a: toggleAutoKey, t: () => state.autoKey, k: 'N' }, { i: 'key', l: T('إضافة مفتاح'), a: () => addKey(), k: 'K' }, { i: 'trash', l: T('حذف مفتاح'), a: delKey }, { i: 'reset', l: T('مسح المفاتيح'), a: clearKeys }] },
+    { n: T('التشغيل'), it: [{ i: 'play', l: T('تشغيل'), a: () => setPlaying(!state.playing), t: () => state.playing, k: 'Space' }, { i: 'stop', l: T('إيقاف'), a: () => { setPlaying(false); seek(0); } }] },
+    { n: T('تحريك الشخصيات'), it: [{ i: 'person', l: T('إضافة شخصية'), a: () => spawnUI({ kind: 'rig', type: 'hero' }) }, { i: 'bone', l: T('وضع الوضعية'), a: () => setPoseMode(!state.poseMode), t: () => state.poseMode, k: 'P' }, ...Object.entries(RIGP).map(([k, v]) => ({ i: v.i, l: v.n, a: () => applyRigPreset(k) }))] },
+    { n: T('حركات GSAP جاهزة'), it: Object.entries(PRESETS).map(([k, v]) => ({ i: v.i, l: v.n, a: () => applyPreset(k) })) },
+    { n: T('الكاميرا'), it: [{ i: 'turn', l: T('دوران المشهد'), a: turntable, t: () => controls.autoRotate }] },
+  ] },
+  view: { n: T('العرض'), g: [
+    { n: T('نمط التظليل'), it: [{ i: 'box', l: T('صلب'), a: () => setShade('solid'), t: () => state.shade === 'solid' }, { i: 'wire', l: T('سلكي'), a: () => setShade('wire'), t: () => state.shade === 'wire' }, { i: 'clay', l: T('طين'), a: () => setShade('clay'), t: () => state.shade === 'clay' }, { i: 'normals', l: T('نواظم'), a: () => setShade('normals'), t: () => state.shade === 'normals' }] },
+    { n: T('المشهد'), it: [{ i: 'grid', l: T('الشبكة'), a: () => toggle('grid'), t: () => state.grid }, { i: 'shadow', l: T('الظلال'), a: () => toggle('shadows'), t: () => state.shadows }, { i: 'env', l: T('انعكاسات البيئة'), a: () => toggle('env'), t: () => state.env }, { i: 'fog', l: T('ضباب'), a: () => toggle('fog'), t: () => state.fog }] },
+    { n: T('الخلفية'), h: `<div class="rfield"><label>${T('النوع')} <select id="bgMode"><option value="gradient">${T('تدرّج')}</option><option value="color">${T('لون ثابت')}</option><option value="env">${T('استوديو')}</option></select></label><label>${T('اللون')} <input type="color" id="bgColor" value="#2a2f37"></label></div>` },
+    { n: T('المساقط'), it: [{ i: 'home', l: T('منظور'), a: () => view('home') }, { i: 'frame', l: T('أعلى'), a: () => view('top') }, { i: 'frame', l: T('أمام'), a: () => view('front') }, { i: 'frame', l: T('يمين'), a: () => view('right') }] },
+    { n: T('اللوحات'), it: [{ i: 'grid', l: T('المكتبة'), a: () => panel('lib'), t: () => !$('#app').classList.contains('no-lib') }, { i: 'props', l: T('الخصائص'), a: () => panel('side'), t: () => !$('#app').classList.contains('no-side') }, { i: 'timeline', l: T('الخط الزمني'), a: () => panel('tl') }] },
+    { n: T('إخراج'), it: [{ i: 'camera', l: T('لقطة PNG'), a: screenshot }, { i: 'full', l: T('ملء الشاشة'), a: fullscreen }] },
+  ] },
+};
+function swatch(m) { const c = m.tx ? `url(${getCanvas(m.tx).toDataURL()}) center/cover` : m.ei ? `radial-gradient(circle at 40% 35%, #fff, ${m.e} 45%, ${m.c})` : m.m > .5 ? `radial-gradient(circle at 35% 30%, #fff 0%, ${m.c} 35%, #333 100%)` : m.tr ? `radial-gradient(circle at 35% 30%, #fff 0%, ${m.c}55 40%, #4a6a8a 100%)` : `radial-gradient(circle at 35% 30%, #ffffffaa 0%, ${m.c} 40%, #222 120%)`; return c; }
+function matToggle(k) { if (!need()) return; if (!sel.userData.mat) { if (sel.userData.rec.kind === 'light' || sel.userData.rec.kind === 'sketch') return; sel.userData.mat = defMat('#cccccc'); } sel.userData.mat[k] = !sel.userData.mat[k]; applyMat(sel); renderInspector(); commit(); }
+function renderTabs() {
+  $('#tabs').innerHTML = Object.entries(RIBBON).map(([k, v]) => `<button class="tab ${k === state.tab ? 'on' : ''}" data-tab="${k}">${v.n}</button>`).join('');
+}
+function renderRibbon() {
+  const T = RIBBON[state.tab];
+  $('#ribbon').innerHTML = T.g.map((g, gi) => `<div class="rg"><div class="rg-items">${g.h || g.it.map((b, bi) => `<button class="rb" data-g="${gi}" data-b="${bi}" title="${esc(b.l)}${b.k ? ' (' + b.k + ')' : ''}">${b.sw ? `<i class="sw" style="background:${b.sw}"></i>` : ic(b.i)}<span>${b.l}</span></button>`).join('')}</div><div class="rg-name">${g.n}</div></div>`).join('');
+  refreshRibbon();
+  const sd = $('#skDepth'); if (sd) { sd.value = state.sk.depth; $('#skBevel').value = state.sk.bevel; $('#skSides').value = state.sk.sides; }
+  const bm = $('#bgMode'); if (bm) { bm.value = state.bg; $('#bgColor').value = state.bgColor; }
+  gsap.fromTo('#ribbon .rb, #ribbon .rfield', { y: -6, opacity: 0 }, { y: 0, opacity: 1, duration: .28, stagger: .012, ease: 'power2.out' });
+}
+function refreshRibbon() {
+  const T = RIBBON[state.tab]; if (!T) return;
+  $$('#ribbon .rb').forEach(el => { const b = T.g[el.dataset.g].it[el.dataset.b]; el.classList.toggle('on', !!(b.t && b.t())); });
+}
+$('#tabs').addEventListener('click', e => { const t = e.target.closest('.tab'); if (!t) return; state.tab = t.dataset.tab; renderTabs(); renderRibbon(); });
+$('#ribbon').addEventListener('click', e => { const el = e.target.closest('.rb'); if (!el) return; RIBBON[state.tab].g[el.dataset.g].it[el.dataset.b].a(); refreshRibbon(); });
+$('#ribbon').addEventListener('change', e => {
+  const id = e.target.id, v = e.target.value;
+  if (id === 'skDepth') state.sk.depth = Math.max(.01, +v || 1);
+  if (id === 'skBevel') state.sk.bevel = Math.max(0, +v || 0);
+  if (id === 'skSides') { state.sk.sides = clamp(+v | 0, 3, 24); if (state.sk.on) setSkTool(state.sk.tool); }
+  if (id === 'bgMode') { state.bg = v; applyScene(); autosave(); }
+  if (id === 'bgColor') { state.bgColor = v; vpWrap.style.setProperty('--vpbg', v); applyScene(); autosave(); }
+});
+
+/* ───────────── UI: library ───────────── */
+const THUMB = {};
+const LIBTABS = { models: T('نماذج'), prims: T('أشكال'), mats: T('خامات'), tex: T('تكسيات'), lights: T('إضاءة') };
+function libItems() {
+  switch (state.lib) {
+    case 'models': return [...Object.entries(RIGS).map(([k, v]) => ({ t: 'rig', id: k, n: v.n, img: THUMB['rig:' + k] })), ...Object.entries(MODELS).map(([k, v]) => ({ t: 'model', id: k, n: v.n, img: THUMB['model:' + k] }))];
+    case 'prims': return Object.entries(PRIMS).map(([k, v]) => ({ t: 'prim', id: k, n: v.n, img: THUMB['prim:' + k] }));
+    case 'mats': return MATS.map(m => ({ t: 'mat', id: m.id, n: m.n, img: THUMB['mat:' + m.id] }));
+    case 'tex': return TEXLIST.map(x => ({ t: 'tex', id: x.id, n: x.n, img: THUMB['tex:' + x.id] }));
+    case 'lights': return Object.entries(LIGHTS).map(([k, v]) => ({ t: 'light', id: k, n: v.n, icon: v.i }));
+  }
+}
+const LIBHINT = { models: T('انقر للإضافة أو اسحب إلى موضع في المشهد'), prims: T('أشكال قابلة للتعديل بخامة كاملة'), mats: T('انقر لتطبيقها على المحدد أو اسحبها فوق أي كائن'), tex: T('تكسيات إجرائية قابلة للتكرار بلا ملفات خارجية'), lights: T('أضواء قابلة للتحريك والتحكم بالشدة واللون') };
+function libTab(t) { state.lib = t; renderLib(); if (innerWidth <= 900) $('#app').classList.add('m-lib'); else $('#app').classList.remove('no-lib'); refreshRibbon(); }
+function renderLib() {
+  $('#libTabs').innerHTML = Object.entries(LIBTABS).map(([k, v]) => `<button class="lt ${k === state.lib ? 'on' : ''}" data-l="${k}">${v}</button>`).join('');
+  const q = $('#libSearch').value.trim();
+  const items = libItems().filter(x => !q || x.n.includes(q) || x.id.includes(q.toLowerCase()));
+  $('#libGrid').innerHTML = `<div class="libhint">${LIBHINT[state.lib]}</div>` + items.map(x => `<div class="li" draggable="true" data-t="${x.t}" data-id="${x.id}" title="${esc(x.n)}">${x.img ? `<img src="${x.img}" alt="">` : `<div class="lic">${ic(x.icon || 'box')}</div>`}<span>${x.n}</span></div>`).join('');
+  gsap.fromTo('#libGrid .li', { opacity: 0, y: 10, scale: .94 }, { opacity: 1, y: 0, scale: 1, duration: .35, stagger: .018, ease: 'power2.out' });
+}
+function libUse(t, id, pos, target) {
+  if (t === 'rig') spawnUI({ kind: 'rig', type: id }, pos); else if (t === 'model') addModel(id, pos); else if (t === 'prim') addPrim(id, pos); else if (t === 'light') addLight(id, pos);
+  else if (t === 'mat') applyMatPreset(id, target || sel); else if (t === 'tex') applyTexture(id, target || sel);
+}
+$('#libTabs').addEventListener('click', e => { const b = e.target.closest('.lt'); if (b) { state.lib = b.dataset.l; renderLib(); refreshRibbon(); } });
+$('#libSearch').addEventListener('input', renderLib);
+$('#libGrid').addEventListener('click', e => { const it = e.target.closest('.li'); if (it) libUse(it.dataset.t, it.dataset.id); });
+$('#libGrid').addEventListener('dragstart', e => { const it = e.target.closest('.li'); if (!it) return; e.dataTransfer.setData('text/plain', JSON.stringify({ t: it.dataset.t, id: it.dataset.id })); e.dataTransfer.effectAllowed = 'copy'; });
+vpWrap.addEventListener('dragover', e => { e.preventDefault(); $('#dropFx').style.display = 'block'; });
+vpWrap.addEventListener('dragleave', e => { if (e.target === vpWrap || !vpWrap.contains(e.relatedTarget)) $('#dropFx').style.display = 'none'; });
+vpWrap.addEventListener('drop', e => {
+  e.preventDefault(); $('#dropFx').style.display = 'none';
+  if (e.dataTransfer.files?.length) { handleFile(e.dataTransfer.files[0]); return; }
+  let d; try { d = JSON.parse(e.dataTransfer.getData('text/plain')); } catch (_) { return; }
+  if (d.t === 'mat' || d.t === 'tex') { const o = pick(e); libUse(d.t, d.id, null, o || sel); }
+  else { const p = groundPt(e); libUse(d.t, d.id, p ? snapP(p) : null); }
+});
+
+/* ───────────── Thumbnails (rendered live with three.js) ───────────── */
+function makeThumbs() {
+  const tr = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); tr.setPixelRatio(1); tr.setSize(112, 112);
+  tr.toneMapping = THREE.ACESFilmicToneMapping; tr.outputColorSpace = THREE.SRGBColorSpace;
+  const ts = new THREE.Scene(); const pm = new THREE.PMREMGenerator(tr); ts.environment = pm.fromScene(new RoomEnvironment(tr), .04).texture;
+  ts.add(new THREE.HemisphereLight(0xffffff, 0x445566, .9)); const dl = new THREE.DirectionalLight(0xffffff, 2.2); dl.position.set(3, 5, 4); ts.add(dl);
+  const cam = new THREE.PerspectiveCamera(32, 1, .01, 100);
+  const shot = obj => {
+    ts.add(obj); obj.updateMatrixWorld(true); const b = new THREE.Box3().setFromObject(obj); const c = b.getCenter(new V3()); const r = b.getSize(new V3()).length() * .5;
+    cam.position.copy(c).add(new V3(1, .7, 1.3).normalize().multiplyScalar(r / Math.sin(16 * D2R) * .92)); cam.lookAt(c);
+    tr.clear(); tr.render(ts, cam); const url = tr.domElement.toDataURL('image/png'); ts.remove(obj); disposeObj(obj); return url;
+  };
+  for (const k in PRIMS) THUMB['prim:' + k] = shot(build({ kind: 'prim', type: k }, { ...defMat('#9fb6d0'), f: !!PRIMS[k].flat }));
+  for (const k in MODELS) THUMB['model:' + k] = shot(build({ kind: 'model', type: k }, null));
+  for (const k in RIGS) { const o = build({ kind: 'rig', type: k }, null); o.traverse(c => { if (c.userData.joint) c.visible = false; }); THUMB['rig:' + k] = shot(o); }
+  for (const m of MATS) THUMB['mat:' + m.id] = shot(build({ kind: 'prim', type: 'sphere' }, { ...defMat(), ...m.m }));
+  for (const t of TEXLIST) { const c = document.createElement('canvas'); c.width = c.height = 96; c.getContext('2d').drawImage(getCanvas(t.id), 0, 0, 96, 96); THUMB['tex:' + t.id] = c.toDataURL(); }
+  pm.dispose(); tr.dispose(); tr.forceContextLoss();
+  palI = 0;
+}
+
+/* ───────────── UI: outliner ───────────── */
+function renderOutliner() {
+  const q = $('#olSearch').value.trim();
+  const list = objects.filter(o => !q || o.name.includes(q));
+  $('#olCount').textContent = objects.length + T(' كائن');
+  $('#olList').innerHTML = list.map(o => `<div class="ol ${o === sel ? 'on' : ''} ${o.visible ? '' : 'hid'}" data-id="${o.userData.id}">${ic(kindIcon(o.userData.rec))}<span class="nm">${esc(o.name)}</span>${hasKeys(o) ? T('<span class="kf" title="متحرك">◆</span>') : ''}<button class="eye" data-eye="1" title="${T('إظهار/إخفاء')}">${ic(o.visible ? 'eye' : 'eyeoff')}</button></div>`).join('') || `<div class="empty"><p>${T('المشهد فارغ')}</p><small>${T('أضف شكلاً من شريط «إنشاء» أو من المكتبة')}</small></div>`;
+}
+const byId = id => objects.find(o => o.userData.id === id);
+$('#olSearch').addEventListener('input', renderOutliner);
+$('#olList').addEventListener('click', e => {
+  const r = e.target.closest('.ol'); if (!r) return; const o = byId(r.dataset.id); if (!o) return;
+  if (e.target.closest('[data-eye]')) { o.visible = !o.visible; commit(); return; }
+  select(o);
+});
+$('#olList').addEventListener('dblclick', e => {
+  const r = e.target.closest('.ol'); if (!r || e.target.closest('[data-eye]')) return; const o = byId(r.dataset.id); const nm = r.querySelector('.nm');
+  const inp = document.createElement('input'); inp.value = o.name; nm.replaceWith(inp); inp.focus(); inp.select();
+  const done = ok => { if (ok && inp.value.trim()) { o.name = inp.value.trim(); commit(); select(o); } else renderOutliner(); };
+  inp.addEventListener('keydown', ev => { if (ev.key === 'Enter') done(true); if (ev.key === 'Escape') done(false); ev.stopPropagation(); });
+  inp.addEventListener('blur', () => done(true));
+});
+
+/* ───────────── UI: inspector ───────────── */
+const closedSecs = new Set();
+const sec = (id, t, body) => `<div class="sec ${closedSecs.has(id) ? 'closed' : ''}" data-sec="${id}"><h4>${t}</h4><div class="sb">${body}</div></div>`;
+const vec = (l, k, vals, step) => `<div class="vec"><span class="vl">${l}</span>${['X', 'Y', 'Z'].map((a, i) => `<label class="scrub ax${i}" data-for="${k}${i}">${a}</label><input type="number" step="${step}" data-k="${k}${i}" value="${fmt(vals[i])}">`).join('')}</div>`;
+const rng = (l, k, v, mn, mx, st) => `<div class="row"><label>${l}</label><input type="range" min="${mn}" max="${mx}" step="${st}" data-k="${k}" value="${v}"><output>${(+v).toFixed(2)}</output></div>`;
+const col = (l, k, v) => `<div class="row"><label>${l}</label><input type="color" data-k="${k}" value="${v}"></div>`;
+const num = (l, k, v, st) => `<div class="row"><label>${l}</label><input type="number" step="${st}" data-k="${k}" value="${v}"></div>`;
+function renderInspector() {
+  const el = $('#props'), o = sel;
+  if (!o) {
+    el.innerHTML = `<div class="empty">${ic('select')}<p>${T('لا يوجد تحديد')}</p><small>${T('انقر على كائن في المشهد أو في المستكشف، أو اسحب نموذجاً من المكتبة.')}</small></div>` +
+      sec('scene', T('المشهد'), `<div class="row"><label>${T('اسم المشروع')}</label><input type="text" data-k="pname" value="${esc(state.name)}"></div><p class="hint">${objects.length} ${T('كائن')} · ${objects.filter(hasKeys).length} ${T('متحرك')}</p><div class="btns"><button class="btn" data-act="focusall">${T('عرض الكل')}</button><button class="btn" data-act="tour">${T('جولة الكاميرا')}</button></div>`);
+    return;
+  }
+  const r = o.userData.rec; let h = '';
+  h += sec('obj', T('الكائن'), `<div class="row"><label>${T('الاسم')}</label><input type="text" data-k="name" value="${esc(o.name)}"></div><div class="row"><label>${T('النوع')}</label><span class="tag">${kindName(r)}</span></div><div class="chk"><label><input type="checkbox" data-k="vis" ${o.visible ? 'checked' : ''}> ${T('مرئي')}</label>${r.kind !== 'light' && r.kind !== 'sketch' ? `<label><input type="checkbox" data-k="cs" ${o.userData.cs !== false ? 'checked' : ''}> ${T('يلقي ظلاً')}</label>` : ''}</div>`);
+  h += sec('tf', T('التحويل'), vec(T('الموضع'), 'p', o.position.toArray(), .1) + vec(T('الدوران°'), 'r', [o.rotation.x / D2R, o.rotation.y / D2R, o.rotation.z / D2R], 1) + vec(T('الحجم'), 's', o.scale.toArray(), .05) + `<div class="chk"><label><input type="checkbox" data-k="ulock" ${state.uLock ? 'checked' : ''}> ${T('تحجيم موحّد')}</label><span class="hint">${T('اسحب حرف المحور لتغيير القيمة')}</span></div>`);
+  if (r.kind === 'light') {
+    const mx = { point: 200, spot: 400, dir: 10, hemi: 5 }[r.type];
+    h += sec('light', T('الإضاءة'), col(T('اللون'), 'l.color', r.color) + rng(T('الشدة'), 'l.int', r.int, 0, mx, mx / 200) + (r.type === 'hemi' ? col(T('لون الأرض'), 'l.ground', r.ground) : '') + (r.type === 'point' || r.type === 'spot' ? rng(T('المدى (0=∞)'), 'l.dist', r.dist || 0, 0, 50, .5) : '') + (r.type === 'spot' ? rng(T('الزاوية°'), 'l.angle', r.angle, 5, 85, 1) + rng(T('النعومة'), 'l.pen', r.pen, 0, 1, .01) : '') + (r.type !== 'hemi' ? `<div class="chk"><label><input type="checkbox" data-k="l.cs" ${r.cs ? 'checked' : ''}> ${T('يلقي ظلالاً')}</label></div>` : ''));
+  }
+  if (r.kind === 'rig') {
+    const bone = o.userData.bones[state.bone] || o.userData.bones.chest; const bd = [bone.rotation.x, bone.rotation.y, bone.rotation.z].map(v => v / D2R);
+    h += sec('rig', T('الهيكل العظمي (Rig)'), `<div class="btns"><button class="btn ${state.poseMode ? 'pri' : ''}" data-act="pose">${state.poseMode ? T('✓ وضع الوضعية مفعّل') : T('وضع الوضعية (P)')}</button><button class="btn" data-act="resetpose">${T('إعادة الوضعية')}</button></div>
+      <div class="row"><label>${T('العظمة')}</label><select data-k="bone">${Object.entries(BONEN).map(([k, v]) => `<option value="${k}" ${k === bone.name ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
+      ${['X', 'Y', 'Z'].map((a, i) => rng(T('دوران ') + a + '°', 'b' + i, fmt(bd[i]), -180, 180, 1)).join('')}
+      <div class="row"><label>${T('حركة شخصية')}</label><select data-k="rigpreset"><option value="">${T('اختر')}…</option>${Object.entries(RIGP).map(([k, v]) => `<option value="${k}">${v.n}</option>`).join('')}</select></div>
+      <p class="hint">${T('في وضع الوضعية انقر أي مفصل في المشهد ودوّره بالمقبض. فعّل «مفتاح تلقائي» ثم حرّك المؤشر الزمني وغيّر الوضعية لتسجيل الحركة مثل 3ds Max.')}</p>`);
+  }
+  if (r.kind === 'extrude') h += sec('ex', T('البثق'), num(T('العمق'), 'x.depth', r.depth, .05) + num(T('الشطف'), 'x.bevel', r.bevel, .01));
+  if (r.kind === 'lathe') h += sec('la', T('الدوران'), num(T('المقاطع'), 'x.seg', r.seg || 64, 1));
+  if (r.kind === 'text') h += sec('tx', T('النص'), `<div class="row"><label>${T('النص')}</label><input type="text" data-k="x.text" value="${esc(r.text)}"></div>` + num(T('الحجم'), 'x.size', r.size, .05) + num(T('العمق'), 'x.depth', r.depth, .05));
+  if (r.kind === 'sketch') h += sec('sk', T('رسم ثنائي الأبعاد'), `<p class="hint">${r.pts.length} ${T('نقطة')} · ${r.closed ? T('شكل مغلق') : T('خط مفتوح')}</p><div class="row"><label>${T('عمق البثق')}</label><input type="number" step="0.1" data-k="sk.depth" value="${state.sk.depth}"></div><div class="btns"><button class="btn pri" data-act="extrude">${T('بثق إلى')} 3D</button><button class="btn" data-act="lathe">${T('دوران (خراطة)')}</button></div><p class="hint">${T('في الخراطة: الحافة اليسرى للرسم هي محور الدوران.')}</p>`);
+  if (r.kind !== 'light' && r.kind !== 'sketch') {
+    const m = o.userData.mat;
+    if (!m) h += sec('mat', T('المادة'), `<p class="hint">${T('يستخدم هذا النموذج خاماته الأصلية المتعددة.')}</p><div class="btns"><button class="btn" data-act="ovmat">${T('تخصيص خامة موحّدة')}</button></div><p class="hint">${T('أو اسحب خامة من المكتبة فوقه.')}</p>`);
+    else h += sec('mat', T('المادة'), col(T('اللون'), 'm.c', m.c) + rng(T('معدني'), 'm.m', m.m, 0, 1, .01) + rng(T('الخشونة'), 'm.r', m.r, 0, 1, .01) + rng(T('العتامة'), 'm.o', m.o, 0, 1, .01) + rng(T('نفاذية (زجاج)'), 'm.tr', m.tr || 0, 0, 1, .01) + rng(T('طلاء لامع'), 'm.cc', m.cc || 0, 0, 1, .01) + col(T('الانبعاث'), 'm.e', m.e) + rng(T('شدة الانبعاث'), 'm.ei', m.ei, 0, 6, .05) +
+      `<div class="row"><label>${T('التكسية')}</label><select data-k="m.tx"><option value="">${T('بدون')}</option>${TEXLIST.map(t => `<option value="${t.id}" ${m.tx === t.id ? 'selected' : ''}>${t.n}</option>`).join('')}</select></div>` + rng(T('تكرار التكسية'), 'm.rp', m.rp, .25, 10, .25) +
+      `<div class="chk"><label><input type="checkbox" data-k="m.w" ${m.w ? 'checked' : ''}> ${T('سلكي')}</label><label><input type="checkbox" data-k="m.f" ${m.f ? 'checked' : ''}> ${T('تظليل مسطح')}</label></div>` + (r.kind === 'model' || r.kind === 'import' ? `<div class="btns"><button class="btn" data-act="origmat">${T('استعادة الخامات الأصلية')}</button></div>` : ''));
+  }
+  const kc = (o.userData.keys || []).length;
+  h += sec('anim', T('التحريك'), `<p class="hint">${kc ? kc + T(' مفاتيح على الخط الزمني') : T('لا توجد مفاتيح. أضف مفتاحاً أو طبّق حركة جاهزة.')}</p><div class="btns"><button class="btn pri" data-act="key">◆ ${T('مفتاح عند')} ${state.time.toFixed(2)}${T('ث')}</button>${kc ? T('<button class="btn" data-act="clearkeys">مسح</button>') : ''}</div><div class="row"><label>${T('حركة جاهزة')}</label><select data-k="preset"><option value="">${T('اختر')}…</option>${Object.entries(PRESETS).map(([k, v]) => `<option value="${k}">${v.n}</option>`).join('')}</select></div>`);
+  el.innerHTML = h;
+}
+function syncInspector() {
+  if (!sel) return; const el = $('#props'); const vals = { p: sel.position.toArray(), r: [sel.rotation.x / D2R, sel.rotation.y / D2R, sel.rotation.z / D2R], s: sel.scale.toArray() };
+  for (const k of ['p', 'r', 's']) for (let i = 0; i < 3; i++) { const inp = el.querySelector(`[data-k="${k}${i}"]`); if (inp && document.activeElement !== inp) inp.value = fmt(vals[k][i]); }
+  const bone = sel.userData.bones?.[state.bone]; if (bone) for (let i = 0; i < 3; i++) { const inp = el.querySelector(`[data-k="b${i}"]`); if (inp && document.activeElement !== inp) { const v = bone.rotation['xyz'[i]] / D2R; inp.value = v; if (inp.nextElementSibling) inp.nextElementSibling.textContent = v.toFixed(2); } }
+  selBox.setFromObject(sel);
+}
+function onField(e, fin) {
+  const t = e.target, k = t.dataset.k; if (!k) return;
+  const v = t.type === 'checkbox' ? t.checked : (t.type === 'number' || t.type === 'range') ? parseFloat(t.value) : t.value;
+  if ((t.type === 'number' || t.type === 'range') && isNaN(v)) return;
+  if (t.type === 'range' && t.nextElementSibling) t.nextElementSibling.textContent = v.toFixed(2);
+  if (k === 'pname') { state.name = v || T('مشروع بلا عنوان'); $('#docName').textContent = state.name; if (fin) autosave(); return; }
+  const o = sel; if (!o) return; const r = o.userData.rec;
+  if (k === 'name') { o.name = v; $('#stSel').textContent = v; if (fin) commit(); return; }
+  if (/^[prs][012]$/.test(k)) {
+    const i = +k[1], ax = 'xyz'[i];
+    if (k[0] === 'p') o.position[ax] = v; else if (k[0] === 'r') o.rotation[ax] = v * D2R;
+    else if (state.uLock) { const old = o.scale[ax] || 1; const f = v / old; if (isFinite(f) && f !== 0) { o.scale.multiplyScalar(f); o.scale[ax] = v; } syncInspector(); }
+    else o.scale[ax] = v;
+    selBox.setFromObject(o); if (fin) commitEdit(o); return;
+  }
+  if (/^b[012]$/.test(k)) { const bone = o.userData.bones?.[state.bone]; if (!bone) return; bone.rotation['xyz'[+k[1]]] = v * D2R; if (fin) commitEdit(o); return; }
+  if (k === 'bone') { state.bone = v; select(o); return; }
+  if (k === 'rigpreset') { if (v) applyRigPreset(v, o); return; }
+  if (k === 'ulock') { state.uLock = v; return; }
+  if (k === 'vis') { o.visible = v; commit(); return; }
+  if (k === 'cs') { o.userData.cs = v; setShadow(o); commit(); return; }
+  if (k === 'preset') { if (v) applyPreset(v); return; }
+  if (k === 'sk.depth') { state.sk.depth = Math.max(.01, v); return; }
+  if (k.startsWith('m.')) { if (!o.userData.mat) o.userData.mat = defMat(); o.userData.mat[k.slice(2)] = v; applyMat(o); if (fin) commit(); return; }
+  if (k.startsWith('l.')) {
+    const f = k.slice(2); r[f] = v; const L = o.userData.light;
+    if (f === 'color') { L.color.set(v); o.userData.bulb.material.color.set(v); o.userData.arrow?.setColor(new THREE.Color(v)); }
+    if (f === 'int') L.intensity = v; if (f === 'dist') L.distance = v; if (f === 'angle') L.angle = v * D2R; if (f === 'pen') L.penumbra = v;
+    if (f === 'ground') L.groundColor?.set(v); if (f === 'cs') L.castShadow = v;
+    if (fin) commit(); return;
+  }
+  if (k.startsWith('x.')) { if (!fin) return; r[k.slice(2)] = t.type === 'number' ? Math.max(k === 'x.bevel' ? 0 : .01, v) : v; rebuildObj(o); commit(); return; }
+}
+$('#props').addEventListener('input', e => onField(e, false));
+$('#props').addEventListener('change', e => onField(e, true));
+$('#props').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches('input')) e.target.blur(); e.stopPropagation(); });
+$('#props').addEventListener('click', e => {
+  const h = e.target.closest('.sec h4'); if (h) { const s = h.parentElement; s.classList.toggle('closed'); s.classList.contains('closed') ? closedSecs.add(s.dataset.sec) : closedSecs.delete(s.dataset.sec); return; }
+  const b = e.target.closest('[data-act]'); if (!b) return; const a = b.dataset.act;
+  if (a === 'extrude' || a === 'lathe') convertSketch(a);
+  if (a === 'key') addKey(); if (a === 'clearkeys') clearKeys();
+  if (a === 'pose') setPoseMode(!state.poseMode); if (a === 'resetpose') resetPose();
+  if (a === 'ovmat') { sel.userData.mat = defMat('#cccccc'); applyMat(sel); renderInspector(); commit(); }
+  if (a === 'origmat') { sel.userData.mat = null; rebuildObj(sel); commit(); }
+  if (a === 'focusall') focusSel();
+  if (a === 'tour') cameraTour();
+});
+let scrub = null;
+$('#props').addEventListener('pointerdown', e => {
+  const l = e.target.closest('.scrub'); if (!l) return; const inp = $(`#props [data-k="${l.dataset.for}"]`); if (!inp) return;
+  scrub = { inp, x: e.clientX, v: parseFloat(inp.value) || 0, st: parseFloat(inp.step) || .1 }; l.setPointerCapture(e.pointerId); e.preventDefault();
+});
+$('#props').addEventListener('pointermove', e => { if (!scrub) return; scrub.inp.value = fmt(scrub.v + (e.clientX - scrub.x) * scrub.st * (e.shiftKey ? .1 : 1)); scrub.inp.dispatchEvent(new Event('input', { bubbles: true })); });
+$('#props').addEventListener('pointerup', () => { if (!scrub) return; scrub.inp.dispatchEvent(new Event('change', { bubbles: true })); scrub = null; });
+function cameraTour() {
+  const tl = gsap.timeline(); const t = controls.target.clone();
+  [[12, 5, 0], [0, 9, 12], [-12, 4, 0], [0, 14, .01], [9, 6, 11]].forEach(p => tl.to(camera.position, { x: t.x + p[0], y: p[1], z: t.z + p[2], duration: 1.4, ease: 'sine.inOut' }));
+  toast(T('جولة الكاميرا بـ GSAP'));
+}
+
+/* ───────────── UI: timeline tracks ───────────── */
+function renderTracks() {
+  const D = state.dur, st = D <= 12 ? .5 : 1;
+  let ticks = ''; for (let t = 0; t <= D + 1e-6; t += st) { const maj = Math.abs(t - Math.round(t)) < 1e-6; ticks += `<div class="tick ${maj ? 'maj' : ''}" style="left:${t / D * 100}%">${maj ? `<i>${Math.round(t)}s</i>` : ''}</div>`; }
+  const rows = objects.length ? objects : [];
+  const names = rows.map(o => `<div class="tlnm ${o === sel ? 'on' : ''}" data-id="${o.userData.id}">${esc(o.name)}${hasKeys(o) ? ' <span style="color:var(--key)">◆</span>' : ''}</div>`).join('');
+  const tracks = rows.map(o => { const ks = o.userData.keys || []; const bar = ks.length > 1 ? `<div class="bar" style="left:${ks[0].t / D * 100}%;width:${(ks[ks.length - 1].t - ks[0].t) / D * 100}%"></div>` : ''; return `<div class="tltr ${o === sel ? 'on' : ''}" data-id="${o.userData.id}">${bar}${ks.map((k, i) => `<div class="kd" data-id="${o.userData.id}" data-i="${i}" style="left:${k.t / D * 100}%" title="${k.t.toFixed(2)}${T('ث')} · ${k.e}"></div>`).join('')}</div>`; }).join('');
+  $('#tlBody').innerHTML = `<div class="tln"><div class="rh">${T('الكائنات / الوقت')}</div>${names}</div><div id="tlArea"><div class="tlr">${ticks}</div>${tracks}<div id="ph"></div></div>`;
+  updatePH();
+}
+function updatePH() {
+  const ph = $('#ph'); if (ph) ph.style.left = (state.time / state.dur * 100) + '%';
+  $('#tlTime').textContent = state.time.toFixed(2) + ' / ' + state.dur.toFixed(2) + ' s';
+}
+let tlDrag = null;
+$('#tlBody').addEventListener('pointerdown', e => {
+  const nm = e.target.closest('.tlnm'); if (nm) { select(byId(nm.dataset.id)); return; }
+  const area = $('#tlArea'); if (!area || !area.contains(e.target)) return;
+  const rect = area.getBoundingClientRect(); const tAt = x => clamp((x - rect.left) / rect.width, 0, 1) * state.dur;
+  const kd = e.target.closest('.kd');
+  if (kd) { const o = byId(kd.dataset.id); const k = o.userData.keys[+kd.dataset.i]; if (sel !== o) select(o); tlDrag = { k, o, el: $(`.kd[data-id="${kd.dataset.id}"][data-i="${kd.dataset.i}"]`), tAt, moved: false }; seek(k.t); }
+  else { tlDrag = { scrub: true, tAt }; if (state.playing) setPlaying(false); seek(tAt(e.clientX)); }
+  e.preventDefault(); $('#tlBody').setPointerCapture(e.pointerId);
+});
+$('#tlBody').addEventListener('pointermove', e => {
+  if (!tlDrag) return; const t = tlDrag.tAt(e.clientX);
+  if (tlDrag.scrub) seek(t);
+  else { tlDrag.k.t = Math.round(t * 20) / 20; tlDrag.moved = true; if (tlDrag.el) tlDrag.el.style.left = (tlDrag.k.t / state.dur * 100) + '%'; state.time = tlDrag.k.t; updatePH(); }
+});
+$('#tlBody').addEventListener('pointerup', () => { if (tlDrag && tlDrag.k && tlDrag.moved) { tlDrag.o.userData.keys.sort((a, b) => a.t - b.t); commit(); buildTL(true); } tlDrag = null; });
+$('#tlBody').addEventListener('dblclick', e => { const kd = e.target.closest('.kd'); if (!kd) return; const o = byId(kd.dataset.id); o.userData.keys.splice(+kd.dataset.i, 1); commit(); toast(T('حُذف المفتاح')); });
+$('#tlPlay').onclick = () => setPlaying(!state.playing);
+$('#tlStop').onclick = () => { setPlaying(false); seek(0); };
+$('#tlStart').onclick = () => seek(0);
+$('#tlEnd').onclick = () => seek(state.dur);
+$('#tlKey').onclick = () => addKey();
+$('#tlAuto').onclick = toggleAutoKey;
+$('#tlDelKey').onclick = delKey;
+$('#tlDur').onchange = e => { state.dur = clamp(+e.target.value || 6, .5, 600); state.time = Math.min(state.time, state.dur); buildTL(true); renderTracks(); autosave(); };
+$('#tlLoop').onchange = e => { state.loop = e.target.checked; buildTL(true); };
+$('#tlEase').innerHTML = EASES.map(([v, n]) => `<option value="${v}" ${v === state.ease ? 'selected' : ''}>${n} · ${v}</option>`).join('');
+$('#tlEase').onchange = e => { state.ease = e.target.value; if (sel && hasKeys(sel)) { const k = sel.userData.keys.find(x => Math.abs(x.t - state.time) < .06); if (k) { k.e = state.ease; commit(); toast(T('التسهيل: ') + state.ease); } } };
+
+/* ───────────── Viewport input ───────────── */
+let down = null;
+const CUBE = 104, CM = 10;
+function cubeRect() { const w = cv.clientWidth; return { x: w - CUBE - CM, y: CM }; }
+function cubeHit(e) {
+  const r = cv.getBoundingClientRect(), cr = cubeRect(), x = e.clientX - r.left - cr.x, y = e.clientY - r.top - cr.y;
+  if (x < 0 || y < 0 || x > CUBE || y > CUBE) return false;
+  rc.setFromCamera(new THREE.Vector2(x / CUBE * 2 - 1, -(y / CUBE) * 2 + 1), cubeCam); const h = rc.intersectObject(cube)[0];
+  if (h) { const n = h.face.normal; const name = n.y > .5 ? 'top' : n.y < -.5 ? 'bottom' : n.x > .5 ? 'right' : n.x < -.5 ? 'left' : n.z > .5 ? 'front' : 'back'; view(name); }
+  return true;
+}
+cv.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY, b: e.button, gizmo: tc.object && tc.axis !== null }; hideMenus(); cv.focus({ preventScroll: true }); });
+cv.addEventListener('pointerup', e => {
+  if (!down) return; const d = down; down = null; if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 4) return;
+  if (d.b === 0) { if (cubeHit(e)) return; if (state.sk.on) { sketchClick(e); return; } if (d.gizmo) return;
+    if (state.poseMode && sel?.userData.bones) { rc.setFromCamera(ndc(e), camera); const h = rc.intersectObject(sel, true).find(x => x.object.userData.boneOf); if (h) { state.bone = h.object.userData.boneOf; select(sel); return; } }
+    select(pick(e)); }
+  else if (d.b === 2) { if (state.sk.on) { if (state.sk.tool === 'poly' && state.sk.pts.length > 1) finishSketch(state.sk.pts, false); else { state.sk.pts = []; updateSkPreview(); } return; } const o = pick(e); if (o && o !== sel) select(o); showCtx(e.clientX, e.clientY); }
+});
+cv.addEventListener('pointermove', e => {
+  if (state.sk.on) { state.sk.cursor = snapP(groundPt(e)); updateSkPreview(); const c = state.sk.cursor; if (c) $('#stHint').textContent = `X ${c.x.toFixed(2)}  Z ${c.z.toFixed(2)}` + (state.sk.pts.length && state.sk.tool !== 'poly' ? `  ·  ${T('البعد')} ${c.distanceTo(state.sk.pts[0]).toFixed(2)}` : ''); }
+});
+cv.addEventListener('contextmenu', e => e.preventDefault());
+cv.addEventListener('dblclick', e => {
+  if (state.sk.on) { if (state.sk.tool === 'poly') finishSketch(state.sk.pts, false); return; }
+  const o = pick(e); if (o) { select(o); focusSel(); }
+});
+tc.addEventListener('dragging-changed', e => { controls.enabled = !e.value; if (e.value && state.playing) setPlaying(false); if (!e.value) commitEdit(sel); });
+tc.addEventListener('objectChange', syncInspector);
+$('#vcBtns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) view(b.dataset.v); });
+
+/* ───────────── Menus / modal / toast ───────────── */
+function hideMenus() { $('#ctx').style.display = 'none'; $('#menu').style.display = 'none'; }
+function menuAt(el, x, y, items) {
+  el.innerHTML = items.map((it, i) => it === '-' ? '<div class="msep"></div>' : `<button class="mi" data-i="${i}">${ic(it.i)}<span>${it.l}</span>${it.k ? `<kbd>${it.k}</kbd>` : ''}</button>`).join('');
+  el.style.display = 'block'; const w = el.offsetWidth, h = el.offsetHeight;
+  el.style.left = clamp(x, 4, innerWidth - w - 4) + 'px'; el.style.top = clamp(y, 4, innerHeight - h - 4) + 'px';
+  el.onclick = e => { const b = e.target.closest('.mi'); if (!b) return; hideMenus(); items[+b.dataset.i].a(); };
+  gsap.fromTo(el, { opacity: 0, scale: .96, transformOrigin: 'top' }, { opacity: 1, scale: 1, duration: .16, ease: 'power2.out' });
+}
+function showCtx(x, y) {
+  const items = sel ? [
+    { i: 'focus', l: T('تركيز'), k: 'F', a: focusSel }, { i: 'dup', l: T('نسخ مكرر'), k: 'Ctrl+D', a: duplicate }, { i: 'eyeoff', l: T('إخفاء'), k: 'H', a: toggleHide }, { i: 'ground', l: T('إسقاط للأرض'), a: groundSel }, '-',
+    { i: 'key', l: T('إضافة مفتاح'), k: 'K', a: () => addKey() }, { i: 'rotate', l: T('حركة: دوران'), a: () => applyPreset('spin') }, { i: 'bounce', l: T('حركة: ارتداد'), a: () => applyPreset('bounce') }, { i: 'float', l: T('حركة: طفو'), a: () => applyPreset('float') }, '-',
+    ...(sel.userData.rec.kind === 'sketch' ? [{ i: 'extrude', l: T('بثق إلى 3D'), a: () => convertSketch('extrude') }, { i: 'lathe', l: T('دوران (خراطة)'), a: () => convertSketch('lathe') }, '-'] : []),
+    { i: 'trash', l: T('حذف'), k: 'Del', a: delSel }]
+    : [{ i: 'box', l: T('إضافة مكعب'), a: P('box') }, { i: 'sphere', l: T('إضافة كرة'), a: P('sphere') }, { i: 'light', l: T('إضافة ضوء'), a: Lt('point') }, '-', { i: 'pen', l: T('وضع الرسم 2D'), a: () => toggleSketch(true) }, { i: 'home', l: T('العرض الرئيسي'), a: () => view('home') }];
+  menuAt($('#ctx'), x, y, items);
+}
+function ask(title, fields) {
+  return new Promise(res => {
+    const bg = $('#modalBg'), m = $('#modal');
+    m.innerHTML = `<h3>${title}</h3><form class="mb" id="askF">${fields.map(f => `<div class="row"><label for="ask_${f.k}">${f.l}</label><input id="ask_${f.k}" type="${f.t}" step="any" value="${esc(f.v)}"></div>`).join('')}</form><div class="mf"><button class="btn pri" id="askOk">${T('موافق')}</button><button class="btn" id="askNo">${T('إلغاء')}</button></div>`;
+    bg.style.display = 'grid'; gsap.fromTo(m, { scale: .92, opacity: 0, y: 10 }, { scale: 1, opacity: 1, y: 0, duration: .25, ease: 'back.out(1.6)' });
+    const close = v => { gsap.to(m, { scale: .95, opacity: 0, duration: .14, onComplete: () => { bg.style.display = 'none'; } }); res(v); };
+    const ok = () => { const o = {}; fields.forEach(f => { const v = $('#ask_' + f.k).value; o[f.k] = f.t === 'number' ? parseFloat(v) || 0 : v; }); close(o); };
+    $('#askOk').onclick = ok; $('#askNo').onclick = () => close(null);
+    $('#askF').onsubmit = e => { e.preventDefault(); ok(); };
+    m.onkeydown = e => { e.stopPropagation(); if (e.key === 'Escape') close(null); if (e.key === 'Enter') { e.preventDefault(); ok(); } };
+    setTimeout(() => m.querySelector('input')?.select(), 50);
+  });
+}
+function info(title, html) {
+  const bg = $('#modalBg'), m = $('#modal');
+  m.innerHTML = `<h3>${title}</h3><div class="mb">${html}</div><div class="mf"><button class="btn pri" id="infOk">${T('حسناً')}</button></div>`;
+  bg.style.display = 'grid'; gsap.fromTo(m, { scale: .92, opacity: 0 }, { scale: 1, opacity: 1, duration: .25, ease: 'back.out(1.6)' });
+  $('#infOk').onclick = () => { bg.style.display = 'none'; };
+}
+function confirmBox(title, msg) {
+  return new Promise(res => {
+    const bg = $('#modalBg'), m = $('#modal');
+    m.innerHTML = `<h3>${title}</h3><div class="mb"><p style="margin:0">${msg}</p></div><div class="mf"><button class="btn pri" id="cfOk">${T('متابعة')}</button><button class="btn" id="cfNo">${T('إلغاء')}</button></div>`;
+    bg.style.display = 'grid'; gsap.fromTo(m, { scale: .92, opacity: 0 }, { scale: 1, opacity: 1, duration: .22, ease: 'back.out(1.6)' });
+    $('#cfOk').onclick = () => { bg.style.display = 'none'; res(true); }; $('#cfNo').onclick = () => { bg.style.display = 'none'; res(false); };
+  });
+}
+function toast(msg) {
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; $('#toasts').appendChild(t);
+  while ($('#toasts').children.length > 3) $('#toasts').firstChild.remove();
+  gsap.timeline({ onComplete: () => t.remove() }).fromTo(t, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: .3, ease: 'power3.out' }).to(t, { opacity: 0, y: -8, duration: .3, delay: 2.2 });
+}
+function hint() { $('#stHint').textContent = state.sk.on ? T('وضع الرسم ثنائي الأبعاد · زر الفأرة الأيمن لإنهاء الخط · Esc للخروج') : T('يسار: تدوير · يمين: سحب · العجلة: تقريب · انقر لتحديد كائن'); }
+document.addEventListener('pointerdown', e => { if (!e.target.closest('#ctx,#menu')) hideMenus(); });
+
+/* ───────────── File: save / open / export ───────────── */
+let DL = null; if (window.claude?.use) window.claude.use('downloads').then(d => { DL = d; }).catch(() => { });
+function anchorDL(url, name) { const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => a.remove(), 500); }
+function dlBlob(blob, name) {
+  if (DL) { DL.save({ filename: name, data: blob }).catch(e => toast(e?.code === 'rejected_extension' ? T('هذه الصيغة غير متاحة في المعاينة على الويب — افتح ملف HTML محلياً لتصديرها') : e?.code === 'declined' ? T('أُلغي الحفظ') : T('تعذّر الحفظ هنا'))); return; }
+  const u = URL.createObjectURL(blob); anchorDL(u, name); setTimeout(() => URL.revokeObjectURL(u), 4000);
+}
+function dlURL(url, name) { if (DL) { fetch(url).then(r => r.blob()).then(b => dlBlob(b, name)); return; } anchorDL(url, name); }
+function exportGroup(forMesh) {
+  const g = new THREE.Group();
+  objects.forEach(o => {
+    if (!o.visible || o.userData.rec.kind === 'sketch') return; if (forMesh && o.userData.rec.kind === 'light') return;
+    const c = o.clone(true); const rm = []; c.traverse(x => { if (x.userData.helper || (forMesh && x.isLight)) rm.push(x); }); rm.forEach(x => x.parent && x.parent.remove(x)); c.name = o.name; g.add(c);
+  });
+  return g;
+}
+function exportAs(fmtName) {
+  const nm = (state.name || 'scene').replace(/[\\/:*?"<>|]/g, '_');
+  if (fmtName === 'json') { dlBlob(new Blob([JSON.stringify(projectData(false), null, 1)], { type: 'application/json' }), nm + '.3dx.json'); toast(T('حُفظ المشروع')); return; }
+  if (fmtName === 'png') { screenshot(); return; }
+  if (fmtName === 'glb' || fmtName === 'gltf') {
+    new GLTFExporter().parse(exportGroup(false), r => { fmtName === 'glb' ? dlBlob(new Blob([r], { type: 'model/gltf-binary' }), nm + '.glb') : dlBlob(new Blob([JSON.stringify(r)], { type: 'model/gltf+json' }), nm + '.gltf'); toast(T('صُدّر ') + fmtName.toUpperCase()); }, err => toast(T('فشل التصدير: ') + err), { binary: fmtName === 'glb', animations: [] });
+    return;
+  }
+  if (fmtName === 'obj') { dlBlob(new Blob([new OBJExporter().parse(exportGroup(true))], { type: 'text/plain' }), nm + '.obj'); toast(T('صُدّر OBJ')); return; }
+  if (fmtName === 'stl') { dlBlob(new Blob([new STLExporter().parse(exportGroup(true), { binary: true })], { type: 'model/stl' }), nm + '.stl'); toast(T('صُدّر STL للطباعة ثلاثية الأبعاد')); }
+}
+function handleFile(f) {
+  const ext = f.name.split('.').pop().toLowerCase(); const rd = new FileReader();
+  const fit = (root, name) => {
+    const ref = uid(); importCache[ref] = root; const b = new THREE.Box3().setFromObject(root); const s = b.getSize(new V3()).length() || 1; const k = 2.5 / s;
+    const o = spawn({ kind: 'import', ref, name: name.replace(/\.[^.]+$/, '') }, { mat: null, scl: k, pos: new V3(controls.target.x, 0, controls.target.z) });
+    select(o); commit(); pop(o); focusSel(); toast(T('استُورد: ') + name);
+  };
+  rd.onerror = () => toast(T('تعذّرت قراءة الملف'));
+  if (ext === 'json') { rd.onload = () => { try { loadProject(JSON.parse(rd.result)); toast(T('فُتح المشروع')); } catch (e) { toast(T('ملف المشروع غير صالح')); } }; rd.readAsText(f); }
+  else if (ext === 'obj') { rd.onload = () => { try { fit(new OBJLoader().parse(rd.result), f.name); } catch (e) { toast(T('تعذّر قراءة OBJ')); } }; rd.readAsText(f); }
+  else if (ext === 'stl') { rd.onload = () => { try { const g = new STLLoader().parse(rd.result); g.center(); fit(new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: 0xb8c4d6, roughness: .5 })), f.name); } catch (e) { toast(T('تعذّر قراءة STL')); } }; rd.readAsArrayBuffer(f); }
+  else if (ext === 'glb' || ext === 'gltf') { rd.onload = () => { new GLTFLoader().parse(rd.result, '', g => fit(g.scene, f.name), () => toast(T('تعذّر قراءة glTF (الملفات ذات الموارد الخارجية غير مدعومة)'))); }; rd.readAsArrayBuffer(f); }
+  else toast(T('صيغة غير مدعومة: ') + ext);
+}
+$('#fileIn').onchange = e => { const f = e.target.files[0]; if (f) handleFile(f); e.target.value = ''; };
+function showHelp() {
+  const rows = [['W / E / R', T('تحريك / تدوير / تحجيم')], ['Q', T('وضع التحديد')], ['G', T('تشغيل الالتقاط')], ['F', T('تركيز على المحدد')], ['Ctrl+D', T('نسخ مكرر')], ['Delete', T('حذف')], ['H', T('إخفاء / إظهار')], ['Ctrl+Z / Ctrl+Y', T('تراجع / إعادة')], ['S', T('وضع الرسم ثنائي الأبعاد')], ['Enter', T('إنهاء الخط المتعدد')], ['Esc', T('إلغاء / إلغاء التحديد')], ['K', T('إضافة مفتاح حركة')], ['N', T('المفتاح التلقائي (Auto Key)')], ['P', T('وضع الوضعية للشخصيات')], ['Space', T('تشغيل / إيقاف الحركة')], ['1 / 3 / 7 / 0', T('أمام / يمين / أعلى / منظور')], ['Ctrl+S', T('حفظ المشروع')]];
+  info(T('اختصارات لوحة المفاتيح'), `<table>${rows.map(r => `<tr><td><span class="kbd">${r[0]}</span></td><td>${r[1]}</td></tr>`).join('')}</table><p class="hint">${T('اسحب النماذج والخامات من المكتبة مباشرة إلى المشهد. اسحب ملفات GLB أو OBJ أو STL إلى نافذة العرض لاستيرادها.')}</p>`);
+}
+$('#titlebar').addEventListener('click', async e => {
+  const b = e.target.closest('[data-cmd]'); if (!b) return; const c = b.dataset.cmd;
+  if (c === 'new') { if (await confirmBox(T('مشهد جديد'), T('سيُمسح المشهد الحالي. يمكنك التراجع بعد ذلك بـ Ctrl+Z.'))) { setPlaying(false); state.time = 0; objects.slice().forEach(removeObject); select(null); commit(); view('home'); toast(T('مشهد جديد')); } }
+  if (c === 'open') $('#fileIn').click();
+  if (c === 'save') exportAs('json');
+  if (c === 'undo') undo(); if (c === 'redo') redo();
+  if (c === 'demo') { setPlaying(false); demo(); toast(T('حُمّل المشهد التجريبي')); }
+  if (c === 'help') showHelp();
+  if (c === 'lang') switchLang();
+  if (c === 'mlib') panel('lib'); if (c === 'mside') panel('side');
+  if (c === 'export') { const r = b.getBoundingClientRect(); menuAt($('#menu'), r.left, r.bottom + 4, [{ i: 'export', l: T('glTF ثنائي (GLB)'), a: () => exportAs('glb') }, { i: 'export', l: 'glTF (JSON)', a: () => exportAs('gltf') }, { i: 'export', l: 'Wavefront OBJ', a: () => exportAs('obj') }, { i: 'export', l: T('STL للطباعة 3D'), a: () => exportAs('stl') }, '-', { i: 'camera', l: T('صورة PNG'), a: () => exportAs('png') }, { i: 'save', l: T('ملف المشروع JSON'), a: () => exportAs('json') }]); }
+});
+
+/* ───────────── Keyboard ───────────── */
+addEventListener('keydown', e => {
+  if (e.target.closest('input,select,textarea') || $('#modalBg').style.display === 'grid') return;
+  const k = e.key.toLowerCase(), ctrl = e.ctrlKey || e.metaKey;
+  if (ctrl && k === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
+  if (ctrl && k === 'y') { e.preventDefault(); redo(); return; }
+  if (ctrl && k === 'd') { e.preventDefault(); duplicate(); return; }
+  if (ctrl && k === 's') { e.preventDefault(); exportAs('json'); return; }
+  if (ctrl) return;
+  if (state.sk.on) {
+    if (k === 'enter') { finishSketch(state.sk.pts, false); return; }
+    if (k === 'escape') { if (state.sk.pts.length) { state.sk.pts = []; updateSkPreview(); } else toggleSketch(false); return; }
+    if (k === 'backspace') { state.sk.pts.pop(); updateSkPreview(); return; }
+  }
+  const map = { q: () => setMode('select'), w: () => setMode('translate'), e: () => setMode('rotate'), r: () => setMode('scale'), g: toggleSnap, f: focusSel, h: toggleHide, k: () => addKey(), n: toggleAutoKey, p: () => setPoseMode(!state.poseMode), s: () => toggleSketch(), delete: delSel, x: delSel, escape: () => { hideMenus(); select(null); }, ' ': () => setPlaying(!state.playing), '1': () => view('front'), '3': () => view('right'), '7': () => view('top'), '0': () => view('home') };
+  if (map[k]) { e.preventDefault(); map[k](); refreshRibbon(); }
+});
+
+/* ───────────── View cube & render loop ───────────── */
+const cubeScene = new THREE.Scene(), cubeCam = new THREE.PerspectiveCamera(30, 1, .1, 20);
+const faceTex = (txt) => { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'); const gr = g.createLinearGradient(0, 0, 0, 128); gr.addColorStop(0, '#4a525e'); gr.addColorStop(1, '#353b45'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); g.strokeStyle = '#6c7682'; g.lineWidth = 6; g.strokeRect(3, 3, 122, 122); g.fillStyle = '#e8edf2'; g.font = 'bold 30px "IBM Plex Sans Arabic", Tahoma, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(txt, 64, 66); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; };
+const cube = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 1.5), [T('يمين'), T('يسار'), T('أعلى'), T('أسفل'), T('أمام'), T('خلف')].map(n => new THREE.MeshBasicMaterial({ map: faceTex(n) })));
+cubeScene.add(cube, new THREE.LineSegments(new THREE.EdgesGeometry(cube.geometry), new THREE.LineBasicMaterial({ color: 0x0696d7 })));
+const cubeAx = new THREE.AxesHelper(1.3); cubeAx.position.set(-.76, -.76, -.76); cubeScene.add(cubeAx);
+function resize() { const r = vp.getBoundingClientRect(); if (!r.width || !r.height) return; renderer.setSize(r.width, r.height); camera.aspect = r.width / r.height; camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(vp);
+function renderFrame() {
+  renderer.info.reset(); renderer.setScissorTest(false); renderer.clear(); renderer.render(scene, camera); renderer.render(helpers, camera);
+}
+let fc = 0, ft = performance.now(), fps = 0;
+function tick() {
+  controls.update();
+  if (sel && (state.playing || tc.dragging)) selBox.setFromObject(sel);
+  renderFrame();
+  const tris = renderer.info.render.triangles;
+  const w = cv.clientWidth, h = cv.clientHeight, cr = cubeRect();
+  cubeCam.position.copy(camera.position).sub(controls.target).normalize().multiplyScalar(5.2); cubeCam.up.copy(camera.up); cubeCam.lookAt(0, 0, 0);
+  renderer.setViewport(cr.x, h - cr.y - CUBE, CUBE, CUBE); renderer.setScissor(cr.x, h - cr.y - CUBE, CUBE, CUBE); renderer.setScissorTest(true); renderer.clearDepth();
+  renderer.render(cubeScene, cubeCam); renderer.setScissorTest(false); renderer.setViewport(0, 0, w, h);
+  fc++; const now = performance.now();
+  if (now - ft > 500) { fps = fc * 1000 / (now - ft); fc = 0; ft = now; $('#stStats').textContent = `${fps.toFixed(0)} fps · ${objects.length} obj · ${(tris / 1000).toFixed(1)}k tris`; }
+}
+
+/* ───────────── Demo scene ───────────── */
+function demo() {
+  objects.slice().forEach(removeObject); sel = null; state.time = 0; palI = 0;
+  const s = (rec, o) => spawn(rec, o);
+  s({ kind: 'prim', type: 'plane' }, { name: T('أرضية الساحة'), scl: [7, 1, 7], mat: { ...defMat('#ffffff'), tx: 'tiles', rp: 6, r: .35, cc: .3 } });
+  s({ kind: 'model', type: 'house' }, { pos: new V3(-4, 0, -2.5), rot: [0, .35, 0] });
+  s({ kind: 'model', type: 'tree' }, { pos: new V3(-6.2, 0, 1) , scl: 1.3 });
+  s({ kind: 'model', type: 'pine' }, { pos: new V3(-5.8, 0, -5.4), scl: 1.4 });
+  s({ kind: 'model', type: 'pine' }, { pos: new V3(3.6, 0, -5), scl: 1.1 });
+  const car = s({ kind: 'model', type: 'car' }, { pos: new V3(1.5, 0, 2.6), rot: [0, -.4, 0] });
+  const knot = s({ kind: 'prim', type: 'knot' }, { name: T('عقدة ذهبية'), pos: new V3(2.6, 0, -1.5), mat: { ...defMat(), ...MATMAP.gold.m } });
+  knot.position.y += .6;
+  const ball = s({ kind: 'prim', type: 'sphere' }, { name: T('كرة كروم'), pos: new V3(-1, 0, 1.8), scl: .7, mat: { ...defMat(), ...MATMAP.chrome.m } });
+  const robot = s({ kind: 'model', type: 'robot' }, { pos: new V3(5, 0, 1.2), rot: [0, -.8, 0] });
+  s({ kind: 'model', type: 'lamp' }, { pos: new V3(-1.6, 0, -1.2) });
+  s({ kind: 'model', type: 'column' }, { pos: new V3(5.4, 0, -2.6) });
+  s({ kind: 'prim', type: 'box' }, { name: T('منصة رخام'), pos: new V3(2.6, 0, -1.5), scl: [1.6, .2, 1.6], mat: { ...defMat(), ...MATMAP.marble.m } });
+  const vase = s({ kind: 'model', type: 'vase' }, { pos: new V3(.3, 0, -.6) });
+  s({ kind: 'extrude', pts: [[-.6, -.5], [.6, -.5], [.6, .5], [0, .9], [-.6, .5]], depth: .3, bevel: .04 }, { name: T('شكل مبثوق'), pos: new V3(-3, 0, 2.5), mat: { ...defMat('#3d85c6'), m: .2, r: .3 } });
+  const neon = s({ kind: 'prim', type: 'torus' }, { name: T('حلقة نيون'), pos: new V3(2.6, 2.2, -1.5), rot: [Math.PI / 2, 0, 0], drop: false, mat: { ...defMat(), ...MATMAP.neonblue.m } });
+  const hero = s({ kind: 'rig', type: 'hero' }, { name: T('الشخصية'), pos: new V3(-1.2, 0, 4.2), rot: [0, .5, 0] });
+  const L = s({ kind: 'light', type: 'point', ...LIGHTS.point.d, color: '#59c8ff', int: 25 }, { name: T('ضوء أزرق'), pos: new V3(2.6, 2.4, -.2) });
+  state.dur = 6; $('#tlDur').value = 6;
+  const mk = (o, id) => { const b = tf(o); o.userData.keys = PRESETS[id].f(b, state.dur).map(([t, v, e]) => ({ t: Math.round(t * 100) / 100, p: [...v.p], r: [...v.r], s: [...v.s], e })); };
+  sel = hero; applyRigPreset('dance', hero); setPlaying(false); sel = null;
+  mk(knot, 'spin'); mk(ball, 'bounce'); mk(robot, 'wobble'); mk(neon, 'float'); mk(car, 'orbit'); mk(vase, 'pulse');
+  state.name = T('مشهد تجريبي — 3D Express'); $('#docName').textContent = state.name;
+  hist = []; hi = -1; select(null); commit(); buildTL(true);
+  camera.position.set(9, 7, 11); controls.target.set(0, .6, 0);
+  objects.forEach((o, i) => pop(o, .25 + i * .04));
+  setTimeout(() => setPlaying(true), 900);
+}
+
+/* ───────────── Boot ───────────── */
+async function boot() {
+  const title = '3D EXPRESS'; $('#spTitle').innerHTML = [...title].map(c => c === ' ' ? '<span>&nbsp;</span>' : c === '3' || c === 'D' ? `<span><em>${c}</em></span>` : `<span>${c}</span>`).join('');
+  gsap.from('#spTitle span', { y: 30, opacity: 0, rotateX: -90, duration: .6, stagger: .05, ease: 'back.out(2)' });
+  gsap.to('.sp-cube div', { rotateY: 360, rotateX: 180, duration: 2.4, repeat: -1, ease: 'power1.inOut' });
+  gsap.to('#spBar', { width: '45%', duration: .5 });
+  await new Promise(r => setTimeout(r, 380));
+  makeThumbs();
+  gsap.to('#spBar', { width: '100%', duration: .35 });
+  renderTabs(); renderRibbon(); renderLib(); hint();
+  resize(); applyScene(); setShade('solid'); vpWrap.style.setProperty('--vpbg', state.bgColor);
+  let restored = false;
+  try { const s = localStorage.getItem('3dx-autosave'); if (s) { const p = JSON.parse(s); if (p.objects?.length) { loadProject(p); restored = true; } } } catch (e) { }
+  if (!restored) demo();
+  gsap.ticker.add(tick);
+  await new Promise(r => setTimeout(r, 420));
+  gsap.to('#splash', { opacity: 0, duration: .5, ease: 'power2.inOut', onComplete: () => $('#splash').remove() });
+  gsap.to('#app', { opacity: 1, duration: .4 });
+  gsap.from('#titlebar, #tabs, #ribbon', { y: -16, opacity: 0, duration: .5, stagger: .07, ease: 'power3.out', delay: .1 });
+  gsap.from('#library', { x: 40, opacity: 0, duration: .6, ease: 'power3.out', delay: .2 });
+  gsap.from('#sidebar', { x: -40, opacity: 0, duration: .6, ease: 'power3.out', delay: .25 });
+  gsap.from('#timeline', { y: 40, opacity: 0, duration: .6, ease: 'power3.out', delay: .3 });
+  if (restored) toast(T('استُعيد آخر مشروع محفوظ تلقائياً — «مشهد تجريبي» لإعادة العرض'));
+  if (innerWidth <= 900) $('#app').classList.add('no-tl-m');
+  window.__3dx = { THREE, scene, objects, state, select, addPrim, addModel, applyPreset, toggleSketch, finishSketch, convertSketch, exportAs };
+}
+boot().catch(err => { console.error(err); const s = $('#splash'); if (s) s.querySelector('.sp-sub').textContent = T('تعذّر التشغيل: ') + err.message; });
+</script>
+</body>
+</html>
