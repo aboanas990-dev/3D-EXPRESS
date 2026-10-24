@@ -1624,7 +1624,8 @@ function info(title, html) {
 function confirmBox(title, msg) {
   return new Promise(res => {
     const bg = $('#modalBg'), m = $('#modal');
-    m.innerHTML = `<h3>${title}</h3><div class="mb"><p style="margin:0">${msg}</p></div><div class="mf"><button class="btn pri" id="cfOk">${T('متابعة')}</button><button class="btn" id="cfNo">${T('إلغاء')}</button></div>`;
+    m.innerHTML = `<h3></h3><div class="mb"><p style="margin:0"></p></div><div class="mf"><button class="btn pri" id="cfOk">${T('متابعة')}</button><button class="btn" id="cfNo">${T('إلغاء')}</button></div>`;
+    m.querySelector('h3').textContent = title; m.querySelector('.mb p').textContent = msg;
     bg.style.display = 'grid'; gsap.fromTo(m, { scale: .92, opacity: 0 }, { scale: 1, opacity: 1, duration: .22, ease: 'back.out(1.6)' });
     $('#cfOk').onclick = () => { bg.style.display = 'none'; res(true); }; $('#cfNo').onclick = () => { bg.style.display = 'none'; res(false); };
   });
@@ -3668,6 +3669,13 @@ async function boot() {
   try { if (localStorage.getItem('3dx-ws') === '2d') a2Open(true); } catch (e) { }
 }
 boot().catch(err => { console.error(err); const s = $('#splash'); if (s) s.querySelector('.sp-sub').textContent = T('تعذّر التشغيل: ') + err.message; });
+</script>
+<script>
+/* وصف الأزرار الأيقونية لقارئ الشاشة: يأخذ نص title، ويتابع الأزرار التي تُضاف لاحقًا */
+(() => {
+  const name = (r) => r.querySelectorAll('button[title]:not([aria-label])').forEach((b) => { if (!b.textContent.trim() || b.textContent.trim().length <= 2) b.setAttribute('aria-label', b.title); });
+  let q = 0; name(document); new MutationObserver(() => { if (!q) q = requestAnimationFrame(() => { q = 0; name(document); }); }).observe(document.body, { childList: true, subtree: true });
+})();
 </script>
 </body>
 </html>
