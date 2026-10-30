@@ -1138,6 +1138,104 @@ try { ExpressLicense.init(LICENSE_CFG); } catch (e) { console.error(e); }
   }, true);
 })();
 </script>
+<style id="ue-css">
+/* Editor layout (game-engine style): Hierarchy | Scene/Game | Inspector, dock below with Project · Console · Animation */
+#ueBar,#ueDock,#ueHier,#ueCenter{display:none}
+#app.ue{position:relative;grid-template-rows:38px 30px 36px minmax(0,1fr) var(--bh,236px) 24px}
+#app.ue #ribbon{position:absolute;top:68px;left:0;right:0;z-index:45;display:none;box-shadow:0 14px 30px rgba(0,0,0,.5);border-bottom:2px solid #c9a227}
+#app.ue.rib-open #ribbon{display:flex}
+#app.ue #tabs .tab{position:relative}
+#app.ue #tabs::after{content:'▾';align-self:center;color:var(--tx3);font-size:10px;padding-inline-start:4px}
+#app.ue #ueBar{display:flex;align-items:center;gap:8px;padding:0 8px;background:var(--bg1);border-bottom:1px solid var(--bd);min-width:0;overflow-x:auto;scrollbar-width:none}
+.ueg{display:flex;align-items:center;gap:2px;flex:none}
+.ueg.mid{margin-inline:auto;background:var(--bg0);border:1px solid var(--bd);border-radius:6px;padding:2px}
+.ub{display:flex;align-items:center;justify-content:center;gap:5px;min-width:30px;height:26px;padding:0 6px;border:1px solid transparent;border-radius:4px;background:none;color:var(--tx);cursor:pointer;white-space:nowrap;font-size:12px}
+.ub svg.i{width:16px;height:16px}
+.ub:hover{background:var(--bg3);border-color:var(--bd)}
+.ub.on{background:var(--acbg);border-color:var(--ac);color:#fff}
+.ub[disabled]{opacity:.38;cursor:default;background:none;border-color:transparent}
+.ub.play.on{background:#c9a227;border-color:#c9a227;color:#0a1f44}
+.ub.pause.on{background:#7a6418;border-color:#c9a227;color:#fff}
+.ueg.m-only{display:none}
+#ueDockTabs{padding-left:46px}
+.ueg .sep{width:1px;height:18px;background:var(--bd);margin:0 4px}
+#app.ue main{grid-template-columns:var(--hw,230px) minmax(0,1fr) var(--iw,300px)}
+#app.ue.no-side main{grid-template-columns:var(--hw,230px) minmax(0,1fr) 0}
+#app.ue #library{display:none}
+#app.ue #ueHier{display:flex;flex-direction:column;position:relative;border-inline-end:1px solid var(--bd)}
+#app.ue #ueHier #outliner{flex:1;height:auto;border:none}
+#app.ue #ueHier #outliner>.ph{display:none}
+#app.ue #ueCenter{display:flex;flex-direction:column;min-width:0;min-height:0}
+#app.ue #ueCenter #vpWrap{flex:1}
+#app.ue #sidebar{position:relative}
+.uetabs{display:flex;align-items:stretch;gap:1px;height:28px;background:var(--bg1);border-bottom:1px solid var(--bd);flex:none;padding:0 4px;min-width:0;overflow-x:auto;scrollbar-width:none}
+.uetabs button{display:flex;align-items:center;gap:6px;padding:0 12px;border:none;border-top:2px solid transparent;background:none;color:var(--tx2);cursor:pointer;font-size:12px;white-space:nowrap}
+.uetabs button svg.i{width:14px;height:14px}
+.uetabs button.on{background:var(--bg2);color:var(--tx);border-top-color:#c9a227}
+.uetabs .sp{flex:1}
+.uetabs select{align-self:center;height:22px;background:var(--bg0);border:1px solid var(--bd);border-radius:3px;font-size:11.5px;padding:0 4px}
+.uetabs .tbtn{border:none;border-top:none;padding:0 8px}
+.uetabs b.cnt{min-width:16px;height:16px;border-radius:8px;background:var(--bad);color:#fff;font-size:10px;display:none;place-items:center;padding:0 4px}
+.uetabs b.cnt.show{display:grid}
+#app.ue #ueDock{display:flex;flex-direction:column;position:relative;background:var(--bg2);border-top:1px solid var(--bd);min-height:0}
+#app.ue.dock-min{--bh:29px!important}
+.uepane{flex:1;min-height:0;display:none}
+.uepane.on{display:flex}
+#app.ue .uepane #library{display:grid;position:static;width:auto;box-shadow:none;grid-template-columns:150px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);flex:1;min-height:0}
+#app.ue .uepane #library>.ph{display:none}
+#app.ue .uepane #libTabs{grid-row:1/3;flex-direction:column;flex-wrap:nowrap;gap:1px;padding:6px;border-inline-end:1px solid var(--bd);overflow:auto}
+#app.ue .uepane #libTabs .lt{justify-content:flex-start;text-align:start;border-radius:3px;width:100%}
+#app.ue .uepane #libTabs .lt::before{content:'';width:14px;height:11px;margin-inline-end:6px;border-radius:2px;background:#c9a227;opacity:.75;display:inline-block;vertical-align:-1px}
+#app.ue .uepane #libGrid{margin:0 6px 6px}
+#app.ue .uepane #timeline{display:flex;flex:1;min-width:0;border-top:none}
+.ueSplit{position:absolute;z-index:6;background:transparent}
+.ueSplit:hover,.ueSplit.drag{background:#c9a227}
+.ueSplit.h{top:0;bottom:0;width:4px;cursor:col-resize}
+.ueSplit.v{left:0;right:0;height:4px;top:-2px;cursor:row-resize}
+#ueHier>.ueSplit{inset-inline-end:-2px}
+#sidebar>.ueSplit{inset-inline-start:-2px}
+#ueLogWrap{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0}
+.ctool{display:flex;align-items:center;gap:4px;padding:3px 6px;background:var(--bg1);border-bottom:1px solid var(--bd);flex:none}
+.ctool .ub{height:22px;font-size:11.5px}
+.ctool .ub.f b{font-weight:600;min-width:14px;text-align:center}
+.ctool .ub.f.off{opacity:.45}
+.ctool i.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+#ueLog{flex:1;overflow:auto;font:12px/1.45 var(--mono);direction:ltr;text-align:left}
+.cl{display:flex;align-items:flex-start;gap:8px;padding:4px 10px;border-bottom:1px solid var(--bg1);cursor:default;white-space:nowrap;overflow:hidden}
+.cl:nth-child(even){background:rgba(255,255,255,.02)}
+.cl.open{white-space:pre-wrap;word-break:break-word}
+.cl i{flex:none;width:9px;height:9px;border-radius:50%;margin-top:4px;background:var(--tx3)}
+.cl.warn i{background:#e8b339} .cl.error i{background:var(--bad)}
+.cl.warn .cm{color:#f0cf7a} .cl.error .cm{color:#ff9a94}
+.cl .ct{color:var(--tx3);flex:none}
+.cl .cm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.cl.open .cm{overflow:visible}
+.cl .cn{flex:none;background:var(--bg4);border-radius:8px;padding:0 6px;font-size:10.5px;color:var(--tx)}
+.cempty{padding:18px;color:var(--tx3);font:12px var(--ui);text-align:center}
+#ueGame{position:absolute;inset:0;display:none;z-index:4}
+#vpWrap.game #ueGame{display:block}
+#vpWrap.game .hud,#vpWrap.game #vcBtns,#vpWrap.game #skHint{display:none!important}
+#ueFrame{position:absolute;box-shadow:0 0 0 9999px #07090c;pointer-events:none}
+#ueNoCam{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:none;flex-direction:column;align-items:center;gap:10px;background:rgba(10,31,68,.88);border:1px solid #c9a227;border-radius:10px;padding:16px 20px;text-align:center;max-width:min(360px,86%);font-size:12.5px}
+#ueNoCam.show{display:flex}
+#ueNoCam .btn{background:#c9a227;border-color:#c9a227;color:#0a1f44;font-weight:600}
+#app.ue-playing #ueBar{background:linear-gradient(0deg,rgba(201,162,39,.16),rgba(201,162,39,.16)),var(--bg1)}
+#app.ue-playing #ueHier::after,#app.ue-playing #sidebar::after,#app.ue-playing #ueDock::after{content:'';position:absolute;inset:0;background:rgba(10,31,68,.28);pointer-events:none;z-index:5}
+#app.ue-playing #ueCenter .uetabs{box-shadow:inset 0 -2px #c9a227}
+@media (max-width:900px){
+  #app.ue{grid-template-rows:38px 30px 36px minmax(0,1fr) var(--bh,190px) 24px}
+  #app.ue main{grid-template-columns:minmax(0,1fr)!important}
+  #app.ue #ueHier,#app.ue #sidebar{position:fixed;top:104px;bottom:24px;width:min(300px,86vw);z-index:30;display:none;box-shadow:0 0 40px rgba(0,0,0,.6);background:var(--bg2)}
+  #app.ue #ueHier{right:0} #app.ue #sidebar{left:0}
+  [dir=ltr] #app.ue #ueHier{right:auto;left:0} [dir=ltr] #app.ue #sidebar{left:auto;right:0}
+  #app.ue.m-lib #ueHier,#app.ue.m-side #sidebar{display:flex}
+  #app.ue .ueSplit.h{display:none}
+  #app.ue .uepane #library{grid-template-columns:96px minmax(0,1fr)}
+  .ub .tl{display:none}
+  .ueg.m-only{display:flex}
+  #app.ue #ueLayoutTb{display:none}
+}
+</style>
 </head>
 <body>
 <div id="splash"><div class="sp">
@@ -1632,6 +1730,7 @@ function build(rec, mat) {
     case 'lathe': o = new THREE.Mesh(latheGeo(rec), managedMat(THREE.DoubleSide)); break;
     case 'text': o = new THREE.Mesh(textGeo(rec), managedMat()); break;
     case 'gen': o = genBuild(rec); break;
+    case 'camera': o = buildGameCam(rec); break;
     case 'import': o = importCache[rec.ref] ? importCache[rec.ref].clone(true) : new THREE.Group(); break;
     default: o = new THREE.Group();
   }
@@ -1696,10 +1795,11 @@ let sel = null, master = null;
 /* ───────────── Object management ───────────── */
 function setShadow(o) { const cs = o.userData.cs !== false; o.traverse(c => { if (c.isMesh && !c.userData.helper) { c.castShadow = cs; c.receiveShadow = true; } }); }
 function kindName(r) {
+  if (r.kind === 'camera') return T('كاميرا رئيسية');
   return r.kind === 'prim' ? T('شكل · ') + (PRIMS[r.type]?.n || '') : r.kind === 'model' ? T('نموذج · ') + (MODELS[r.type]?.n || '') : r.kind === 'rig' ? T('شخصية بهيكل عظمي · ') + (RIGS[r.type]?.n || '') : r.kind === 'light' ? LIGHTS[r.type]?.n : r.kind === 'sketch' ? T('رسم ثنائي الأبعاد') : r.kind === 'extrude' ? T('جسم مبثوق') : r.kind === 'lathe' ? T('جسم دوراني') : r.kind === 'text' ? T('نص ثلاثي الأبعاد') : r.kind === 'gen' ? T('نموذج مولّد · ') + (GTN()[r.t] || '') : T('نموذج مستورد');
 }
-function kindIcon(r) { if (r.kind === 'rig') return 'person'; return r.kind === 'prim' ? (PRIMS[r.type]?.i || 'box') : r.kind === 'model' ? (r.type === 'tree' || r.type === 'pine' ? 'tree' : 'models') : r.kind === 'light' ? LIGHTS[r.type]?.i : r.kind === 'sketch' ? 'pen' : r.kind === 'extrude' ? 'extrude' : r.kind === 'lathe' ? 'lathe' : r.kind === 'text' ? 'text' : r.kind === 'gen' ? 'gen' : 'import'; }
-function baseName(r) { if (r.kind === 'rig') return RIGS[r.type]?.n || T('شخصية'); return r.kind === 'prim' ? PRIMS[r.type]?.n : r.kind === 'model' ? MODELS[r.type]?.n : r.kind === 'light' ? LIGHTS[r.type]?.n : r.kind === 'sketch' ? T('رسم') : r.kind === 'extrude' ? T('بثق') : r.kind === 'lathe' ? T('دوران') : r.kind === 'text' ? T('نص') : r.kind === 'gen' ? (GTN()[r.t] || T('نموذج مولّد')) : (r.name || T('مستورد')); }
+function kindIcon(r) { if (r.kind === 'rig') return 'person'; if (r.kind === 'camera') return 'camera'; return r.kind === 'prim' ? (PRIMS[r.type]?.i || 'box') : r.kind === 'model' ? (r.type === 'tree' || r.type === 'pine' ? 'tree' : 'models') : r.kind === 'light' ? LIGHTS[r.type]?.i : r.kind === 'sketch' ? 'pen' : r.kind === 'extrude' ? 'extrude' : r.kind === 'lathe' ? 'lathe' : r.kind === 'text' ? 'text' : r.kind === 'gen' ? 'gen' : 'import'; }
+function baseName(r) { if (r.kind === 'rig') return RIGS[r.type]?.n || T('شخصية'); if (r.kind === 'camera') return T('كاميرا رئيسية'); return r.kind === 'prim' ? PRIMS[r.type]?.n : r.kind === 'model' ? MODELS[r.type]?.n : r.kind === 'light' ? LIGHTS[r.type]?.n : r.kind === 'sketch' ? T('رسم') : r.kind === 'extrude' ? T('بثق') : r.kind === 'lathe' ? T('دوران') : r.kind === 'text' ? T('نص') : r.kind === 'gen' ? (GTN()[r.t] || T('نموذج مولّد')) : (r.name || T('مستورد')); }
 function uniqueName(b) { let n = 1; const names = new Set(objects.map(o => o.name)); while (names.has(b + ' ' + n)) n++; return b + ' ' + n; }
 function ser(o) {
   return { id: o.userData.id, name: o.name, rec: JSON.parse(JSON.stringify(o.userData.rec)), mat: o.userData.mat ? { ...o.userData.mat } : null, p: o.position.toArray().map(fmt), r: [o.rotation.x, o.rotation.y, o.rotation.z].map(v => Math.round(v * 1e5) / 1e5), s: o.scale.toArray().map(fmt), v: o.visible, cs: o.userData.cs !== false, keys: JSON.parse(JSON.stringify(o.userData.keys || [])), ...(o.userData.bones ? { pose: readPose(o) } : {}) };
@@ -2158,6 +2258,7 @@ function renderRibbon() {
   gsap.fromTo('#ribbon .rb, #ribbon .rfield', { y: -6, opacity: 0 }, { y: 0, opacity: 1, duration: .28, stagger: .012, ease: 'power2.out' });
 }
 function refreshRibbon() {
+  ueSync();
   const T = RIBBON[state.tab]; if (!T) return;
   $$('#ribbon .rb').forEach(el => { const b = T.g[el.dataset.g].it[el.dataset.b]; el.classList.toggle('on', !!(b.t && b.t())); });
 }
@@ -2181,7 +2282,7 @@ function libItems() {
     case 'prims': return Object.entries(PRIMS).map(([k, v]) => ({ t: 'prim', id: k, n: v.n, img: THUMB['prim:' + k] }));
     case 'mats': return MATS.map(m => ({ t: 'mat', id: m.id, n: m.n, img: THUMB['mat:' + m.id] }));
     case 'tex': return TEXLIST.map(x => ({ t: 'tex', id: x.id, n: x.n, img: THUMB['tex:' + x.id] }));
-    case 'lights': return Object.entries(LIGHTS).map(([k, v]) => ({ t: 'light', id: k, n: v.n, icon: v.i }));
+    case 'lights': return [...Object.entries(LIGHTS).map(([k, v]) => ({ t: 'light', id: k, n: v.n, icon: v.i })), { t: 'cam', id: 'main', n: T('كاميرا رئيسية'), icon: 'camera' }];
   }
 }
 const LIBHINT = { models: T('انقر للإضافة أو اسحب إلى موضع في المشهد'), prims: T('أشكال قابلة للتعديل بخامة كاملة'), mats: T('انقر لتطبيقها على المحدد أو اسحبها فوق أي كائن'), tex: T('تكسيات إجرائية قابلة للتكرار بلا ملفات خارجية'), lights: T('أضواء قابلة للتحريك والتحكم بالشدة واللون') };
@@ -2194,7 +2295,7 @@ function renderLib() {
   gsap.fromTo('#libGrid .li', { opacity: 0, y: 10, scale: .94 }, { opacity: 1, y: 0, scale: 1, duration: .35, stagger: .018, ease: 'power2.out' });
 }
 function libUse(t, id, pos, target) {
-  if (t === 'rig') spawnUI({ kind: 'rig', type: id }, pos); else if (t === 'model') addModel(id, pos); else if (t === 'prim') addPrim(id, pos); else if (t === 'light') addLight(id, pos);
+  if (t === 'rig') spawnUI({ kind: 'rig', type: id }, pos); else if (t === 'model') addModel(id, pos); else if (t === 'prim') addPrim(id, pos); else if (t === 'light') addLight(id, pos); else if (t === 'cam') ueAddCam(pos ? new V3(pos.x, 1.6, pos.z) : null);
   else if (t === 'mat') applyMatPreset(id, target || sel); else if (t === 'tex') applyTexture(id, target || sel);
 }
 $('#libTabs').addEventListener('click', e => { const b = e.target.closest('.lt'); if (b) { state.lib = b.dataset.l; renderLib(); refreshRibbon(); } });
@@ -2237,6 +2338,7 @@ function renderOutliner() {
   const q = $('#olSearch').value.trim();
   const list = objects.filter(o => !q || o.name.includes(q));
   $('#olCount').textContent = objects.length + T(' كائن');
+  ueGameSync();
   $('#olList').innerHTML = list.map(o => `<div class="ol ${o === sel ? 'on' : ''} ${o.visible ? '' : 'hid'}" data-id="${o.userData.id}">${ic(kindIcon(o.userData.rec))}<span class="nm">${esc(o.name)}</span>${hasKeys(o) ? T('<span class="kf" title="متحرك">◆</span>') : ''}<button class="eye" data-eye="1" title="${T('إظهار/إخفاء')}">${ic(o.visible ? 'eye' : 'eyeoff')}</button></div>`).join('') || `<div class="empty"><p>${T('المشهد فارغ')}</p><small>${T('أضف شكلاً من شريط «إنشاء» أو من المكتبة')}</small></div>`;
 }
 const byId = id => objects.find(o => o.userData.id === id);
@@ -2287,7 +2389,8 @@ function renderInspector() {
   if (r.kind === 'lathe') h += sec('la', T('الدوران'), num(T('المقاطع'), 'x.seg', r.seg || 64, 1));
   if (r.kind === 'text') h += sec('tx', T('النص'), `<div class="row"><label>${T('النص')}</label><input type="text" data-k="x.text" value="${esc(r.text)}"></div>` + num(T('الحجم'), 'x.size', r.size, .05) + num(T('العمق'), 'x.depth', r.depth, .05));
   if (r.kind === 'sketch') h += sec('sk', T('رسم ثنائي الأبعاد'), `<p class="hint">${r.pts.length} ${T('نقطة')} · ${r.closed ? T('شكل مغلق') : T('خط مفتوح')}</p><div class="row"><label>${T('عمق البثق')}</label><input type="number" step="0.1" data-k="sk.depth" value="${state.sk.depth}"></div><div class="btns"><button class="btn pri" data-act="extrude">${T('بثق إلى')} 3D</button><button class="btn" data-act="lathe">${T('دوران (خراطة)')}</button></div><p class="hint">${T('في الخراطة: الحافة اليسرى للرسم هي محور الدوران.')}</p>`);
-  if (r.kind !== 'light' && r.kind !== 'sketch') {
+  if (r.kind === 'camera') h += ueCamInspector(o);
+  if (r.kind !== 'light' && r.kind !== 'sketch' && r.kind !== 'camera') {
     const m = o.userData.mat;
     if (!m) h += sec('mat', T('المادة'), `<p class="hint">${T('يستخدم هذا النموذج خاماته الأصلية المتعددة.')}</p><div class="btns"><button class="btn" data-act="ovmat">${T('تخصيص خامة موحّدة')}</button></div><p class="hint">${T('أو اسحب خامة من المكتبة فوقه.')}</p>`);
     else h += sec('mat', T('المادة'), col(T('اللون'), 'm.c', m.c) + rng(T('معدني'), 'm.m', m.m, 0, 1, .01) + rng(T('الخشونة'), 'm.r', m.r, 0, 1, .01) + rng(T('العتامة'), 'm.o', m.o, 0, 1, .01) + rng(T('نفاذية (زجاج)'), 'm.tr', m.tr || 0, 0, 1, .01) + rng(T('طلاء لامع'), 'm.cc', m.cc || 0, 0, 1, .01) + col(T('الانبعاث'), 'm.e', m.e) + rng(T('شدة الانبعاث'), 'm.ei', m.ei, 0, 6, .05) +
@@ -2540,7 +2643,7 @@ function handleFile(f) {
 }
 $('#fileIn').onchange = e => { const f = e.target.files[0]; if (f) handleFile(f); e.target.value = ''; };
 function showHelp() {
-  const rows = [['W / E / R', T('تحريك / تدوير / تحجيم')], ['Q', T('وضع التحديد')], ['G', T('تشغيل الالتقاط')], ['F', T('تركيز على المحدد')], ['Ctrl+D', T('نسخ مكرر')], ['Delete', T('حذف')], ['H', T('إخفاء / إظهار')], ['Ctrl+Z / Ctrl+Y', T('تراجع / إعادة')], ['S', T('وضع الرسم ثنائي الأبعاد')], ['Enter', T('إنهاء الخط المتعدد')], ['Esc', T('إلغاء / إلغاء التحديد')], ['K', T('إضافة مفتاح حركة')], ['N', T('المفتاح التلقائي (Auto Key)')], ['P', T('وضع الوضعية للشخصيات')], ['Space', T('تشغيل / إيقاف الحركة')], ['1 / 3 / 7 / 0', T('أمام / يمين / أعلى / منظور')], ['Ctrl+S', T('حفظ المشروع')]];
+  const rows = [['Ctrl+P', T('تشغيل (Ctrl+P)').replace(' (Ctrl+P)', '')], ['Ctrl+Shift+P / Ctrl+Alt+P', T('إيقاف مؤقت (Ctrl+Shift+P)').replace(' (Ctrl+Shift+P)', '') + ' / ' + T('خطوة إطار (Ctrl+Alt+P)').replace(' (Ctrl+Alt+P)', '')], ['W / E / R', T('تحريك / تدوير / تحجيم')], ['Q', T('وضع التحديد')], ['G', T('تشغيل الالتقاط')], ['F', T('تركيز على المحدد')], ['Ctrl+D', T('نسخ مكرر')], ['Delete', T('حذف')], ['H', T('إخفاء / إظهار')], ['Ctrl+Z / Ctrl+Y', T('تراجع / إعادة')], ['S', T('وضع الرسم ثنائي الأبعاد')], ['Enter', T('إنهاء الخط المتعدد')], ['Esc', T('إلغاء / إلغاء التحديد')], ['K', T('إضافة مفتاح حركة')], ['N', T('المفتاح التلقائي (Auto Key)')], ['P', T('وضع الوضعية للشخصيات')], ['Space', T('تشغيل / إيقاف الحركة')], ['1 / 3 / 7 / 0', T('أمام / يمين / أعلى / منظور')], ['Ctrl+S', T('حفظ المشروع')]];
   info(T('اختصارات لوحة المفاتيح'), `<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><i style="width:44px;height:44px;flex:none;background:var(--app-logo) center/contain no-repeat"></i><div><b>3D Express Studio</b><div class="hint" style="margin:2px 0 0">© Hassan Alfaifi</div></div></div><table>${rows.map(r => `<tr><td><span class="kbd">${r[0]}</span></td><td>${r[1]}</td></tr>`).join('')}</table><p class="hint">${T('اسحب النماذج والخامات من المكتبة مباشرة إلى المشهد. اسحب ملفات GLB أو OBJ أو STL إلى نافذة العرض لاستيرادها.')}</p>`);
 }
 $('#titlebar').addEventListener('click', async e => {
@@ -2720,6 +2823,8 @@ let fc = 0, ft = performance.now(), fps = 0;
 function tick() {
   controls.update();
   if (state.recording) { renderer.setScissorTest(false); renderer.clear(); renderer.render(scene, camera); return; }
+  if (UE.play === 'play') ueUpdate();
+  if (UE.view === 'game') { ueRenderGame(); tickStats(); return; }
   if (sel && (state.playing || tc.dragging)) selBox.setFromObject(sel);
   renderFrame();
   const tris = renderer.info.render.triangles;
@@ -2727,6 +2832,9 @@ function tick() {
   cubeCam.position.copy(camera.position).sub(controls.target).normalize().multiplyScalar(5.2); cubeCam.up.copy(camera.up); cubeCam.lookAt(0, 0, 0);
   renderer.setViewport(cr.x, h - cr.y - CUBE, CUBE, CUBE); renderer.setScissor(cr.x, h - cr.y - CUBE, CUBE, CUBE); renderer.setScissorTest(true); renderer.clearDepth();
   renderer.render(cubeScene, cubeCam); renderer.setScissorTest(false); renderer.setViewport(0, 0, w, h);
+  tickStats(tris);
+}
+function tickStats(tris = renderer.info.render.triangles) {
   fc++; const now = performance.now();
   if (now - ft > 500) { fps = fc * 1000 / (now - ft); fc = 0; ft = now; $('#stStats').textContent = `${fps.toFixed(0)} fps · ${objects.length} obj · ${(tris / 1000).toFixed(1)}k tris`; }
 }
@@ -4495,6 +4603,254 @@ function sdHelp() {
   </div>`, [{ l: T('رجوع'), a: () => genDialog('image') }, { l: T('إغلاق'), a: closeModal }], true);
 }
 
+/* ───────────── Editor layout (game-engine style) ─────────────
+   Hierarchy | Scene/Game | Inspector, a dock with Project · Console · Animation, a centred Play/Pause/Step bar.
+   Play mode snapshots the scene and puts it back on Stop. The classic layout stays one click away. */
+Object.assign(EN, {
+  'تخطيط المحرر': 'Editor Layout', 'التخطيط الكلاسيكي': 'Classic Layout', 'التسلسل الهرمي': 'Hierarchy', 'المفتّش': 'Inspector', 'المشروع': 'Project', 'وحدة التحكم': 'Console',
+  'اللعبة': 'Game', 'حر': 'Free', 'تشغيل (Ctrl+P)': 'Play (Ctrl+P)', 'إيقاف مؤقت (Ctrl+Shift+P)': 'Pause (Ctrl+Shift+P)', 'خطوة إطار (Ctrl+Alt+P)': 'Step (Ctrl+Alt+P)',
+  'تحديد (Q)': 'Select (Q)', 'تحريك (W)': 'Move (W)', 'تدوير (E)': 'Rotate (E)', 'تحجيم (R)': 'Scale (R)', 'عالمي': 'Global', 'محلي': 'Local', 'محاور التحويل': 'Transform axes',
+  'مسح': 'Clear', 'دمج المتكرر': 'Collapse', 'رسائل': 'Messages', 'تحذيرات': 'Warnings', 'أخطاء': 'Errors', 'لا توجد رسائل': 'No messages',
+  'كاميرا رئيسية': 'Main Camera', 'كاميرا اللعبة': 'Game camera', 'زاوية الرؤية°': 'Field of view°', 'مطابقة العرض الحالي': 'Align with view', 'أُضيفت الكاميرا الرئيسية': 'Main Camera added',
+  'لا توجد كاميرا في المشهد، لذلك يعرض «اللعبة» كاميرا المحرر.': 'There is no camera in the scene, so Game shows the editor camera.', 'إضافة كاميرا رئيسية من العرض الحالي': 'Add a Main Camera from this view',
+  'بدأ التشغيل': 'Entered play mode', 'انتهى التشغيل — أُعيد المشهد كما كان قبل التشغيل': 'Exited play mode. The scene is back to how it was before Play', 'إيقاف التشغيل (Ctrl+P)': 'Stop (Ctrl+P)',
+  'إنشاء كائن': 'Create object', 'التعديلات أثناء التشغيل تُلغى عند الإيقاف': 'Changes made in play mode are undone when you stop', 'الكاميرا تطابق العرض الحالي': 'Camera aligned with the view',
+  'انقر التبويب مرة أخرى لإخفاء الأدوات': 'Click the tab again to hide the tools', 'تصغير / تكبير اللوحة': 'Collapse / expand the panel',
+});
+$('#iconDefs').innerHTML += [['ue-console', 'M4 5h16v14H4zM7 9l3 3-3 3M12 15h5'], ['ue-folder', 'M3 6h6l2 2h10v11H3z'], ['ue-step', 'M6 5v14M10 5l9 7-9 7z'], ['ue-layout', 'M3 4h18v16H3zM9 4v16M15 4v11M3 15h18']]
+  .map(([k, d]) => `<symbol id="i-${k}" viewBox="0 0 24 24"><path d="${d}"/></symbol>`).join('');
+
+const UE = { on: false, view: 'scene', play: 'stop', snap: null, dock: 'project', aspect: 'free', logs: [], filt: { log: true, warn: true, error: true }, collapse: false, updaters: [], moved: [], built: false };
+const UE_ASPECTS = { free: 0, '16:9': 16 / 9, '4:3': 4 / 3, '9:16': 9 / 16, '1:1': 1 };
+
+/* Game camera object */
+function buildGameCam(rec) {
+  const g = new THREE.Group(), cam = new THREE.PerspectiveCamera(rec.fov || 60, 16 / 9, .05, 600); g.add(cam); g.userData.cam = cam;
+  const m = new THREE.MeshBasicMaterial({ color: 0x9aa4b1 }), help = c => { c.userData.helper = true; g.add(c); return c; };
+  help(new THREE.Mesh(new THREE.BoxGeometry(.3, .22, .36), m)).position.z = .2;
+  help(new THREE.Mesh(new THREE.ConeGeometry(.12, .18, 14, 1, true).rotateX(Math.PI / 2), m)).position.z = -.06;
+  const d = .9, hh = Math.tan((rec.fov || 60) * D2R / 2) * d, hw = hh * 16 / 9, c = [[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]].map(([x, y]) => new V3(x, y, -d)), O = new V3();
+  const pts = [O, c[0], O, c[1], O, c[2], O, c[3], c[0], c[1], c[1], c[2], c[2], c[3], c[3], c[0], new V3(-hw * .4, hh * 1.1, -d), new V3(0, hh * 1.45, -d), new V3(0, hh * 1.45, -d), new V3(hw * .4, hh * 1.1, -d)];
+  help(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xc9a227 })));
+  return g;
+}
+function ueGameCam() { return objects.find(o => o.userData.rec.kind === 'camera' && o.visible) || null; }
+function ueAddCam(pos) {
+  const o = spawn({ kind: 'camera', fov: 60 }, { drop: false, pos: pos || camera.position.clone() });
+  if (pos) o.lookAt(controls.target.x, pos.y, controls.target.z); else o.quaternion.copy(camera.quaternion);
+  select(o); commit(); pop(o); toast(T('أُضيفت الكاميرا الرئيسية')); ueGameSync();
+  return o;
+}
+function ueCamInspector(o) {
+  return sec('cam', T('كاميرا اللعبة'), rng(T('زاوية الرؤية°'), 'c.fov', o.userData.rec.fov || 60, 20, 110, 1) + `<div class="btns"><button class="btn" data-act="ue-camalign">${T('مطابقة العرض الحالي')}</button></div>`);
+}
+$('#props').addEventListener('change', e => {
+  const k = e.target.dataset.k; if (k !== 'c.fov' || !sel || sel.userData.rec.kind !== 'camera') return;
+  const v = parseFloat(e.target.value); if (isNaN(v)) return; sel.userData.rec.fov = clamp(v, 10, 150); rebuildObj(sel); commit();
+});
+$('#props').addEventListener('click', e => {
+  if (!e.target.closest('[data-act="ue-camalign"]') || !sel || sel.userData.rec.kind !== 'camera') return;
+  sel.position.copy(camera.position); sel.quaternion.copy(camera.quaternion); syncInspector(); commit(); toast(T('الكاميرا تطابق العرض الحالي'));
+});
+
+/* Console */
+function ueFmt(a) {
+  if (a instanceof Error) return a.stack || a.message;
+  if (a && typeof a === 'object') { try { return JSON.stringify(a); } catch (e) { return String(a); } }
+  return String(a);
+}
+function ueLog(type, args) {
+  UE.logs.push({ type, msg: args.map(ueFmt).join(' '), t: new Date() }); if (UE.logs.length > 999) UE.logs.shift();
+  if (!UE.logQ) UE.logQ = requestAnimationFrame(() => { UE.logQ = 0; ueRenderLog(); });
+}
+['log', 'info', 'warn', 'error'].forEach(k => { const f = console[k].bind(console); console[k] = (...a) => { f(...a); try { ueLog(k === 'info' ? 'log' : k, a); } catch (e) { } }; });
+addEventListener('error', e => ueLog('error', [e.message + (e.filename ? ` (${e.filename.split('/').pop()}:${e.lineno})` : '')]));
+addEventListener('unhandledrejection', e => ueLog('error', [e.reason ?? 'Promise rejected']));
+function ueRenderLog() {
+  if (!UE.built) return;
+  const n = { log: 0, warn: 0, error: 0 }; UE.logs.forEach(l => n[l.type]++);
+  ['log', 'warn', 'error'].forEach(t => { const b = $(`#ueDock [data-cf="${t}"]`); b.querySelector('b').textContent = n[t] > 999 ? '999+' : n[t]; b.classList.toggle('off', !UE.filt[t]); });
+  $('#ueDock [data-ce="collapse"]').classList.toggle('on', UE.collapse);
+  const cnt = $('#ueErrCnt'); cnt.textContent = n.error; cnt.classList.toggle('show', n.error > 0);
+  if (UE.dock !== 'console') return;
+  let rows = UE.logs.filter(l => UE.filt[l.type]).map(l => ({ ...l, n: 1 }));
+  if (UE.collapse) { const m = new Map(); rows.forEach(r => { const k = r.type + '\u0000' + r.msg, x = m.get(k); x ? (x.n++, x.t = r.t) : m.set(k, r); }); rows = [...m.values()]; }
+  const box = $('#ueLog'), atEnd = box.scrollTop + box.clientHeight >= box.scrollHeight - 8;
+  box.innerHTML = rows.length ? rows.slice(-400).map(r => `<div class="cl ${r.type}"><i></i><span class="ct">[${r.t.toTimeString().slice(0, 8)}]</span><span class="cm">${esc(r.msg)}</span>${r.n > 1 ? `<b class="cn">${r.n}</b>` : ''}</div>`).join('') : `<div class="cempty">${T('لا توجد رسائل')}</div>`;
+  if (atEnd) box.scrollTop = box.scrollHeight;
+}
+
+/* Play mode */
+function uePlay() {
+  if (A2.on || state.recording) return;
+  if (UE.play !== 'stop') { ueStop(); return; }
+  if (state.sk.on) toggleSketch(false); if (state.poseMode) setPoseMode(false, true);
+  UE.snap = { data: JSON.stringify(snapshot()), sel: sel?.userData.id, time: state.time, view: UE.view };
+  UE.play = 'play'; $('#app').classList.add('ue-playing'); ueView('game');
+  seek(0); setPlaying(true); UE.last = performance.now();
+  console.info('▶ ' + T('بدأ التشغيل') + ' · ' + T('التعديلات أثناء التشغيل تُلغى عند الإيقاف'));
+  ueSync();
+}
+function uePause() {
+  if (UE.play === 'stop') return;
+  if (UE.play === 'play') { UE.play = 'pause'; setPlaying(false); } else { UE.play = 'play'; UE.last = performance.now(); setPlaying(true); }
+  ueSync();
+}
+function ueStep() {
+  if (UE.play === 'stop') return;
+  if (UE.play === 'play') { UE.play = 'pause'; setPlaying(false); }
+  const t = state.time + 1 / 30; seek(t > state.dur ? (state.loop ? 0 : state.dur) : t); UE.updaters.forEach(f => f(1 / 30)); ueSync();
+}
+function ueStop() {
+  const s = UE.snap; UE.play = 'stop'; UE.snap = null; setPlaying(false);
+  if (s) {
+    restore(JSON.parse(s.data), s.sel);
+    const i = hist.lastIndexOf(s.data); if (i >= 0) { hist = hist.slice(0, i + 1); hi = i; } else commit();
+    autosave(); renderOutliner(); renderTracks(); seek(s.time);
+  }
+  $('#app').classList.remove('ue-playing'); ueView(s ? s.view : 'scene');
+  console.info('■ ' + T('انتهى التشغيل — أُعيد المشهد كما كان قبل التشغيل')); toast(T('انتهى التشغيل — أُعيد المشهد كما كان قبل التشغيل'));
+  ueSync();
+}
+function ueUpdate() {
+  const now = performance.now(), dt = Math.min(.1, (now - (UE.last || now)) / 1000); UE.last = now;
+  for (const f of UE.updaters) { try { f(dt); } catch (e) { console.error(e); } }
+}
+
+/* Scene / Game view */
+function ueView(v) {
+  UE.view = UE.on ? v : 'scene'; vpWrap.classList.toggle('game', UE.view === 'game');
+  if (UE.built) { $$('#ueViewTabs [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === UE.view)); $('#ueAspect').style.display = UE.view === 'game' ? '' : 'none'; }
+  if (UE.view === 'game') { hideMenus(); tc.enabled = false; } else { tc.enabled = true; UE.frame = ''; resize(); }
+  ueGameSync();
+}
+function ueGameSync() { if (UE.built) $('#ueNoCam').classList.toggle('show', UE.view === 'game' && !ueGameCam()); }
+function ueRenderGame() {
+  const go = ueGameCam(), cam = go ? go.userData.cam : camera, w = cv.clientWidth, h = cv.clientHeight, a = UE_ASPECTS[UE.aspect];
+  let vw = w, vh = h; if (a) { if (w / h > a) vw = Math.round(h * a); else vh = Math.round(w / a); }
+  const vx = (w - vw) >> 1, vy = (h - vh) >> 1, asp = cam.aspect; cam.aspect = vw / Math.max(1, vh); cam.updateProjectionMatrix();
+  const hid = []; objects.forEach(o => o.traverse(c => { if (c.userData.helper && c.visible) { c.visible = false; hid.push(c); } }));
+  renderer.info.reset(); renderer.setScissorTest(false); renderer.setViewport(0, 0, w, h); renderer.clear();
+  renderer.setViewport(vx, h - vy - vh, vw, vh); renderer.setScissor(vx, h - vy - vh, vw, vh); renderer.setScissorTest(true);
+  renderer.render(scene, cam); renderer.setScissorTest(false); renderer.setViewport(0, 0, w, h);
+  hid.forEach(c => c.visible = true);
+  if (cam === camera) { cam.aspect = asp; cam.updateProjectionMatrix(); }
+  const f = `${vx},${vy},${vw},${vh}`; if (f !== UE.frame) { UE.frame = f; Object.assign($('#ueFrame').style, { left: vx + 'px', top: vy + 'px', width: vw + 'px', height: vh + 'px' }); }
+}
+
+/* Toolbar state */
+function ueSync() {
+  if (!UE.built) return;
+  $$('#ueBar [data-ue-mode]').forEach(b => b.classList.toggle('on', b.dataset.ueMode === state.mode));
+  const sp = $('#ueBar [data-ue="space"]'); sp.querySelector('span').textContent = state.space === 'local' ? T('محلي') : T('عالمي');
+  const pl = $('#ueBar [data-ue="play"]'); pl.classList.toggle('on', UE.play !== 'stop'); pl.innerHTML = ic(UE.play === 'stop' ? 'play' : 'stop'); pl.title = UE.play === 'stop' ? T('تشغيل (Ctrl+P)') : T('إيقاف التشغيل (Ctrl+P)');
+  const pa = $('#ueBar [data-ue="pause"]'); pa.disabled = UE.play === 'stop'; pa.classList.toggle('on', UE.play === 'pause');
+  $('#ueBar [data-ue="step"]').disabled = UE.play === 'stop';
+  $('#ueBar [data-ue="layout"] span').textContent = UE.on ? T('التخطيط الكلاسيكي') : T('تخطيط المحرر');
+  $('#ueLayoutTb span').textContent = UE.on ? T('التخطيط الكلاسيكي') : T('تخطيط المحرر');
+}
+function ueDock(d, force) {
+  const app = $('#app');
+  if (!force && d === UE.dock && !app.classList.contains('dock-min')) { app.classList.add('dock-min'); return; }
+  app.classList.remove('dock-min'); UE.dock = d;
+  $$('#ueDockTabs [data-dock]').forEach(b => b.classList.toggle('on', b.dataset.dock === d));
+  $$('#ueDock .uepane').forEach(p => p.classList.toggle('on', p.dataset.pane === d));
+  if (d === 'console') ueRenderLog(); if (d === 'anim') { renderTracks(); buildTL(false); }
+}
+function ueSplit(el, v, axis, sign, mn, mx) {
+  el.addEventListener('pointerdown', e => {
+    e.preventDefault(); el.setPointerCapture(e.pointerId); el.classList.add('drag');
+    const app = $('#app'), rtl = document.documentElement.dir === 'rtl', s0 = axis === 'x' ? e.clientX : e.clientY;
+    const base = parseFloat(getComputedStyle(app).getPropertyValue(v)) || (axis === 'x' ? 260 : 236);
+    const mv = ev => { const d = ((axis === 'x' ? ev.clientX : ev.clientY) - s0) * sign * (axis === 'x' && rtl ? -1 : 1); app.style.setProperty(v, clamp(base + d, mn, mx) + 'px'); };
+    const up = () => { el.classList.remove('drag'); el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); try { localStorage.setItem('3dx-ue' + v, app.style.getPropertyValue(v)); } catch (e) { } };
+    el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up);
+  });
+  try { const s = localStorage.getItem('3dx-ue' + v); if (s) $('#app').style.setProperty(v, s); } catch (e) { }
+}
+
+/* Build the editor shell once; the classic panels are moved in, never copied, so every handler keeps working */
+function ueBuild() {
+  const app = $('#app'), main = $('main'), mk = (tag, id, html) => { const e = document.createElement(tag); if (id) e.id = id; if (html) e.innerHTML = html; return e; };
+  const tools = [['select', 'select', T('تحديد (Q)')], ['translate', 'move', T('تحريك (W)')], ['rotate', 'rotate', T('تدوير (E)')], ['scale', 'scale', T('تحجيم (R)')]];
+  const bar = mk('div', 'ueBar', `<div class="ueg">${tools.map(([m, i, n]) => `<button class="ub" data-ue-mode="${m}" title="${n}">${ic(i)}</button>`).join('')}<span class="sep"></span><button class="ub" data-ue="space" title="${T('محاور التحويل')}">${ic('local')}<span></span></button></div>
+    <div class="ueg mid"><button class="ub play" data-ue="play">${ic('play')}</button><button class="ub pause" data-ue="pause" title="${T('إيقاف مؤقت (Ctrl+Shift+P)')}">${ic('pause')}</button><button class="ub" data-ue="step" title="${T('خطوة إطار (Ctrl+Alt+P)')}">${ic('ue-step')}</button></div>
+    <div class="ueg m-only"><button class="ub" data-ue="hier" title="${T('التسلسل الهرمي')}">${ic('layers')}</button><button class="ub" data-ue="insp" title="${T('المفتّش')}">${ic('props')}</button><button class="ub" data-ue="layout" title="${T('تخطيط المحرر')} / ${T('التخطيط الكلاسيكي')}">${ic('ue-layout')}<span class="tl"></span></button></div>`);
+  $('#ribbon').after(bar);
+  const hier = mk('aside', 'ueHier', `<div class="ph">${T('التسلسل الهرمي')}<button class="ub" data-ue="create" title="${T('إنشاء كائن')}">+ ▾</button></div>`); hier.classList.add('panel');
+  const center = mk('section', 'ueCenter', `<div class="uetabs" id="ueViewTabs"><button data-view="scene">${ic('grid')}${T('المشهد')}</button><button data-view="game">${ic('camera')}${T('اللعبة')}</button><span class="sp"></span><select id="ueAspect" title="Aspect">${Object.keys(UE_ASPECTS).map(k => `<option value="${k}">${k === 'free' ? T('حر') : k}</option>`).join('')}</select></div>`);
+  main.prepend(hier, center);
+  const dock = mk('div', 'ueDock', `<div class="uetabs" id="ueDockTabs"><button data-dock="project">${ic('ue-folder')}${T('المشروع')}</button><button data-dock="console">${ic('ue-console')}${T('وحدة التحكم')}<b class="cnt" id="ueErrCnt"></b></button><button data-dock="anim">${ic('timeline')}${T('الخط الزمني')}</button><span class="sp"></span><button class="tbtn" data-dock="min" title="${T('تصغير / تكبير اللوحة')}">▁</button></div>
+    <div class="uepane" data-pane="project"></div>
+    <div class="uepane" data-pane="console"><div id="ueLogWrap"><div class="ctool"><button class="ub" data-ce="clear">${T('مسح')}</button><button class="ub" data-ce="collapse">${T('دمج المتكرر')}</button><span style="flex:1"></span><button class="ub f" data-cf="log" title="${T('رسائل')}"><i class="dot" style="background:var(--tx3)"></i><b>0</b></button><button class="ub f" data-cf="warn" title="${T('تحذيرات')}"><i class="dot" style="background:#e8b339"></i><b>0</b></button><button class="ub f" data-cf="error" title="${T('أخطاء')}"><i class="dot" style="background:var(--bad)"></i><b>0</b></button></div><div id="ueLog"></div></div></div>
+    <div class="uepane" data-pane="anim"></div><div class="ueSplit v"></div>`);
+  $('#status').before(dock);
+  vpWrap.append(mk('div', 'ueGame', `<div id="ueFrame"></div><div id="ueNoCam"><span>${T('لا توجد كاميرا في المشهد، لذلك يعرض «اللعبة» كاميرا المحرر.')}</span><button class="btn" data-ue="addcam">${ic('camera')} ${T('إضافة كاميرا رئيسية من العرض الحالي')}</button></div>`));
+  const lt = mk('button', 'ueLayoutTb', `${ic('ue-layout')}<span class="tl"></span>`); lt.className = 'tb'; lt.title = T('تخطيط المحرر') + ' / ' + T('التخطيط الكلاسيكي'); $('#langBtn').before(lt);
+  hier.append(mk('div', null)); hier.lastChild.className = 'ueSplit h';
+  const sp = mk('div', null); sp.className = 'ueSplit h'; $('#sidebar').append(sp);
+  ueSplit(hier.lastChild, '--hw', 'x', 1, 150, 480); ueSplit(sp, '--iw', 'x', -1, 220, 560); ueSplit(dock.querySelector('.ueSplit.v'), '--bh', 'y', -1, 120, 640);
+  UE.insp = $('#sidebar > .ph'); UE.inspTxt = UE.insp.textContent;
+
+  bar.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b || b.disabled) return;
+    if (b.dataset.ueMode) { setMode(b.dataset.ueMode); return; }
+    const a = b.dataset.ue; if (a === 'space') { toggleSpace(); ueSync(); } if (a === 'play') uePlay(); if (a === 'pause') uePause(); if (a === 'step') ueStep(); if (a === 'layout') ueLayout(!UE.on); if (a === 'hier') panel('lib'); if (a === 'insp') panel('side');
+  });
+  lt.addEventListener('click', () => ueLayout(!UE.on));
+  hier.addEventListener('click', e => {
+    const b = e.target.closest('[data-ue="create"]'); if (!b) return; const r = b.getBoundingClientRect();
+    menuAt($('#menu'), r.left, r.bottom + 4, [
+      { i: 'box', l: PRIMS.box.n, a: () => addPrim('box') }, { i: 'sphere', l: PRIMS.sphere.n, a: () => addPrim('sphere') }, { i: 'cyl', l: PRIMS.cylinder.n, a: () => addPrim('cylinder') },
+      { i: 'plane', l: PRIMS.plane.n, a: () => addPrim('plane') }, { i: 'light', l: LIGHTS.point.n, a: () => addLight('point') }, { i: 'sun', l: LIGHTS.dir.n, a: () => addLight('dir') },
+      { i: 'camera', l: T('كاميرا رئيسية'), a: () => ueAddCam() },
+    ]);
+  });
+  center.addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) ueView(b.dataset.view); });
+  $('#ueAspect').addEventListener('change', e => { UE.aspect = e.target.value; UE.frame = ''; });
+  vpWrap.addEventListener('click', e => { if (e.target.closest('[data-ue="addcam"]')) ueAddCam(); });
+  dock.addEventListener('click', e => {
+    const t = e.target.closest('[data-dock]'); if (t) { t.dataset.dock === 'min' ? app.classList.toggle('dock-min') : ueDock(t.dataset.dock); return; }
+    const c = e.target.closest('[data-ce]'); if (c) { if (c.dataset.ce === 'clear') UE.logs = []; else UE.collapse = !UE.collapse; ueRenderLog(); return; }
+    const f = e.target.closest('[data-cf]'); if (f) { UE.filt[f.dataset.cf] = !UE.filt[f.dataset.cf]; ueRenderLog(); return; }
+    const l = e.target.closest('.cl'); if (l) l.classList.toggle('open');
+  });
+  // Ribbon tabs act as menus: a tab opens its tools as a drop-down, the same tab closes it
+  $('#tabs').addEventListener('click', e => {
+    if (!UE.on) return; const t = e.target.closest('.tab'); if (!t) return;
+    const same = t.dataset.tab === state.tab && app.classList.contains('rib-open'); app.classList.toggle('rib-open', !same);
+  }, true);
+  $('#ribbon').addEventListener('click', e => { if (UE.on && e.target.closest('.rb')) setTimeout(() => app.classList.remove('rib-open'), 120); });
+  document.addEventListener('pointerdown', e => { if (UE.on && app.classList.contains('rib-open') && !e.target.closest('#ribbon,#tabs,#menu,#ctx')) app.classList.remove('rib-open'); });
+  addEventListener('keydown', e => {
+    if (!UE.on || A2.on || !(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'p') return;
+    e.preventDefault(); e.stopPropagation(); e.altKey ? ueStep() : e.shiftKey ? uePause() : uePlay();
+  }, true);
+  UE.moved = [$('#outliner'), $('#library'), vpWrap, $('#timeline')].map(n => ({ n, p: n.parentNode, nx: n.nextSibling }));
+  UE.built = true;
+}
+function ueLayout(on) {
+  if (!UE.built) ueBuild();
+  if (!on && UE.play !== 'stop') ueStop();
+  const app = $('#app'); UE.on = on; app.classList.toggle('ue', on); app.classList.remove('rib-open', 'm-lib', 'm-side');
+  if (on) {
+    $('#ueHier').append($('#outliner')); $('#ueCenter').append(vpWrap);
+    $('#ueDock [data-pane="project"]').append($('#library')); $('#ueDock [data-pane="anim"]').append($('#timeline'));
+    UE.insp.textContent = T('المفتّش'); ueDock(UE.dock, true); $('#ueHier').append($('#ueHier > .ueSplit'));
+  } else {
+    UE.moved.slice().reverse().forEach(m => m.p.insertBefore(m.n, m.nx && m.nx.parentNode === m.p ? m.nx : null));
+    UE.insp.textContent = UE.inspTxt;
+  }
+  ueView(on ? UE.view : 'scene');
+  try { localStorage.setItem('3dx-layout', on ? 'editor' : 'classic'); } catch (e) { }
+  resize(); ueSync(); renderTracks();
+}
+function ueInit() {
+  ueBuild();
+  let l = 'editor'; try { l = localStorage.getItem('3dx-layout') || 'editor'; } catch (e) { }
+  ueLayout(l !== 'classic');
+}
+
 /* ───────────── Boot ───────────── */
 async function boot() {
   const title = '3D EXPRESS'; $('#spTitle').innerHTML = [...title].map(c => c === ' ' ? '<span>&nbsp;</span>' : c === '3' || c === 'D' ? `<span><em>${c}</em></span>` : `<span>${c}</span>`).join('');
@@ -4504,7 +4860,7 @@ async function boot() {
   await new Promise(r => setTimeout(r, 380));
   makeThumbs();
   gsap.to('#spBar', { width: '100%', duration: .35 });
-  renderTabs(); renderRibbon(); renderLib(); hint();
+  renderTabs(); renderRibbon(); renderLib(); hint(); ueInit();
   resize(); applyScene(); setShade('solid'); vpWrap.style.setProperty('--vpbg', state.bgColor);
   let restored = false;
   try { const p = await loadProjectStore(); if (p && p.objects?.length) { loadProject(p); restored = true; } } catch (e) { }
