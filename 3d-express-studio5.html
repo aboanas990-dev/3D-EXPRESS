@@ -1138,6 +1138,105 @@ try { ExpressLicense.init(LICENSE_CFG); } catch (e) { console.error(e); }
   }, true);
 })();
 </script>
+<style id="ue-css">
+/* Editor layout (game-engine style): Hierarchy | Scene/Game | Inspector, dock below with Project · Console · Animation */
+#ueBar,#ueDock,#ueHier,#ueCenter{display:none}
+#app.ue{position:relative;grid-template-rows:38px 30px 36px minmax(0,1fr) var(--bh,236px) 24px}
+#app.ue #ribbon{position:absolute;top:68px;left:0;right:0;z-index:45;display:none;box-shadow:0 14px 30px rgba(0,0,0,.5);border-bottom:2px solid #c9a227}
+#app.ue.rib-open #ribbon{display:flex}
+#app.ue #tabs .tab{position:relative}
+#app.ue #tabs::after{content:'▾';align-self:center;color:var(--tx3);font-size:10px;padding-inline-start:4px}
+#app.ue #ueBar{display:flex;align-items:center;gap:8px;padding:0 8px;background:var(--bg1);border-bottom:1px solid var(--bd);min-width:0;overflow-x:auto;scrollbar-width:none}
+.ueg{display:flex;align-items:center;gap:2px;flex:none}
+.ueg.mid{margin-inline:auto;background:var(--bg0);border:1px solid var(--bd);border-radius:6px;padding:2px}
+.ub{display:flex;align-items:center;justify-content:center;gap:5px;min-width:30px;height:26px;padding:0 6px;border:1px solid transparent;border-radius:4px;background:none;color:var(--tx);cursor:pointer;white-space:nowrap;font-size:12px}
+.ub svg.i{width:16px;height:16px}
+.ub:hover{background:var(--bg3);border-color:var(--bd)}
+.ub.on{background:var(--acbg);border-color:var(--ac);color:#fff}
+.ub[disabled]{opacity:.38;cursor:default;background:none;border-color:transparent}
+.ub.play.on{background:#c9a227;border-color:#c9a227;color:#0a1f44}
+.ub.pause.on{background:#7a6418;border-color:#c9a227;color:#fff}
+.ueg.m-only{display:none}
+.ptview{width:100%;background:repeating-conic-gradient(#2a2f37 0 25%,#22262c 0 50%) 0 0/20px 20px;border-radius:4px;overflow:hidden}
+#ueDockTabs{padding-left:46px}
+.ueg .sep{width:1px;height:18px;background:var(--bd);margin:0 4px}
+#app.ue main{grid-template-columns:var(--hw,230px) minmax(0,1fr) var(--iw,300px)}
+#app.ue.no-side main{grid-template-columns:var(--hw,230px) minmax(0,1fr) 0}
+#app.ue #library{display:none}
+#app.ue #ueHier{display:flex;flex-direction:column;position:relative;border-inline-end:1px solid var(--bd)}
+#app.ue #ueHier #outliner{flex:1;height:auto;border:none}
+#app.ue #ueHier #outliner>.ph{display:none}
+#app.ue #ueCenter{display:flex;flex-direction:column;min-width:0;min-height:0}
+#app.ue #ueCenter #vpWrap{flex:1}
+#app.ue #sidebar{position:relative}
+.uetabs{display:flex;align-items:stretch;gap:1px;height:28px;background:var(--bg1);border-bottom:1px solid var(--bd);flex:none;padding:0 4px;min-width:0;overflow-x:auto;scrollbar-width:none}
+.uetabs button{display:flex;align-items:center;gap:6px;padding:0 12px;border:none;border-top:2px solid transparent;background:none;color:var(--tx2);cursor:pointer;font-size:12px;white-space:nowrap}
+.uetabs button svg.i{width:14px;height:14px}
+.uetabs button.on{background:var(--bg2);color:var(--tx);border-top-color:#c9a227}
+.uetabs .sp{flex:1}
+.uetabs select{align-self:center;height:22px;background:var(--bg0);border:1px solid var(--bd);border-radius:3px;font-size:11.5px;padding:0 4px}
+.uetabs .tbtn{border:none;border-top:none;padding:0 8px}
+.uetabs b.cnt{min-width:16px;height:16px;border-radius:8px;background:var(--bad);color:#fff;font-size:10px;display:none;place-items:center;padding:0 4px}
+.uetabs b.cnt.show{display:grid}
+#app.ue #ueDock{display:flex;flex-direction:column;position:relative;background:var(--bg2);border-top:1px solid var(--bd);min-height:0}
+#app.ue.dock-min{--bh:29px!important}
+.uepane{flex:1;min-height:0;display:none}
+.uepane.on{display:flex}
+#app.ue .uepane #library{display:grid;position:static;width:auto;box-shadow:none;grid-template-columns:150px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);flex:1;min-height:0}
+#app.ue .uepane #library>.ph{display:none}
+#app.ue .uepane #libTabs{grid-row:1/3;flex-direction:column;flex-wrap:nowrap;gap:1px;padding:6px;border-inline-end:1px solid var(--bd);overflow:auto}
+#app.ue .uepane #libTabs .lt{justify-content:flex-start;text-align:start;border-radius:3px;width:100%}
+#app.ue .uepane #libTabs .lt::before{content:'';width:14px;height:11px;margin-inline-end:6px;border-radius:2px;background:#c9a227;opacity:.75;display:inline-block;vertical-align:-1px}
+#app.ue .uepane #libGrid{margin:0 6px 6px}
+#app.ue .uepane #timeline{display:flex;flex:1;min-width:0;border-top:none}
+.ueSplit{position:absolute;z-index:6;background:transparent}
+.ueSplit:hover,.ueSplit.drag{background:#c9a227}
+.ueSplit.h{top:0;bottom:0;width:4px;cursor:col-resize}
+.ueSplit.v{left:0;right:0;height:4px;top:-2px;cursor:row-resize}
+#ueHier>.ueSplit{inset-inline-end:-2px}
+#sidebar>.ueSplit{inset-inline-start:-2px}
+#ueLogWrap{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0}
+.ctool{display:flex;align-items:center;gap:4px;padding:3px 6px;background:var(--bg1);border-bottom:1px solid var(--bd);flex:none}
+.ctool .ub{height:22px;font-size:11.5px}
+.ctool .ub.f b{font-weight:600;min-width:14px;text-align:center}
+.ctool .ub.f.off{opacity:.45}
+.ctool i.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+#ueLog{flex:1;overflow:auto;font:12px/1.45 var(--mono);direction:ltr;text-align:left}
+.cl{display:flex;align-items:flex-start;gap:8px;padding:4px 10px;border-bottom:1px solid var(--bg1);cursor:default;white-space:nowrap;overflow:hidden}
+.cl:nth-child(even){background:rgba(255,255,255,.02)}
+.cl.open{white-space:pre-wrap;word-break:break-word}
+.cl i{flex:none;width:9px;height:9px;border-radius:50%;margin-top:4px;background:var(--tx3)}
+.cl.warn i{background:#e8b339} .cl.error i{background:var(--bad)}
+.cl.warn .cm{color:#f0cf7a} .cl.error .cm{color:#ff9a94}
+.cl .ct{color:var(--tx3);flex:none}
+.cl .cm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.cl.open .cm{overflow:visible}
+.cl .cn{flex:none;background:var(--bg4);border-radius:8px;padding:0 6px;font-size:10.5px;color:var(--tx)}
+.cempty{padding:18px;color:var(--tx3);font:12px var(--ui);text-align:center}
+#ueGame{position:absolute;inset:0;display:none;z-index:4}
+#vpWrap.game #ueGame{display:block}
+#vpWrap.game .hud,#vpWrap.game #vcBtns,#vpWrap.game #skHint{display:none!important}
+#ueFrame{position:absolute;box-shadow:0 0 0 9999px #07090c;pointer-events:none}
+#ueNoCam{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:none;flex-direction:column;align-items:center;gap:10px;background:rgba(10,31,68,.88);border:1px solid #c9a227;border-radius:10px;padding:16px 20px;text-align:center;max-width:min(360px,86%);font-size:12.5px}
+#ueNoCam.show{display:flex}
+#ueNoCam .btn{background:#c9a227;border-color:#c9a227;color:#0a1f44;font-weight:600}
+#app.ue-playing #ueBar{background:linear-gradient(0deg,rgba(201,162,39,.16),rgba(201,162,39,.16)),var(--bg1)}
+#app.ue-playing #ueHier::after,#app.ue-playing #sidebar::after,#app.ue-playing #ueDock::after{content:'';position:absolute;inset:0;background:rgba(10,31,68,.28);pointer-events:none;z-index:5}
+#app.ue-playing #ueCenter .uetabs{box-shadow:inset 0 -2px #c9a227}
+@media (max-width:900px){
+  #app.ue{grid-template-rows:38px 30px 36px minmax(0,1fr) var(--bh,190px) 24px}
+  #app.ue main{grid-template-columns:minmax(0,1fr)!important}
+  #app.ue #ueHier,#app.ue #sidebar{position:fixed;top:104px;bottom:24px;width:min(300px,86vw);z-index:30;display:none;box-shadow:0 0 40px rgba(0,0,0,.6);background:var(--bg2)}
+  #app.ue #ueHier{right:0} #app.ue #sidebar{left:0}
+  [dir=ltr] #app.ue #ueHier{right:auto;left:0} [dir=ltr] #app.ue #sidebar{left:auto;right:0}
+  #app.ue.m-lib #ueHier,#app.ue.m-side #sidebar{display:flex}
+  #app.ue .ueSplit.h{display:none}
+  #app.ue .uepane #library{grid-template-columns:96px minmax(0,1fr)}
+  .ub .tl{display:none}
+  .ueg.m-only{display:flex}
+  #app.ue #ueLayoutTb{display:none}
+}
+</style>
 </head>
 <body>
 <div id="splash"><div class="sp">
@@ -1237,7 +1336,10 @@ try { ExpressLicense.init(LICENSE_CFG); } catch (e) { console.error(e); }
 <script type="importmap">
 {"imports":{
   "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+  "three/examples/jsm/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+  "three-mesh-bvh":"https://cdn.jsdelivr.net/npm/three-mesh-bvh@0.7.8/build/index.module.js",
+  "three-gpu-pathtracer":"https://cdn.jsdelivr.net/npm/three-gpu-pathtracer@0.0.23/build/index.module.js"
 }}
 </script>
 <script type="module">
@@ -1255,6 +1357,13 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { PLYExporter } from 'three/addons/exporters/PLYExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { Sky } from 'three/addons/objects/Sky.js';
 
 const gsap = window.gsap;
 const LANG = (() => { const h = location.hash.slice(1); if (h === 'ar' || h === 'en') return h; try { return localStorage.getItem('3dx-lang') || 'en'; } catch (e) { return 'en'; } })();
@@ -1632,6 +1741,7 @@ function build(rec, mat) {
     case 'lathe': o = new THREE.Mesh(latheGeo(rec), managedMat(THREE.DoubleSide)); break;
     case 'text': o = new THREE.Mesh(textGeo(rec), managedMat()); break;
     case 'gen': o = genBuild(rec); break;
+    case 'camera': o = buildGameCam(rec); break;
     case 'import': o = importCache[rec.ref] ? importCache[rec.ref].clone(true) : new THREE.Group(); break;
     default: o = new THREE.Group();
   }
@@ -1696,10 +1806,11 @@ let sel = null, master = null;
 /* ───────────── Object management ───────────── */
 function setShadow(o) { const cs = o.userData.cs !== false; o.traverse(c => { if (c.isMesh && !c.userData.helper) { c.castShadow = cs; c.receiveShadow = true; } }); }
 function kindName(r) {
+  if (r.kind === 'camera') return T('كاميرا رئيسية');
   return r.kind === 'prim' ? T('شكل · ') + (PRIMS[r.type]?.n || '') : r.kind === 'model' ? T('نموذج · ') + (MODELS[r.type]?.n || '') : r.kind === 'rig' ? T('شخصية بهيكل عظمي · ') + (RIGS[r.type]?.n || '') : r.kind === 'light' ? LIGHTS[r.type]?.n : r.kind === 'sketch' ? T('رسم ثنائي الأبعاد') : r.kind === 'extrude' ? T('جسم مبثوق') : r.kind === 'lathe' ? T('جسم دوراني') : r.kind === 'text' ? T('نص ثلاثي الأبعاد') : r.kind === 'gen' ? T('نموذج مولّد · ') + (GTN()[r.t] || '') : T('نموذج مستورد');
 }
-function kindIcon(r) { if (r.kind === 'rig') return 'person'; return r.kind === 'prim' ? (PRIMS[r.type]?.i || 'box') : r.kind === 'model' ? (r.type === 'tree' || r.type === 'pine' ? 'tree' : 'models') : r.kind === 'light' ? LIGHTS[r.type]?.i : r.kind === 'sketch' ? 'pen' : r.kind === 'extrude' ? 'extrude' : r.kind === 'lathe' ? 'lathe' : r.kind === 'text' ? 'text' : r.kind === 'gen' ? 'gen' : 'import'; }
-function baseName(r) { if (r.kind === 'rig') return RIGS[r.type]?.n || T('شخصية'); return r.kind === 'prim' ? PRIMS[r.type]?.n : r.kind === 'model' ? MODELS[r.type]?.n : r.kind === 'light' ? LIGHTS[r.type]?.n : r.kind === 'sketch' ? T('رسم') : r.kind === 'extrude' ? T('بثق') : r.kind === 'lathe' ? T('دوران') : r.kind === 'text' ? T('نص') : r.kind === 'gen' ? (GTN()[r.t] || T('نموذج مولّد')) : (r.name || T('مستورد')); }
+function kindIcon(r) { if (r.kind === 'rig') return 'person'; if (r.kind === 'camera') return 'camera'; return r.kind === 'prim' ? (PRIMS[r.type]?.i || 'box') : r.kind === 'model' ? (r.type === 'tree' || r.type === 'pine' ? 'tree' : 'models') : r.kind === 'light' ? LIGHTS[r.type]?.i : r.kind === 'sketch' ? 'pen' : r.kind === 'extrude' ? 'extrude' : r.kind === 'lathe' ? 'lathe' : r.kind === 'text' ? 'text' : r.kind === 'gen' ? 'gen' : 'import'; }
+function baseName(r) { if (r.kind === 'rig') return RIGS[r.type]?.n || T('شخصية'); if (r.kind === 'camera') return T('كاميرا رئيسية'); return r.kind === 'prim' ? PRIMS[r.type]?.n : r.kind === 'model' ? MODELS[r.type]?.n : r.kind === 'light' ? LIGHTS[r.type]?.n : r.kind === 'sketch' ? T('رسم') : r.kind === 'extrude' ? T('بثق') : r.kind === 'lathe' ? T('دوران') : r.kind === 'text' ? T('نص') : r.kind === 'gen' ? (GTN()[r.t] || T('نموذج مولّد')) : (r.name || T('مستورد')); }
 function uniqueName(b) { let n = 1; const names = new Set(objects.map(o => o.name)); while (names.has(b + ' ' + n)) n++; return b + ' ' + n; }
 function ser(o) {
   return { id: o.userData.id, name: o.name, rec: JSON.parse(JSON.stringify(o.userData.rec)), mat: o.userData.mat ? { ...o.userData.mat } : null, p: o.position.toArray().map(fmt), r: [o.rotation.x, o.rotation.y, o.rotation.z].map(v => Math.round(v * 1e5) / 1e5), s: o.scale.toArray().map(fmt), v: o.visible, cs: o.userData.cs !== false, keys: JSON.parse(JSON.stringify(o.userData.keys || [])), ...(o.userData.bones ? { pose: readPose(o) } : {}) };
@@ -1785,7 +1896,7 @@ function restore(arr, selId) {
 function undo() { if (hi > 0) { hi--; restore(JSON.parse(hist[hi]), sel?.userData.id); toast(T('تراجع')); } }
 function redo() { if (hi < hist.length - 1) { hi++; restore(JSON.parse(hist[hi]), sel?.userData.id); toast(T('إعادة')); } }
 function projectData(includeImports) {
-  return { app: '3d-express-studio', v: 1, name: state.name, settings: { dur: state.dur, loop: state.loop, bg: state.bg, bgColor: state.bgColor, fog: state.fog, env: state.env, shadows: state.shadows, grid: state.grid }, camera: { p: camera.position.toArray(), t: controls.target.toArray() }, objects: snapshot().filter(d => includeImports || d.rec.kind !== 'import') };
+  return { app: '3d-express-studio', v: 1, name: state.name, settings: { fx: state.fx, dur: state.dur, loop: state.loop, bg: state.bg, bgColor: state.bgColor, fog: state.fog, env: state.env, shadows: state.shadows, grid: state.grid }, camera: { p: camera.position.toArray(), t: controls.target.toArray() }, objects: snapshot().filter(d => includeImports || d.rec.kind !== 'import') };
 }
 let saveT = 0, saveWarned = false;
 // Autosave lives in IndexedDB, which holds far more than localStorage's ~5MB, so large scenes keep saving.
@@ -1913,6 +2024,7 @@ function applyScene() {
   else if (state.bg === 'env') { scene.background = envTex; scene.backgroundBlurriness = .5; }
   else { scene.background = bgc; vpWrap.classList.add('flat'); }
   scene.fog = state.fog ? new THREE.Fog(state.bg === 'color' ? bgc : new THREE.Color(0x2a3038), 12, 60) : null;
+  skyApply(); fxParams();
   refreshRibbon();
 }
 function toggle(k) { state[k] = !state[k]; applyScene(); }
@@ -2138,7 +2250,7 @@ const RIBBON = {
   view: { n: T('العرض'), g: [
     { n: T('نمط التظليل'), it: [{ i: 'box', l: T('صلب'), a: () => setShade('solid'), t: () => state.shade === 'solid' }, { i: 'wire', l: T('سلكي'), a: () => setShade('wire'), t: () => state.shade === 'wire' }, { i: 'clay', l: T('طين'), a: () => setShade('clay'), t: () => state.shade === 'clay' }, { i: 'normals', l: T('نواظم'), a: () => setShade('normals'), t: () => state.shade === 'normals' }] },
     { n: T('المشهد'), it: [{ i: 'grid', l: T('الشبكة'), a: () => toggle('grid'), t: () => state.grid }, { i: 'shadow', l: T('الظلال'), a: () => toggle('shadows'), t: () => state.shadows }, { i: 'env', l: T('انعكاسات البيئة'), a: () => toggle('env'), t: () => state.env }, { i: 'fog', l: T('ضباب'), a: () => toggle('fog'), t: () => state.fog }] },
-    { n: T('الخلفية'), h: `<div class="rfield"><label>${T('النوع')} <select id="bgMode"><option value="gradient">${T('تدرّج')}</option><option value="color">${T('لون ثابت')}</option><option value="env">${T('استوديو')}</option></select></label><label>${T('اللون')} <input type="color" id="bgColor" value="#2a2f37"></label></div>` },
+    { n: T('الخلفية'), h: `<div class="rfield"><label>${T('النوع')} <select id="bgMode"><option value="gradient">${T('تدرّج')}</option><option value="color">${T('لون ثابت')}</option><option value="env">${T('استوديو')}</option><option value="sky">${T('سماء واقعية')}</option></select></label><label>${T('اللون')} <input type="color" id="bgColor" value="#2a2f37"></label></div>` },
     { n: T('المساقط'), it: [{ i: 'home', l: T('منظور'), a: () => view('home') }, { i: 'frame', l: T('أعلى'), a: () => view('top') }, { i: 'frame', l: T('أمام'), a: () => view('front') }, { i: 'frame', l: T('يمين'), a: () => view('right') }] },
     { n: T('اللوحات'), it: [{ i: 'grid', l: T('المكتبة'), a: () => panel('lib'), t: () => !$('#app').classList.contains('no-lib') }, { i: 'props', l: T('الخصائص'), a: () => panel('side'), t: () => !$('#app').classList.contains('no-side') }, { i: 'timeline', l: T('الخط الزمني'), a: () => panel('tl') }] },
     { n: T('إخراج'), it: [{ i: 'camera', l: T('لقطة PNG'), a: screenshot }, { i: 'full', l: T('ملء الشاشة'), a: fullscreen }] },
@@ -2158,6 +2270,7 @@ function renderRibbon() {
   gsap.fromTo('#ribbon .rb, #ribbon .rfield', { y: -6, opacity: 0 }, { y: 0, opacity: 1, duration: .28, stagger: .012, ease: 'power2.out' });
 }
 function refreshRibbon() {
+  ueSync();
   const T = RIBBON[state.tab]; if (!T) return;
   $$('#ribbon .rb').forEach(el => { const b = T.g[el.dataset.g].it[el.dataset.b]; el.classList.toggle('on', !!(b.t && b.t())); });
 }
@@ -2181,7 +2294,7 @@ function libItems() {
     case 'prims': return Object.entries(PRIMS).map(([k, v]) => ({ t: 'prim', id: k, n: v.n, img: THUMB['prim:' + k] }));
     case 'mats': return MATS.map(m => ({ t: 'mat', id: m.id, n: m.n, img: THUMB['mat:' + m.id] }));
     case 'tex': return TEXLIST.map(x => ({ t: 'tex', id: x.id, n: x.n, img: THUMB['tex:' + x.id] }));
-    case 'lights': return Object.entries(LIGHTS).map(([k, v]) => ({ t: 'light', id: k, n: v.n, icon: v.i }));
+    case 'lights': return [...Object.entries(LIGHTS).map(([k, v]) => ({ t: 'light', id: k, n: v.n, icon: v.i })), { t: 'cam', id: 'main', n: T('كاميرا رئيسية'), icon: 'camera' }];
   }
 }
 const LIBHINT = { models: T('انقر للإضافة أو اسحب إلى موضع في المشهد'), prims: T('أشكال قابلة للتعديل بخامة كاملة'), mats: T('انقر لتطبيقها على المحدد أو اسحبها فوق أي كائن'), tex: T('تكسيات إجرائية قابلة للتكرار بلا ملفات خارجية'), lights: T('أضواء قابلة للتحريك والتحكم بالشدة واللون') };
@@ -2194,7 +2307,7 @@ function renderLib() {
   gsap.fromTo('#libGrid .li', { opacity: 0, y: 10, scale: .94 }, { opacity: 1, y: 0, scale: 1, duration: .35, stagger: .018, ease: 'power2.out' });
 }
 function libUse(t, id, pos, target) {
-  if (t === 'rig') spawnUI({ kind: 'rig', type: id }, pos); else if (t === 'model') addModel(id, pos); else if (t === 'prim') addPrim(id, pos); else if (t === 'light') addLight(id, pos);
+  if (t === 'rig') spawnUI({ kind: 'rig', type: id }, pos); else if (t === 'model') addModel(id, pos); else if (t === 'prim') addPrim(id, pos); else if (t === 'light') addLight(id, pos); else if (t === 'cam') ueAddCam(pos ? new V3(pos.x, 1.6, pos.z) : null);
   else if (t === 'mat') applyMatPreset(id, target || sel); else if (t === 'tex') applyTexture(id, target || sel);
 }
 $('#libTabs').addEventListener('click', e => { const b = e.target.closest('.lt'); if (b) { state.lib = b.dataset.l; renderLib(); refreshRibbon(); } });
@@ -2237,6 +2350,7 @@ function renderOutliner() {
   const q = $('#olSearch').value.trim();
   const list = objects.filter(o => !q || o.name.includes(q));
   $('#olCount').textContent = objects.length + T(' كائن');
+  ueGameSync();
   $('#olList').innerHTML = list.map(o => `<div class="ol ${o === sel ? 'on' : ''} ${o.visible ? '' : 'hid'}" data-id="${o.userData.id}">${ic(kindIcon(o.userData.rec))}<span class="nm">${esc(o.name)}</span>${hasKeys(o) ? T('<span class="kf" title="متحرك">◆</span>') : ''}<button class="eye" data-eye="1" title="${T('إظهار/إخفاء')}">${ic(o.visible ? 'eye' : 'eyeoff')}</button></div>`).join('') || `<div class="empty"><p>${T('المشهد فارغ')}</p><small>${T('أضف شكلاً من شريط «إنشاء» أو من المكتبة')}</small></div>`;
 }
 const byId = id => objects.find(o => o.userData.id === id);
@@ -2266,6 +2380,7 @@ function renderInspector() {
   if (!o) {
     el.innerHTML = `<div class="empty">${ic('select')}<p>${T('لا يوجد تحديد')}</p><small>${T('انقر على كائن في المشهد أو في المستكشف، أو اسحب نموذجاً من المكتبة.')}</small></div>` +
       sec('scene', T('المشهد'), `<div class="row"><label>${T('اسم المشروع')}</label><input type="text" data-k="pname" value="${esc(state.name)}"></div><p class="hint">${objects.length} ${T('كائن')} · ${objects.filter(hasKeys).length} ${T('متحرك')}</p><div class="btns"><button class="btn" data-act="focusall">${T('عرض الكل')}</button><button class="btn" data-act="tour">${T('جولة الكاميرا')}</button></div>`);
+    el.insertAdjacentHTML('beforeend', fxInspector());
     return;
   }
   const r = o.userData.rec; let h = '';
@@ -2287,7 +2402,8 @@ function renderInspector() {
   if (r.kind === 'lathe') h += sec('la', T('الدوران'), num(T('المقاطع'), 'x.seg', r.seg || 64, 1));
   if (r.kind === 'text') h += sec('tx', T('النص'), `<div class="row"><label>${T('النص')}</label><input type="text" data-k="x.text" value="${esc(r.text)}"></div>` + num(T('الحجم'), 'x.size', r.size, .05) + num(T('العمق'), 'x.depth', r.depth, .05));
   if (r.kind === 'sketch') h += sec('sk', T('رسم ثنائي الأبعاد'), `<p class="hint">${r.pts.length} ${T('نقطة')} · ${r.closed ? T('شكل مغلق') : T('خط مفتوح')}</p><div class="row"><label>${T('عمق البثق')}</label><input type="number" step="0.1" data-k="sk.depth" value="${state.sk.depth}"></div><div class="btns"><button class="btn pri" data-act="extrude">${T('بثق إلى')} 3D</button><button class="btn" data-act="lathe">${T('دوران (خراطة)')}</button></div><p class="hint">${T('في الخراطة: الحافة اليسرى للرسم هي محور الدوران.')}</p>`);
-  if (r.kind !== 'light' && r.kind !== 'sketch') {
+  if (r.kind === 'camera') h += ueCamInspector(o);
+  if (r.kind !== 'light' && r.kind !== 'sketch' && r.kind !== 'camera') {
     const m = o.userData.mat;
     if (!m) h += sec('mat', T('المادة'), `<p class="hint">${T('يستخدم هذا النموذج خاماته الأصلية المتعددة.')}</p><div class="btns"><button class="btn" data-act="ovmat">${T('تخصيص خامة موحّدة')}</button></div><p class="hint">${T('أو اسحب خامة من المكتبة فوقه.')}</p>`);
     else h += sec('mat', T('المادة'), col(T('اللون'), 'm.c', m.c) + rng(T('معدني'), 'm.m', m.m, 0, 1, .01) + rng(T('الخشونة'), 'm.r', m.r, 0, 1, .01) + rng(T('العتامة'), 'm.o', m.o, 0, 1, .01) + rng(T('نفاذية (زجاج)'), 'm.tr', m.tr || 0, 0, 1, .01) + rng(T('طلاء لامع'), 'm.cc', m.cc || 0, 0, 1, .01) + col(T('الانبعاث'), 'm.e', m.e) + rng(T('شدة الانبعاث'), 'm.ei', m.ei, 0, 6, .05) +
@@ -2540,7 +2656,7 @@ function handleFile(f) {
 }
 $('#fileIn').onchange = e => { const f = e.target.files[0]; if (f) handleFile(f); e.target.value = ''; };
 function showHelp() {
-  const rows = [['W / E / R', T('تحريك / تدوير / تحجيم')], ['Q', T('وضع التحديد')], ['G', T('تشغيل الالتقاط')], ['F', T('تركيز على المحدد')], ['Ctrl+D', T('نسخ مكرر')], ['Delete', T('حذف')], ['H', T('إخفاء / إظهار')], ['Ctrl+Z / Ctrl+Y', T('تراجع / إعادة')], ['S', T('وضع الرسم ثنائي الأبعاد')], ['Enter', T('إنهاء الخط المتعدد')], ['Esc', T('إلغاء / إلغاء التحديد')], ['K', T('إضافة مفتاح حركة')], ['N', T('المفتاح التلقائي (Auto Key)')], ['P', T('وضع الوضعية للشخصيات')], ['Space', T('تشغيل / إيقاف الحركة')], ['1 / 3 / 7 / 0', T('أمام / يمين / أعلى / منظور')], ['Ctrl+S', T('حفظ المشروع')]];
+  const rows = [['Ctrl+P', T('تشغيل (Ctrl+P)').replace(' (Ctrl+P)', '')], ['Ctrl+Shift+P / Ctrl+Alt+P', T('إيقاف مؤقت (Ctrl+Shift+P)').replace(' (Ctrl+Shift+P)', '') + ' / ' + T('خطوة إطار (Ctrl+Alt+P)').replace(' (Ctrl+Alt+P)', '')], ['W / E / R', T('تحريك / تدوير / تحجيم')], ['Q', T('وضع التحديد')], ['G', T('تشغيل الالتقاط')], ['F', T('تركيز على المحدد')], ['Ctrl+D', T('نسخ مكرر')], ['Delete', T('حذف')], ['H', T('إخفاء / إظهار')], ['Ctrl+Z / Ctrl+Y', T('تراجع / إعادة')], ['S', T('وضع الرسم ثنائي الأبعاد')], ['Enter', T('إنهاء الخط المتعدد')], ['Esc', T('إلغاء / إلغاء التحديد')], ['K', T('إضافة مفتاح حركة')], ['N', T('المفتاح التلقائي (Auto Key)')], ['P', T('وضع الوضعية للشخصيات')], ['Space', T('تشغيل / إيقاف الحركة')], ['1 / 3 / 7 / 0', T('أمام / يمين / أعلى / منظور')], ['Ctrl+S', T('حفظ المشروع')]];
   info(T('اختصارات لوحة المفاتيح'), `<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><i style="width:44px;height:44px;flex:none;background:var(--app-logo) center/contain no-repeat"></i><div><b>3D Express Studio</b><div class="hint" style="margin:2px 0 0">© Hassan Alfaifi</div></div></div><table>${rows.map(r => `<tr><td><span class="kbd">${r[0]}</span></td><td>${r[1]}</td></tr>`).join('')}</table><p class="hint">${T('اسحب النماذج والخامات من المكتبة مباشرة إلى المشهد. اسحب ملفات GLB أو OBJ أو STL إلى نافذة العرض لاستيرادها.')}</p>`);
 }
 $('#titlebar').addEventListener('click', async e => {
@@ -2606,22 +2722,26 @@ function modal(title, body, buttons, wide) {
 }
 const closeModal = () => { $('#modalBg').style.display = 'none'; $('#modal').style.width = ''; };
 const sel_ = (id, opts, v) => `<select id="${id}" style="grid-column:2/4;height:26px;background:var(--bg1);border:1px solid var(--bd);border-radius:3px;color:var(--tx)">${opts.map(([k, n]) => `<option value="${k}" ${k === v ? 'selected' : ''}>${n}</option>`).join('')}</select>`;
-const rcfg = { res: '1920x1080', w: 1920, h: 1080, ss: 2, hq: true, tr: false, fmt: 'png', exp: 1, vres: '1280x720', fps: 30, mbps: 8, orbit: false };
+const rcfg = { eng: 'raster', smp: 256, bnc: 6, floor: true, res: '1920x1080', w: 1920, h: 1080, ss: 2, hq: true, tr: false, fmt: 'png', exp: 1, vres: '1280x720', fps: 30, mbps: 8, orbit: false };
 function readRes(sel, w, h) { const v = $(sel).value; if (v === 'viewport') return [cv.clientWidth, cv.clientHeight]; if (v === 'custom') return [clamp(+$(w).value | 0, 16, 8192), clamp(+$(h).value | 0, 16, 8192)]; return v.split('x').map(Number); }
 function renderDialog() {
   if (state.playing) setPlaying(false);
   modal(T('الرندر النهائي'), `
+    <div class="row"><label>${T('المحرك')}</label>${sel_('rEng', [['raster', T('سريع (فوري)')], ['pt', T('واقعي (تتبّع المسار)')]], rcfg.eng)}</div>
     <div class="row"><label>${T('الدقة')}</label>${sel_('rRes', RES, rcfg.res)}</div>
     <div class="row" id="rCustom" style="display:${rcfg.res === 'custom' ? 'grid' : 'none'}"><label>${T('العرض (بكسل)')}</label><input type="number" id="rW" value="${rcfg.w}" style="grid-column:2/3"><input type="number" id="rH" value="${rcfg.h}" style="grid-column:3/4;height:24px;background:var(--bg1);border:1px solid var(--bd);border-radius:3px;min-width:0"></div>
     <div class="row"><label>${T('الجودة')}</label>${sel_('rSS', [['1', T('مسودة (1x)')], ['2', T('عالية (2x تنعيم)')], ['3', T('فائقة (3x تنعيم)')]], String(rcfg.ss))}</div>
     <div class="row"><label>${T('التعريض')}</label><input type="range" id="rExp" min="0.3" max="2.5" step="0.05" value="${rcfg.exp}"><output>${rcfg.exp.toFixed(2)}</output></div>
     <div class="row"><label>${T('الصيغة')}</label>${sel_('rFmt', [['png', 'PNG'], ['jpg', 'JPG']], rcfg.fmt)}</div>
+    <div class="ptopt"><div class="row"><label>${T('العيّنات')}</label>${sel_('rSmp', [['64', '64 · ' + T('مسودة (1x)').split(' ')[0]], ['256', '256'], ['512', '512'], ['1024', '1024 · ' + T('فائقة')]], String(rcfg.smp))}</div><div class="row"><label>${T('الارتدادات')}</label>${sel_('rBnc', [['3', '3'], ['6', '6'], ['10', '10']], String(rcfg.bnc))}</div><div class="chk"><label><input type="checkbox" id="rFloor" ${rcfg.floor ? 'checked' : ''}> ${T('أرضية الاستوديو')}</label></div><p class="hint">${T('كلما زادت العيّنات قلّ التشويش وزاد الوقت. الزجاج والمعادن والظلال الناعمة تظهر كما في الواقع.')}</p></div>
     <div class="chk"><label><input type="checkbox" id="rHQ" ${rcfg.hq ? 'checked' : ''}> ${T('ظلال عالية الدقة')}</label><label><input type="checkbox" id="rTr" ${rcfg.tr ? 'checked' : ''}> ${T('خلفية شفافة')}</label></div>`,
     [{ l: T('ابدأ الرندر'), a: doRender }, { l: T('إغلاق'), a: closeModal }]);
   $('#rRes').onchange = e => { $('#rCustom').style.display = e.target.value === 'custom' ? 'grid' : 'none'; };
   $('#rExp').oninput = e => { e.target.nextElementSibling.textContent = (+e.target.value).toFixed(2); };
+  const eng = () => { const pt = $('#rEng').value === 'pt'; $('#modal .ptopt').style.display = pt ? '' : 'none'; $('#rSS').closest('.row').style.display = pt ? 'none' : ''; }; $('#rEng').onchange = eng; eng();
 }
 function doRender() {
+  if ($('#rEng')?.value === 'pt') { ptDialogRun(); return; } rcfg.eng = 'raster';
   Object.assign(rcfg, { res: $('#rRes').value, w: +$('#rW').value, h: +$('#rH').value, ss: +$('#rSS').value, hq: $('#rHQ').checked, tr: $('#rTr').checked, fmt: $('#rFmt').value, exp: +$('#rExp').value });
   let [w, h] = readRes('#rRes', '#rW', '#rH'); const max = Math.min(renderer.capabilities.maxTextureSize, 8192);
   let ss = rcfg.ss; while (ss > 1 && Math.max(w, h) * ss > max) ss--; if (Math.max(w, h) > max) { const k = max / Math.max(w, h); w = Math.floor(w * k); h = Math.floor(h * k); toast(T('الدقة الكبيرة تقلّصت إلى حد كرت الشاشة')); }
@@ -2632,7 +2752,7 @@ function doRender() {
       const exp = renderer.toneMappingExposure; renderer.toneMappingExposure = rcfg.exp;
       if (rcfg.hq) setShadowRes(4096);
       scene.background = rcfg.tr ? null : (state.bg === 'gradient' ? bgTexture() : scene.background);
-      renderer.setScissorTest(false); renderer.setClearColor(0x000000, 0); renderer.clear(); renderer.render(scene, camera);
+      if (fxOn() && !rcfg.tr) fxStill(); else { renderer.setScissorTest(false); renderer.setClearColor(0x000000, 0); renderer.clear(); renderer.render(scene, camera); }
       const out = document.createElement('canvas'); out.width = w; out.height = h; const g = out.getContext('2d'); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
       if (rcfg.fmt === 'jpg') { g.fillStyle = '#1c1f24'; g.fillRect(0, 0, w, h); }
       g.drawImage(cv, 0, 0, w, h);
@@ -2714,12 +2834,15 @@ const cubeAx = new THREE.AxesHelper(1.3); cubeAx.position.set(-.76, -.76, -.76);
 function resize() { if (state.recording) return; const r = vp.getBoundingClientRect(); if (!r.width || !r.height) return; renderer.setSize(r.width, r.height); camera.aspect = r.width / r.height; camera.updateProjectionMatrix(); }
 new ResizeObserver(resize).observe(vp);
 function renderFrame() {
+  if (fxOn()) { renderer.info.reset(); fxRender(camera, true); return; }
   renderer.info.reset(); renderer.setScissorTest(false); renderer.clear(); renderer.render(scene, camera); renderer.render(helpers, camera);
 }
 let fc = 0, ft = performance.now(), fps = 0;
 function tick() {
   controls.update();
-  if (state.recording) { renderer.setScissorTest(false); renderer.clear(); renderer.render(scene, camera); return; }
+  if (state.recording) { if (fxOn()) fxRender(camera, false); else { renderer.setScissorTest(false); renderer.clear(); renderer.render(scene, camera); } return; }
+  if (UE.play === 'play') ueUpdate();
+  if (UE.view === 'game') { ueRenderGame(); tickStats(); return; }
   if (sel && (state.playing || tc.dragging)) selBox.setFromObject(sel);
   renderFrame();
   const tris = renderer.info.render.triangles;
@@ -2727,8 +2850,11 @@ function tick() {
   cubeCam.position.copy(camera.position).sub(controls.target).normalize().multiplyScalar(5.2); cubeCam.up.copy(camera.up); cubeCam.lookAt(0, 0, 0);
   renderer.setViewport(cr.x, h - cr.y - CUBE, CUBE, CUBE); renderer.setScissor(cr.x, h - cr.y - CUBE, CUBE, CUBE); renderer.setScissorTest(true); renderer.clearDepth();
   renderer.render(cubeScene, cubeCam); renderer.setScissorTest(false); renderer.setViewport(0, 0, w, h);
+  tickStats(tris);
+}
+function tickStats(tris = renderer.info.render.triangles) {
   fc++; const now = performance.now();
-  if (now - ft > 500) { fps = fc * 1000 / (now - ft); fc = 0; ft = now; $('#stStats').textContent = `${fps.toFixed(0)} fps · ${objects.length} obj · ${(tris / 1000).toFixed(1)}k tris`; }
+  if (now - ft > 500) { fps = fc * 1000 / (now - ft); fc = 0; ft = now; fxWatch(fps); $('#stStats').textContent = `${fps.toFixed(0)} fps · ${objects.length} obj · ${(tris / 1000).toFixed(1)}k tris`; }
 }
 
 /* ───────────── Demo scene ───────────── */
@@ -4495,6 +4621,437 @@ function sdHelp() {
   </div>`, [{ l: T('رجوع'), a: () => genDialog('image') }, { l: T('إغلاق'), a: closeModal }], true);
 }
 
+/* ───────────── Rendering quality: post-processing, sky, path tracing ─────────────
+   Viewport, Game view, video and final render share one pipeline:
+   scene → helpers → ambient occlusion (GTAO) → bloom → colour grade → tone mapping (OutputPass).
+   The photoreal final render uses a GPU path tracer, loaded only when it is first needed. */
+Object.assign(EN, {
+  'جودة العرض': 'Render Quality', 'أساسي': 'Basic', 'متوازن': 'Balanced', 'عالٍ': 'High', 'سينمائي': 'Cinematic', 'مخصص ': 'Custom', 'إعدادات العرض': 'Render Settings',
+  'تحويل الألوان': 'Tone mapping', 'الإطباق المحيطي (AO)': 'Ambient occlusion (AO)', 'التوهج (Bloom)': 'Bloom', 'تنعيم الحواف': 'Anti-aliasing', 'الشدة ': 'Strength', 'نصف القطر ': 'Radius',
+  'العتبة': 'Threshold', 'التباين': 'Contrast', 'التشبع': 'Saturation', 'التظليل الطرفي': 'Vignette', 'الشمس: الاتجاه°': 'Sun direction°', 'الشمس: الارتفاع°': 'Sun height°', 'سماء واقعية': 'Physical sky',
+  'جودة العرض: ': 'Render quality: ', 'العرض بطيء على هذا الجهاز، فخُفّضت الجودة إلى «متوازن» بلا إطباق محيطي': 'Rendering is slow on this device, so quality dropped to Balanced without ambient occlusion',
+  'المحرك': 'Engine', 'سريع (فوري)': 'Fast (real-time)', 'واقعي (تتبّع المسار)': 'Photoreal (path tracing)', 'العيّنات': 'Samples', 'الارتدادات': 'Bounces', 'أرضية الاستوديو': 'Studio floor',
+  'جارٍ تجهيز محرك تتبّع المسار…': 'Preparing the path tracer…', 'جارٍ بناء المشهد…': 'Building the scene…', 'عيّنة': 'sample', 'إيقاف وحفظ الحالي': 'Stop and keep',
+  'تعذّر تحميل محرك تتبّع المسار (يحتاج اتصالاً بالإنترنت أول مرة)': "Couldn't load the path tracer (it needs an internet connection the first time)",
+  'كلما زادت العيّنات قلّ التشويش وزاد الوقت. الزجاج والمعادن والظلال الناعمة تظهر كما في الواقع.': 'More samples means less noise and a longer render. Glass, metal and soft shadows behave as in real life.',
+});
+state.fx = { q: 'balanced', tm: 'aces', exp: 1, ao: true, aoI: 1, aoR: .45, bloom: true, bS: .25, bT: 1.6, bR: .35, aa: true, con: 1.04, sat: 1.06, vig: .18, sunAz: 35, sunEl: 42, sh: 2048 };
+const FXQ = {
+  off: { ao: false, bloom: false, aa: true, con: 1, sat: 1, vig: 0, sh: 2048 },
+  balanced: { tm: 'aces', exp: 1, ao: true, aoI: 1, aoR: .45, bloom: true, bS: .25, bT: 1.6, bR: .35, aa: true, con: 1.04, sat: 1.06, vig: .18, sh: 2048 },
+  high: { tm: 'aces', exp: 1, ao: true, aoI: 1.2, aoR: .6, bloom: true, bS: .35, bT: 1.4, bR: .45, aa: true, con: 1.06, sat: 1.08, vig: .22, sh: 4096 },
+  cinematic: { tm: 'agx', exp: 1.2, ao: true, aoI: 1.35, aoR: .7, bloom: true, bS: .45, bT: 1.2, bR: .55, aa: true, con: 1.1, sat: 1.12, vig: .38, sh: 4096 },
+};
+const FXQN = () => ({ off: T('أساسي'), balanced: T('متوازن'), high: T('عالٍ'), cinematic: T('سينمائي') });
+const TMS = { aces: THREE.ACESFilmicToneMapping, agx: THREE.AgXToneMapping, reinhard: THREE.ReinhardToneMapping, cineon: THREE.CineonToneMapping, none: THREE.NoToneMapping };
+const GRADE = {
+  uniforms: { tDiffuse: { value: null }, con: { value: 1 }, sat: { value: 1 }, vig: { value: 0 } },
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: `uniform sampler2D tDiffuse; uniform float con, sat, vig; varying vec2 vUv;
+    void main(){ vec4 c = texture2D(tDiffuse, vUv); vec3 col = c.rgb; float l = dot(col, vec3(.2126, .7152, .0722));
+      col = max(mix(vec3(l), col, sat), 0.); col = max((col - .18) * con + .18, 0.);
+      float d = distance(vUv, vec2(.5)); col *= mix(1., smoothstep(.95, .3, d), vig); gl_FragColor = vec4(col, c.a); }`,
+};
+const FX = { c: null, w: 0, h: 0, slow: 0 };
+const fxOn = () => state.fx.q !== 'off' && state.shade === 'solid';
+function fxBuild() {
+  const w = Math.max(1, cv.width), h = Math.max(1, cv.height);
+  const rt = new THREE.WebGLRenderTarget(w, h, { type: THREE.HalfFloatType, samples: state.fx.aa ? 4 : 0 });
+  const c = new EffectComposer(renderer, rt); c.setPixelRatio(1); c.setSize(w, h);
+  const rp = new RenderPass(scene, camera), hp = new RenderPass(helpers, camera); hp.clear = false; hp.clearDepth = false;
+  const ao = new GTAOPass(scene, camera, w, h), bloom = new UnrealBloomPass(new THREE.Vector2(w, h), .3, .45, .9), grade = new ShaderPass(GRADE), out = new OutputPass();
+  [rp, hp, ao, bloom, grade, out].forEach(p => c.addPass(p));
+  if (FX.c) { FX.c.renderTarget1.dispose(); FX.c.renderTarget2.dispose(); FX.ao.dispose?.(); FX.bloom.dispose?.(); }
+  Object.assign(FX, { c, rp, hp, ao, bloom, grade, w, h, aa: state.fx.aa }); fxParams();
+}
+function fxParams() {
+  const f = state.fx; renderer.toneMapping = TMS[f.tm] ?? THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = f.exp;
+  if (!FX.c) return;
+  FX.ao.enabled = f.ao; FX.ao.blendIntensity = f.aoI; FX.ao.updateGtaoMaterial({ radius: f.aoR, thickness: 1, distanceExponent: 1.5, scale: 1 });
+  FX.bloom.enabled = f.bloom; FX.bloom.strength = f.bS; FX.bloom.threshold = f.bT; FX.bloom.radius = f.bR;
+  FX.grade.uniforms.con.value = f.con; FX.grade.uniforms.sat.value = f.sat; FX.grade.uniforms.vig.value = f.vig;
+}
+function fxRender(cam, withHelpers) {
+  if (!FX.c || FX.aa !== state.fx.aa) fxBuild();
+  if (cv.width !== FX.w || cv.height !== FX.h) { FX.w = cv.width; FX.h = cv.height; FX.c.setSize(FX.w, FX.h); }
+  FX.rp.camera = FX.hp.camera = FX.ao.camera = cam; FX.hp.enabled = !!withHelpers;
+  const bg = scene.background; if (!bg && state.bg === 'gradient') scene.background = bgTexture();
+  renderer.setScissorTest(false); renderer.setViewport(0, 0, cv.width / renderer.getPixelRatio(), cv.height / renderer.getPixelRatio());
+  FX.c.render(); scene.background = bg;
+}
+/* A still frame at the stage size withStage() set: the composer follows the drawing buffer */
+function fxStill() { FX.w = 0; fxRender(camera, false); FX.w = 0; }
+// Drops to Balanced without AO if the viewport stays below 18 fps, so weak GPUs remain usable
+function fxWatch(fps) {
+  if (!fxOn() || state.recording || document.hidden) { FX.slow = 0; return; }
+  FX.slow = fps < 18 ? FX.slow + 1 : 0;
+  if (FX.slow >= 8 && (state.fx.ao || state.fx.q !== 'balanced')) { FX.slow = 0; Object.assign(state.fx, FXQ.balanced, { q: 'balanced', ao: false }); setShadowRes(state.fx.sh); fxParams(); toast(T('العرض بطيء على هذا الجهاز، فخُفّضت الجودة إلى «متوازن» بلا إطباق محيطي')); if (!sel) renderInspector(); refreshRibbon(); }
+}
+function fxPreset(q) {
+  const prevSh = state.fx.sh; state.fx.q = q; Object.assign(state.fx, FXQ[q]);
+  if (q === 'off') Object.assign(state.fx, { tm: 'aces', exp: 1 });
+  if (state.fx.sh !== prevSh) setShadowRes(state.fx.sh);
+  fxParams(); FX.slow = 0; if (!sel) renderInspector(); refreshRibbon(); autosave(); toast(T('جودة العرض: ') + FXQN()[q]);
+}
+
+/* Physical sky: the sun drives the key light and an environment map generated from the sky itself */
+const SKY = { mesh: null, env: null, key: '' };
+// The sky shader's radiance is far above what the studio lights expect; scale it down so the scene isn't washed out
+function skyMesh() { const m = new Sky(); m.scale.setScalar(300); m.material.uniforms.skyGain = { value: .42 }; m.material.fragmentShader = 'uniform float skyGain;\n' + m.material.fragmentShader.replace('gl_FragColor = vec4( retColor, 1.0 );', 'gl_FragColor = vec4( retColor * skyGain, 1.0 );'); return m; }
+function skyApply() {
+  const on = state.bg === 'sky';
+  if (!on) { if (SKY.mesh) { SKY.mesh.visible = false; keyL.color.set(0xffffff); keyL.position.set(6, 11, 5); vpWrap.style.setProperty('--vpbg', state.bgColor); } return; }
+  if (!SKY.mesh) { SKY.mesh = skyMesh(); SKY.mesh.material.uniforms.turbidity.value = 6; SKY.mesh.material.uniforms.rayleigh.value = 2.6; SKY.mesh.material.uniforms.mieCoefficient.value = .004; SKY.mesh.material.uniforms.mieDirectionalG.value = .82; scene.add(SKY.mesh); }
+  SKY.mesh.visible = true;
+  const el = state.fx.sunEl * D2R, az = state.fx.sunAz * D2R, sun = new V3(Math.cos(el) * Math.sin(az), Math.sin(el), Math.cos(el) * Math.cos(az));
+  SKY.mesh.material.uniforms.sunPosition.value.copy(sun);
+  keyL.position.copy(sun).multiplyScalar(16); keyL.color.setHSL(.09, clamp(1 - state.fx.sunEl / 50, 0, .75), clamp(.55 + state.fx.sunEl / 200, .55, .95));
+  const k = state.fx.sunAz + ':' + state.fx.sunEl;
+  if (k !== SKY.key) {
+    SKY.key = k; const s = new THREE.Scene(), m = skyMesh(); m.material.uniforms.sunPosition.value.copy(sun);
+    for (const u of ['turbidity', 'rayleigh', 'mieCoefficient', 'mieDirectionalG']) m.material.uniforms[u].value = SKY.mesh.material.uniforms[u].value;
+    s.add(m); SKY.env?.dispose(); SKY.env = pmrem.fromScene(s, 0, .1, 1000).texture; m.geometry.dispose(); m.material.dispose();
+  }
+  scene.background = null; vpWrap.classList.add('flat'); vpWrap.style.setProperty('--vpbg', '#8fb3d9');
+  scene.environment = state.env ? SKY.env : null; hemi.intensity = .25;
+}
+
+/* Inspector: scene-level render settings, shown when nothing is selected (like a post-processing volume) */
+function fxInspector() {
+  const f = state.fx, opt = (o, v) => Object.entries(o).map(([k, n]) => `<option value="${k}" ${k === v ? 'selected' : ''}>${n}</option>`).join('');
+  const chk = (k, l) => `<label><input type="checkbox" data-k="fx.${k}" ${f[k] ? 'checked' : ''}> ${l}</label>`;
+  return sec('fx', T('جودة العرض'),
+    `<div class="row"><label>${T('جودة العرض')}</label><select data-k="fx.q">${opt({ ...FXQN(), ...(f.q === 'custom' ? { custom: T('مخصص ') } : {}) }, f.q)}</select></div>` +
+    `<div class="row"><label>${T('تحويل الألوان')}</label><select data-k="fx.tm">${opt({ aces: 'ACES Filmic', agx: 'AgX', reinhard: 'Reinhard', cineon: 'Cineon', none: T('بدون') }, f.tm)}</select></div>` +
+    rng(T('التعريض'), 'fx.exp', f.exp, .2, 3, .05) +
+    `<div class="chk">${chk('ao', T('الإطباق المحيطي (AO)'))}</div>` + rng(T('الشدة '), 'fx.aoI', f.aoI, 0, 2, .05) + rng(T('نصف القطر '), 'fx.aoR', f.aoR, .05, 2, .05) +
+    `<div class="chk">${chk('bloom', T('التوهج (Bloom)'))}</div>` + rng(T('الشدة '), 'fx.bS', f.bS, 0, 2, .05) + rng(T('العتبة'), 'fx.bT', f.bT, 0, 3, .05) +
+    rng(T('التباين'), 'fx.con', f.con, .6, 1.5, .01) + rng(T('التشبع'), 'fx.sat', f.sat, 0, 2, .01) + rng(T('التظليل الطرفي'), 'fx.vig', f.vig, 0, 1, .01) +
+    `<div class="chk">${chk('aa', T('تنعيم الحواف'))}</div>` +
+    (state.bg === 'sky' ? rng(T('الشمس: الاتجاه°'), 'fx.sunAz', f.sunAz, 0, 360, 1) + rng(T('الشمس: الارتفاع°'), 'fx.sunEl', f.sunEl, 1, 89, 1) : ''));
+}
+function fxField(e, fin) {
+  const t = e.target, k = t.dataset.k; if (!k || !k.startsWith('fx.')) return;
+  const f = k.slice(3), v = t.type === 'checkbox' ? t.checked : t.type === 'range' ? parseFloat(t.value) : t.value;
+  if (t.type === 'range' && t.nextElementSibling) t.nextElementSibling.textContent = (+v).toFixed(2);
+  if (f === 'q') { if (fin && FXQ[v]) fxPreset(v); return; }
+  state.fx[f] = v; if (f !== 'sunAz' && f !== 'sunEl' && f !== 'tm' && f !== 'exp') state.fx.q = 'custom';
+  if (f === 'sunAz' || f === 'sunEl') { if (fin) skyApply(); } else fxParams();
+  if (fin) { autosave(); if (f === 'q' || state.fx.q === 'custom') { const s = $('#props [data-k="fx.q"]'); if (s && !s.querySelector('[value="custom"]')) renderInspector(); } }
+}
+$('#props').addEventListener('input', e => fxField(e, false));
+$('#props').addEventListener('change', e => fxField(e, true));
+RIBBON.render.g.splice(1, 0, { n: T('جودة العرض'), it: [
+  ...Object.keys(FXQ).map(q => ({ i: q === 'off' ? 'flat' : q === 'cinematic' ? 'video' : 'sun', l: FXQN()[q], a: () => fxPreset(q), t: () => state.fx.q === q })),
+  { i: 'props', l: T('إعدادات العرض'), a: () => { select(null); $('#app').classList.remove('no-side'); if (innerWidth <= 900) $('#app').classList.add('m-side'); closedSecs.delete('fx'); renderInspector(); $('#props [data-sec="fx"]')?.scrollIntoView({ block: 'start' }); } },
+] });
+
+/* Photoreal final render with the GPU path tracer (separate WebGL context, so the editor keeps running) */
+let PTmod = null;
+async function ptRender(w, h, opt, onStep) {
+  // The tracer reads Scene fields that three.js added after r160; give older scenes neutral defaults
+  [['backgroundRotation', new THREE.Euler()], ['environmentRotation', new THREE.Euler()], ['environmentIntensity', 1]].forEach(([k, v]) => { if (!(k in THREE.Scene.prototype) && !(k in scene)) Object.defineProperty(THREE.Scene.prototype, k, { value: v, writable: true, configurable: true }); });
+  PTmod = PTmod || await import('three-gpu-pathtracer');
+  const r2 = new THREE.WebGLRenderer({ antialias: false, preserveDrawingBuffer: true, alpha: !!opt.tr });
+  r2.setPixelRatio(1); r2.setSize(w, h, false); r2.outputColorSpace = THREE.SRGBColorSpace; r2.toneMapping = renderer.toneMapping; r2.toneMappingExposure = opt.exp;
+  const pt = new PTmod.WebGLPathTracer(r2); Object.assign(pt, { bounces: opt.bounces, transmissiveBounces: 8, filterGlossyFactor: .5, minSamples: 0, renderDelay: 0, fadeDuration: 0, dynamicLowRes: false, rasterizeScene: false });
+  pt.tiles.set(2, 2);
+  const cam = camera.clone(); cam.aspect = w / h; cam.updateProjectionMatrix();
+  // The editor's environment is a PMREM cube from another context, so the tracer gets its own gradient sky
+  const sky = state.bg === 'sky', env = new PTmod.GradientEquirectTexture(); env.exponent = sky ? 1.6 : 2;
+  if (sky) { env.topColor.set(0x5d8fd6); env.bottomColor.set(0xd9e4ef); } else if (state.bg === 'color') { env.topColor.set(state.bgColor).multiplyScalar(1.4); env.bottomColor.set(state.bgColor); } else { env.topColor.set(0x8a94a3); env.bottomColor.set(0x262b33); }
+  env.update();
+  const prev = { env: scene.environment, bg: scene.background, sp: shadowPlane.visible, sky: SKY.mesh?.visible };
+  const hidden = []; objects.forEach(o => o.traverse(c => { if ((c.userData.helper || o.userData.rec.kind === 'sketch' || o.userData.rec.kind === 'camera') && c.visible) { c.visible = false; hidden.push(c); } }));
+  let floor = null;
+  if (opt.floor) { floor = new THREE.Mesh(new THREE.CircleGeometry(80, 64).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ color: sky ? 0xb9b2a6 : state.bg === 'color' ? state.bgColor : 0x3a3f47, roughness: .85 })); floor.position.y = -.003; scene.add(floor); }
+  shadowPlane.visible = false; if (SKY.mesh) SKY.mesh.visible = false;
+  scene.environment = env; scene.background = opt.tr ? null : env;
+  const undo = () => { hidden.forEach(c => c.visible = true); if (floor) { scene.remove(floor); floor.geometry.dispose(); floor.material.dispose(); } Object.assign(scene, { environment: prev.env, background: prev.bg }); shadowPlane.visible = prev.sp; if (SKY.mesh) SKY.mesh.visible = !!prev.sky; };
+  try { pt.setScene(scene, cam); } catch (e) { undo(); r2.dispose(); throw e; }
+  undo();
+  return new Promise(res => {
+    const done = () => { const url = r2.domElement.toDataURL(opt.fmt === 'jpg' ? 'image/jpeg' : 'image/png', .95); try { pt.dispose(); } catch (e) { } env.dispose(); r2.dispose(); r2.forceContextLoss(); res(url); };
+    const step = () => {
+      if (opt.stop?.()) { done(); return; }
+      try { for (let i = 0; i < 4 && pt.samples < opt.samples; i++) pt.renderSample(); } catch (e) { console.error(e); done(); return; }
+      onStep(pt.samples, r2.domElement);
+      pt.samples >= opt.samples ? done() : requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+async function ptDialogRun() {
+  let [w, h] = readRes('#rRes', '#rW', '#rH'); const max = 4096; if (Math.max(w, h) > max) { const k = max / Math.max(w, h); w = Math.floor(w * k); h = Math.floor(h * k); }
+  const opt = { samples: +$('#rSmp').value, bounces: +$('#rBnc').value, floor: $('#rFloor').checked, tr: $('#rTr').checked, fmt: $('#rFmt').value, exp: +$('#rExp').value };
+  Object.assign(rcfg, { eng: 'pt', smp: opt.samples, bnc: opt.bounces, floor: opt.floor, tr: opt.tr, fmt: opt.fmt, exp: opt.exp, res: $('#rRes').value, w: +$('#rW').value, h: +$('#rH').value });
+  let stop = false; opt.stop = () => stop;
+  $('#modal .mb').innerHTML = `<div class="ptwrap"><div class="ptview" style="aspect-ratio:${w}/${h}"></div><div class="sp-bar" style="width:100%;margin-top:10px"><i id="ptBar" style="width:2%;animation:none"></i></div><p class="hint" id="ptMsg">${T('جارٍ تجهيز محرك تتبّع المسار…')}</p></div>`;
+  $('#modal .mf').innerHTML = `<button class="btn" id="ptStop">${T('إيقاف وحفظ الحالي')}</button>`; $('#ptStop').onclick = () => { stop = true; };
+  const t0 = performance.now(); let url;
+  try {
+    url = await ptRender(w, h, opt, (n, canvas) => {
+      const v = $('#modal .ptview'); if (v && canvas.parentNode !== v) { canvas.style.cssText = 'width:100%;height:100%;display:block;border-radius:4px'; v.appendChild(canvas); }
+      $('#ptBar').style.width = Math.max(2, n / opt.samples * 100) + '%'; $('#ptMsg').textContent = `${Math.floor(n)} / ${opt.samples} ${T('عيّنة')} · ${((performance.now() - t0) / 1000).toFixed(0)}s`;
+    });
+  } catch (e) { console.error(e); closeModal(); toast(T('تعذّر تحميل محرك تتبّع المسار (يحتاج اتصالاً بالإنترنت أول مرة)')); return; }
+  const secs = ((performance.now() - t0) / 1000).toFixed(1), name = fileBase('render') + '_pt_' + w + 'x' + h + '.' + opt.fmt;
+  modal(T('اكتمل الرندر'), `<img src="${url}" alt="" style="width:100%;border-radius:4px;background:repeating-conic-gradient(#2a2f37 0 25%,#22262c 0 50%) 0 0/20px 20px"><p class="hint" style="direction:ltr">${w}×${h} · path tracing · ${opt.samples} spp · ${opt.bounces} bounces · ${secs}s</p>`,
+    [{ l: T('حفظ الصورة'), a: () => dlURL(url, name) }, { l: T('إعادة الرندر'), a: renderDialog }, { l: T('إغلاق'), a: closeModal }], true);
+}
+
+/* ───────────── Editor layout (game-engine style) ─────────────
+   Hierarchy | Scene/Game | Inspector, a dock with Project · Console · Animation, a centred Play/Pause/Step bar.
+   Play mode snapshots the scene and puts it back on Stop. The classic layout stays one click away. */
+Object.assign(EN, {
+  'تخطيط المحرر': 'Editor Layout', 'التخطيط الكلاسيكي': 'Classic Layout', 'التسلسل الهرمي': 'Hierarchy', 'المفتّش': 'Inspector', 'المشروع': 'Project', 'وحدة التحكم': 'Console',
+  'اللعبة': 'Game', 'حر': 'Free', 'تشغيل (Ctrl+P)': 'Play (Ctrl+P)', 'إيقاف مؤقت (Ctrl+Shift+P)': 'Pause (Ctrl+Shift+P)', 'خطوة إطار (Ctrl+Alt+P)': 'Step (Ctrl+Alt+P)',
+  'تحديد (Q)': 'Select (Q)', 'تحريك (W)': 'Move (W)', 'تدوير (E)': 'Rotate (E)', 'تحجيم (R)': 'Scale (R)', 'عالمي': 'Global', 'محلي': 'Local', 'محاور التحويل': 'Transform axes',
+  'مسح': 'Clear', 'دمج المتكرر': 'Collapse', 'رسائل': 'Messages', 'تحذيرات': 'Warnings', 'أخطاء': 'Errors', 'لا توجد رسائل': 'No messages',
+  'كاميرا رئيسية': 'Main Camera', 'كاميرا اللعبة': 'Game camera', 'زاوية الرؤية°': 'Field of view°', 'مطابقة العرض الحالي': 'Align with view', 'أُضيفت الكاميرا الرئيسية': 'Main Camera added',
+  'لا توجد كاميرا في المشهد، لذلك يعرض «اللعبة» كاميرا المحرر.': 'There is no camera in the scene, so Game shows the editor camera.', 'إضافة كاميرا رئيسية من العرض الحالي': 'Add a Main Camera from this view',
+  'بدأ التشغيل': 'Entered play mode', 'انتهى التشغيل — أُعيد المشهد كما كان قبل التشغيل': 'Exited play mode. The scene is back to how it was before Play', 'إيقاف التشغيل (Ctrl+P)': 'Stop (Ctrl+P)',
+  'إنشاء كائن': 'Create object', 'التعديلات أثناء التشغيل تُلغى عند الإيقاف': 'Changes made in play mode are undone when you stop', 'الكاميرا تطابق العرض الحالي': 'Camera aligned with the view',
+  'انقر التبويب مرة أخرى لإخفاء الأدوات': 'Click the tab again to hide the tools', 'تصغير / تكبير اللوحة': 'Collapse / expand the panel',
+});
+$('#iconDefs').innerHTML += [['ue-console', 'M4 5h16v14H4zM7 9l3 3-3 3M12 15h5'], ['ue-folder', 'M3 6h6l2 2h10v11H3z'], ['ue-step', 'M6 5v14M10 5l9 7-9 7z'], ['ue-layout', 'M3 4h18v16H3zM9 4v16M15 4v11M3 15h18']]
+  .map(([k, d]) => `<symbol id="i-${k}" viewBox="0 0 24 24"><path d="${d}"/></symbol>`).join('');
+
+const UE = { on: false, view: 'scene', play: 'stop', snap: null, dock: 'project', aspect: 'free', logs: [], filt: { log: true, warn: true, error: true }, collapse: false, updaters: [], moved: [], built: false };
+const UE_ASPECTS = { free: 0, '16:9': 16 / 9, '4:3': 4 / 3, '9:16': 9 / 16, '1:1': 1 };
+
+/* Game camera object */
+function buildGameCam(rec) {
+  const g = new THREE.Group(), cam = new THREE.PerspectiveCamera(rec.fov || 60, 16 / 9, .05, 600); g.add(cam); g.userData.cam = cam;
+  const m = new THREE.MeshBasicMaterial({ color: 0x9aa4b1 }), help = c => { c.userData.helper = true; g.add(c); return c; };
+  help(new THREE.Mesh(new THREE.BoxGeometry(.3, .22, .36), m)).position.z = .2;
+  help(new THREE.Mesh(new THREE.ConeGeometry(.12, .18, 14, 1, true).rotateX(Math.PI / 2), m)).position.z = -.06;
+  const d = .9, hh = Math.tan((rec.fov || 60) * D2R / 2) * d, hw = hh * 16 / 9, c = [[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]].map(([x, y]) => new V3(x, y, -d)), O = new V3();
+  const pts = [O, c[0], O, c[1], O, c[2], O, c[3], c[0], c[1], c[1], c[2], c[2], c[3], c[3], c[0], new V3(-hw * .4, hh * 1.1, -d), new V3(0, hh * 1.45, -d), new V3(0, hh * 1.45, -d), new V3(hw * .4, hh * 1.1, -d)];
+  help(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xc9a227 })));
+  return g;
+}
+function ueGameCam() { return objects.find(o => o.userData.rec.kind === 'camera' && o.visible) || null; }
+function ueAddCam(pos) {
+  const o = spawn({ kind: 'camera', fov: 60 }, { drop: false, pos: pos || camera.position.clone() });
+  if (pos) o.lookAt(controls.target.x, pos.y, controls.target.z); else o.quaternion.copy(camera.quaternion);
+  select(o); commit(); pop(o); toast(T('أُضيفت الكاميرا الرئيسية')); ueGameSync();
+  return o;
+}
+function ueCamInspector(o) {
+  return sec('cam', T('كاميرا اللعبة'), rng(T('زاوية الرؤية°'), 'c.fov', o.userData.rec.fov || 60, 20, 110, 1) + `<div class="btns"><button class="btn" data-act="ue-camalign">${T('مطابقة العرض الحالي')}</button></div>`);
+}
+$('#props').addEventListener('change', e => {
+  const k = e.target.dataset.k; if (k !== 'c.fov' || !sel || sel.userData.rec.kind !== 'camera') return;
+  const v = parseFloat(e.target.value); if (isNaN(v)) return; sel.userData.rec.fov = clamp(v, 10, 150); rebuildObj(sel); commit();
+});
+$('#props').addEventListener('click', e => {
+  if (!e.target.closest('[data-act="ue-camalign"]') || !sel || sel.userData.rec.kind !== 'camera') return;
+  sel.position.copy(camera.position); sel.quaternion.copy(camera.quaternion); syncInspector(); commit(); toast(T('الكاميرا تطابق العرض الحالي'));
+});
+
+/* Console */
+function ueFmt(a) {
+  if (a instanceof Error) return a.stack || a.message;
+  if (a && typeof a === 'object') { try { return JSON.stringify(a); } catch (e) { return String(a); } }
+  return String(a);
+}
+function ueLog(type, args) {
+  UE.logs.push({ type, msg: args.map(ueFmt).join(' '), t: new Date() }); if (UE.logs.length > 999) UE.logs.shift();
+  if (!UE.logQ) UE.logQ = requestAnimationFrame(() => { UE.logQ = 0; ueRenderLog(); });
+}
+['log', 'info', 'warn', 'error'].forEach(k => { const f = console[k].bind(console); console[k] = (...a) => { f(...a); try { ueLog(k === 'info' ? 'log' : k, a); } catch (e) { } }; });
+addEventListener('error', e => ueLog('error', [e.message + (e.filename ? ` (${e.filename.split('/').pop()}:${e.lineno})` : '')]));
+addEventListener('unhandledrejection', e => ueLog('error', [e.reason ?? 'Promise rejected']));
+function ueRenderLog() {
+  if (!UE.built) return;
+  const n = { log: 0, warn: 0, error: 0 }; UE.logs.forEach(l => n[l.type]++);
+  ['log', 'warn', 'error'].forEach(t => { const b = $(`#ueDock [data-cf="${t}"]`); b.querySelector('b').textContent = n[t] > 999 ? '999+' : n[t]; b.classList.toggle('off', !UE.filt[t]); });
+  $('#ueDock [data-ce="collapse"]').classList.toggle('on', UE.collapse);
+  const cnt = $('#ueErrCnt'); cnt.textContent = n.error; cnt.classList.toggle('show', n.error > 0);
+  if (UE.dock !== 'console') return;
+  let rows = UE.logs.filter(l => UE.filt[l.type]).map(l => ({ ...l, n: 1 }));
+  if (UE.collapse) { const m = new Map(); rows.forEach(r => { const k = r.type + '\u0000' + r.msg, x = m.get(k); x ? (x.n++, x.t = r.t) : m.set(k, r); }); rows = [...m.values()]; }
+  const box = $('#ueLog'), atEnd = box.scrollTop + box.clientHeight >= box.scrollHeight - 8;
+  box.innerHTML = rows.length ? rows.slice(-400).map(r => `<div class="cl ${r.type}"><i></i><span class="ct">[${r.t.toTimeString().slice(0, 8)}]</span><span class="cm">${esc(r.msg)}</span>${r.n > 1 ? `<b class="cn">${r.n}</b>` : ''}</div>`).join('') : `<div class="cempty">${T('لا توجد رسائل')}</div>`;
+  if (atEnd) box.scrollTop = box.scrollHeight;
+}
+
+/* Play mode */
+function uePlay() {
+  if (A2.on || state.recording) return;
+  if (UE.play !== 'stop') { ueStop(); return; }
+  if (state.sk.on) toggleSketch(false); if (state.poseMode) setPoseMode(false, true);
+  UE.snap = { data: JSON.stringify(snapshot()), sel: sel?.userData.id, time: state.time, view: UE.view };
+  UE.play = 'play'; $('#app').classList.add('ue-playing'); ueView('game');
+  seek(0); setPlaying(true); UE.last = performance.now();
+  console.info('▶ ' + T('بدأ التشغيل') + ' · ' + T('التعديلات أثناء التشغيل تُلغى عند الإيقاف'));
+  ueSync();
+}
+function uePause() {
+  if (UE.play === 'stop') return;
+  if (UE.play === 'play') { UE.play = 'pause'; setPlaying(false); } else { UE.play = 'play'; UE.last = performance.now(); setPlaying(true); }
+  ueSync();
+}
+function ueStep() {
+  if (UE.play === 'stop') return;
+  if (UE.play === 'play') { UE.play = 'pause'; setPlaying(false); }
+  const t = state.time + 1 / 30; seek(t > state.dur ? (state.loop ? 0 : state.dur) : t); UE.updaters.forEach(f => f(1 / 30)); ueSync();
+}
+function ueStop() {
+  const s = UE.snap; UE.play = 'stop'; UE.snap = null; setPlaying(false);
+  if (s) {
+    restore(JSON.parse(s.data), s.sel);
+    const i = hist.lastIndexOf(s.data); if (i >= 0) { hist = hist.slice(0, i + 1); hi = i; } else commit();
+    autosave(); renderOutliner(); renderTracks(); seek(s.time);
+  }
+  $('#app').classList.remove('ue-playing'); ueView(s ? s.view : 'scene');
+  console.info('■ ' + T('انتهى التشغيل — أُعيد المشهد كما كان قبل التشغيل')); toast(T('انتهى التشغيل — أُعيد المشهد كما كان قبل التشغيل'));
+  ueSync();
+}
+function ueUpdate() {
+  const now = performance.now(), dt = Math.min(.1, (now - (UE.last || now)) / 1000); UE.last = now;
+  for (const f of UE.updaters) { try { f(dt); } catch (e) { console.error(e); } }
+}
+
+/* Scene / Game view */
+function ueView(v) {
+  UE.view = UE.on ? v : 'scene'; vpWrap.classList.toggle('game', UE.view === 'game');
+  if (UE.built) { $$('#ueViewTabs [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === UE.view)); $('#ueAspect').style.display = UE.view === 'game' ? '' : 'none'; }
+  if (UE.view === 'game') { hideMenus(); tc.enabled = false; } else { tc.enabled = true; UE.frame = ''; resize(); }
+  ueGameSync();
+}
+function ueGameSync() { if (UE.built) $('#ueNoCam').classList.toggle('show', UE.view === 'game' && !ueGameCam()); }
+function ueRenderGame() {
+  const go = ueGameCam(), cam = go ? go.userData.cam : camera, w = cv.clientWidth, h = cv.clientHeight, a = UE_ASPECTS[UE.aspect];
+  let vw = w, vh = h; if (a) { if (w / h > a) vw = Math.round(h * a); else vh = Math.round(w / a); }
+  const vx = (w - vw) >> 1, vy = (h - vh) >> 1, asp = cam.aspect; cam.aspect = vw / Math.max(1, vh); cam.updateProjectionMatrix();
+  const hid = []; objects.forEach(o => o.traverse(c => { if (c.userData.helper && c.visible) { c.visible = false; hid.push(c); } }));
+  renderer.info.reset();
+  if (fxOn()) { cam.setViewOffset(vw, vh, -vx, -vy, w, h); fxRender(cam, false); cam.clearViewOffset(); }
+  else {
+    renderer.setScissorTest(false); renderer.setViewport(0, 0, w, h); renderer.clear();
+    renderer.setViewport(vx, h - vy - vh, vw, vh); renderer.setScissor(vx, h - vy - vh, vw, vh); renderer.setScissorTest(true);
+    renderer.render(scene, cam); renderer.setScissorTest(false); renderer.setViewport(0, 0, w, h);
+  }
+  hid.forEach(c => c.visible = true);
+  if (cam === camera) { cam.aspect = asp; cam.updateProjectionMatrix(); }
+  const f = `${vx},${vy},${vw},${vh}`; if (f !== UE.frame) { UE.frame = f; Object.assign($('#ueFrame').style, { left: vx + 'px', top: vy + 'px', width: vw + 'px', height: vh + 'px' }); }
+}
+
+/* Toolbar state */
+function ueSync() {
+  if (!UE.built) return;
+  $$('#ueBar [data-ue-mode]').forEach(b => b.classList.toggle('on', b.dataset.ueMode === state.mode));
+  const sp = $('#ueBar [data-ue="space"]'); sp.querySelector('span').textContent = state.space === 'local' ? T('محلي') : T('عالمي');
+  const pl = $('#ueBar [data-ue="play"]'); pl.classList.toggle('on', UE.play !== 'stop'); pl.innerHTML = ic(UE.play === 'stop' ? 'play' : 'stop'); pl.title = UE.play === 'stop' ? T('تشغيل (Ctrl+P)') : T('إيقاف التشغيل (Ctrl+P)');
+  const pa = $('#ueBar [data-ue="pause"]'); pa.disabled = UE.play === 'stop'; pa.classList.toggle('on', UE.play === 'pause');
+  $('#ueBar [data-ue="step"]').disabled = UE.play === 'stop';
+  $('#ueBar [data-ue="layout"] span').textContent = UE.on ? T('التخطيط الكلاسيكي') : T('تخطيط المحرر');
+  $('#ueLayoutTb span').textContent = UE.on ? T('التخطيط الكلاسيكي') : T('تخطيط المحرر');
+}
+function ueDock(d, force) {
+  const app = $('#app');
+  if (!force && d === UE.dock && !app.classList.contains('dock-min')) { app.classList.add('dock-min'); return; }
+  app.classList.remove('dock-min'); UE.dock = d;
+  $$('#ueDockTabs [data-dock]').forEach(b => b.classList.toggle('on', b.dataset.dock === d));
+  $$('#ueDock .uepane').forEach(p => p.classList.toggle('on', p.dataset.pane === d));
+  if (d === 'console') ueRenderLog(); if (d === 'anim') { renderTracks(); buildTL(false); }
+}
+function ueSplit(el, v, axis, sign, mn, mx) {
+  el.addEventListener('pointerdown', e => {
+    e.preventDefault(); el.setPointerCapture(e.pointerId); el.classList.add('drag');
+    const app = $('#app'), rtl = document.documentElement.dir === 'rtl', s0 = axis === 'x' ? e.clientX : e.clientY;
+    const base = parseFloat(getComputedStyle(app).getPropertyValue(v)) || (axis === 'x' ? 260 : 236);
+    const mv = ev => { const d = ((axis === 'x' ? ev.clientX : ev.clientY) - s0) * sign * (axis === 'x' && rtl ? -1 : 1); app.style.setProperty(v, clamp(base + d, mn, mx) + 'px'); };
+    const up = () => { el.classList.remove('drag'); el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); try { localStorage.setItem('3dx-ue' + v, app.style.getPropertyValue(v)); } catch (e) { } };
+    el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up);
+  });
+  try { const s = localStorage.getItem('3dx-ue' + v); if (s) $('#app').style.setProperty(v, s); } catch (e) { }
+}
+
+/* Build the editor shell once; the classic panels are moved in, never copied, so every handler keeps working */
+function ueBuild() {
+  const app = $('#app'), main = $('main'), mk = (tag, id, html) => { const e = document.createElement(tag); if (id) e.id = id; if (html) e.innerHTML = html; return e; };
+  const tools = [['select', 'select', T('تحديد (Q)')], ['translate', 'move', T('تحريك (W)')], ['rotate', 'rotate', T('تدوير (E)')], ['scale', 'scale', T('تحجيم (R)')]];
+  const bar = mk('div', 'ueBar', `<div class="ueg">${tools.map(([m, i, n]) => `<button class="ub" data-ue-mode="${m}" title="${n}">${ic(i)}</button>`).join('')}<span class="sep"></span><button class="ub" data-ue="space" title="${T('محاور التحويل')}">${ic('local')}<span></span></button></div>
+    <div class="ueg mid"><button class="ub play" data-ue="play">${ic('play')}</button><button class="ub pause" data-ue="pause" title="${T('إيقاف مؤقت (Ctrl+Shift+P)')}">${ic('pause')}</button><button class="ub" data-ue="step" title="${T('خطوة إطار (Ctrl+Alt+P)')}">${ic('ue-step')}</button></div>
+    <div class="ueg m-only"><button class="ub" data-ue="hier" title="${T('التسلسل الهرمي')}">${ic('layers')}</button><button class="ub" data-ue="insp" title="${T('المفتّش')}">${ic('props')}</button><button class="ub" data-ue="layout" title="${T('تخطيط المحرر')} / ${T('التخطيط الكلاسيكي')}">${ic('ue-layout')}<span class="tl"></span></button></div>`);
+  $('#ribbon').after(bar);
+  const hier = mk('aside', 'ueHier', `<div class="ph">${T('التسلسل الهرمي')}<button class="ub" data-ue="create" title="${T('إنشاء كائن')}">+ ▾</button></div>`); hier.classList.add('panel');
+  const center = mk('section', 'ueCenter', `<div class="uetabs" id="ueViewTabs"><button data-view="scene">${ic('grid')}${T('المشهد')}</button><button data-view="game">${ic('camera')}${T('اللعبة')}</button><span class="sp"></span><select id="ueAspect" title="Aspect">${Object.keys(UE_ASPECTS).map(k => `<option value="${k}">${k === 'free' ? T('حر') : k}</option>`).join('')}</select></div>`);
+  main.prepend(hier, center);
+  const dock = mk('div', 'ueDock', `<div class="uetabs" id="ueDockTabs"><button data-dock="project">${ic('ue-folder')}${T('المشروع')}</button><button data-dock="console">${ic('ue-console')}${T('وحدة التحكم')}<b class="cnt" id="ueErrCnt"></b></button><button data-dock="anim">${ic('timeline')}${T('الخط الزمني')}</button><span class="sp"></span><button class="tbtn" data-dock="min" title="${T('تصغير / تكبير اللوحة')}">▁</button></div>
+    <div class="uepane" data-pane="project"></div>
+    <div class="uepane" data-pane="console"><div id="ueLogWrap"><div class="ctool"><button class="ub" data-ce="clear">${T('مسح')}</button><button class="ub" data-ce="collapse">${T('دمج المتكرر')}</button><span style="flex:1"></span><button class="ub f" data-cf="log" title="${T('رسائل')}"><i class="dot" style="background:var(--tx3)"></i><b>0</b></button><button class="ub f" data-cf="warn" title="${T('تحذيرات')}"><i class="dot" style="background:#e8b339"></i><b>0</b></button><button class="ub f" data-cf="error" title="${T('أخطاء')}"><i class="dot" style="background:var(--bad)"></i><b>0</b></button></div><div id="ueLog"></div></div></div>
+    <div class="uepane" data-pane="anim"></div><div class="ueSplit v"></div>`);
+  $('#status').before(dock);
+  vpWrap.append(mk('div', 'ueGame', `<div id="ueFrame"></div><div id="ueNoCam"><span>${T('لا توجد كاميرا في المشهد، لذلك يعرض «اللعبة» كاميرا المحرر.')}</span><button class="btn" data-ue="addcam">${ic('camera')} ${T('إضافة كاميرا رئيسية من العرض الحالي')}</button></div>`));
+  const lt = mk('button', 'ueLayoutTb', `${ic('ue-layout')}<span class="tl"></span>`); lt.className = 'tb'; lt.title = T('تخطيط المحرر') + ' / ' + T('التخطيط الكلاسيكي'); $('#langBtn').before(lt);
+  hier.append(mk('div', null)); hier.lastChild.className = 'ueSplit h';
+  const sp = mk('div', null); sp.className = 'ueSplit h'; $('#sidebar').append(sp);
+  ueSplit(hier.lastChild, '--hw', 'x', 1, 150, 480); ueSplit(sp, '--iw', 'x', -1, 220, 560); ueSplit(dock.querySelector('.ueSplit.v'), '--bh', 'y', -1, 120, 640);
+  UE.insp = $('#sidebar > .ph'); UE.inspTxt = UE.insp.textContent;
+
+  bar.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b || b.disabled) return;
+    if (b.dataset.ueMode) { setMode(b.dataset.ueMode); return; }
+    const a = b.dataset.ue; if (a === 'space') { toggleSpace(); ueSync(); } if (a === 'play') uePlay(); if (a === 'pause') uePause(); if (a === 'step') ueStep(); if (a === 'layout') ueLayout(!UE.on); if (a === 'hier') panel('lib'); if (a === 'insp') panel('side');
+  });
+  lt.addEventListener('click', () => ueLayout(!UE.on));
+  hier.addEventListener('click', e => {
+    const b = e.target.closest('[data-ue="create"]'); if (!b) return; const r = b.getBoundingClientRect();
+    menuAt($('#menu'), r.left, r.bottom + 4, [
+      { i: 'box', l: PRIMS.box.n, a: () => addPrim('box') }, { i: 'sphere', l: PRIMS.sphere.n, a: () => addPrim('sphere') }, { i: 'cyl', l: PRIMS.cylinder.n, a: () => addPrim('cylinder') },
+      { i: 'plane', l: PRIMS.plane.n, a: () => addPrim('plane') }, { i: 'light', l: LIGHTS.point.n, a: () => addLight('point') }, { i: 'sun', l: LIGHTS.dir.n, a: () => addLight('dir') },
+      { i: 'camera', l: T('كاميرا رئيسية'), a: () => ueAddCam() },
+    ]);
+  });
+  center.addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) ueView(b.dataset.view); });
+  $('#ueAspect').addEventListener('change', e => { UE.aspect = e.target.value; UE.frame = ''; });
+  vpWrap.addEventListener('click', e => { if (e.target.closest('[data-ue="addcam"]')) ueAddCam(); });
+  dock.addEventListener('click', e => {
+    const t = e.target.closest('[data-dock]'); if (t) { t.dataset.dock === 'min' ? app.classList.toggle('dock-min') : ueDock(t.dataset.dock); return; }
+    const c = e.target.closest('[data-ce]'); if (c) { if (c.dataset.ce === 'clear') UE.logs = []; else UE.collapse = !UE.collapse; ueRenderLog(); return; }
+    const f = e.target.closest('[data-cf]'); if (f) { UE.filt[f.dataset.cf] = !UE.filt[f.dataset.cf]; ueRenderLog(); return; }
+    const l = e.target.closest('.cl'); if (l) l.classList.toggle('open');
+  });
+  // Ribbon tabs act as menus: a tab opens its tools as a drop-down, the same tab closes it
+  $('#tabs').addEventListener('click', e => {
+    if (!UE.on) return; const t = e.target.closest('.tab'); if (!t) return;
+    const same = t.dataset.tab === state.tab && app.classList.contains('rib-open'); app.classList.toggle('rib-open', !same);
+  }, true);
+  $('#ribbon').addEventListener('click', e => { if (UE.on && e.target.closest('.rb')) setTimeout(() => app.classList.remove('rib-open'), 120); });
+  document.addEventListener('pointerdown', e => { if (UE.on && app.classList.contains('rib-open') && !e.target.closest('#ribbon,#tabs,#menu,#ctx')) app.classList.remove('rib-open'); });
+  addEventListener('keydown', e => {
+    if (!UE.on || A2.on || !(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'p') return;
+    e.preventDefault(); e.stopPropagation(); e.altKey ? ueStep() : e.shiftKey ? uePause() : uePlay();
+  }, true);
+  UE.moved = [$('#outliner'), $('#library'), vpWrap, $('#timeline')].map(n => ({ n, p: n.parentNode, nx: n.nextSibling }));
+  UE.built = true;
+}
+function ueLayout(on) {
+  if (!UE.built) ueBuild();
+  if (!on && UE.play !== 'stop') ueStop();
+  const app = $('#app'); UE.on = on; app.classList.toggle('ue', on); app.classList.remove('rib-open', 'm-lib', 'm-side');
+  if (on) {
+    $('#ueHier').append($('#outliner')); $('#ueCenter').append(vpWrap);
+    $('#ueDock [data-pane="project"]').append($('#library')); $('#ueDock [data-pane="anim"]').append($('#timeline'));
+    UE.insp.textContent = T('المفتّش'); ueDock(UE.dock, true); $('#ueHier').append($('#ueHier > .ueSplit'));
+  } else {
+    UE.moved.slice().reverse().forEach(m => m.p.insertBefore(m.n, m.nx && m.nx.parentNode === m.p ? m.nx : null));
+    UE.insp.textContent = UE.inspTxt;
+  }
+  ueView(on ? UE.view : 'scene');
+  try { localStorage.setItem('3dx-layout', on ? 'editor' : 'classic'); } catch (e) { }
+  resize(); ueSync(); renderTracks();
+}
+function ueInit() {
+  ueBuild();
+  let l = 'editor'; try { l = localStorage.getItem('3dx-layout') || 'editor'; } catch (e) { }
+  ueLayout(l !== 'classic');
+}
+
 /* ───────────── Boot ───────────── */
 async function boot() {
   const title = '3D EXPRESS'; $('#spTitle').innerHTML = [...title].map(c => c === ' ' ? '<span>&nbsp;</span>' : c === '3' || c === 'D' ? `<span><em>${c}</em></span>` : `<span>${c}</span>`).join('');
@@ -4504,7 +5061,7 @@ async function boot() {
   await new Promise(r => setTimeout(r, 380));
   makeThumbs();
   gsap.to('#spBar', { width: '100%', duration: .35 });
-  renderTabs(); renderRibbon(); renderLib(); hint();
+  renderTabs(); renderRibbon(); renderLib(); hint(); ueInit();
   resize(); applyScene(); setShade('solid'); vpWrap.style.setProperty('--vpbg', state.bgColor);
   let restored = false;
   try { const p = await loadProjectStore(); if (p && p.objects?.length) { loadProject(p); restored = true; } } catch (e) { }
